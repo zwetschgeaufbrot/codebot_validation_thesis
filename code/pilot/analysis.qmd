@@ -1,0 +1,97 @@
+---
+title: "Pilot sample analysis"
+author: "Anna Wittmann"
+date: today
+format:
+  html:
+    code-fold: true
+    highlight-style: haddock
+    theme: flatly
+    toc: true
+    toc-location: left
+execute:
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+# Turn off scientific notation globally
+options(scipen = 999)
+```
+
+# Dependencies
+```{r}
+# packages and setup here
+library(dplyr)
+library(ggplot2)
+library(lme4)
+library(easystats)
+library(roundwork)
+library(roundwork)
+library(kableExtra)
+
+dat <- readRDS("../../data/processed/res_pilot.rds")
+```
+
+# Taking a look at the data
+```{r}
+temp <- dat %>%  
+  group_by(paper_id) %>% 
+  filter(!is.na(agree)) %>% 
+  count(agree) %>% 
+  ungroup()
+
+temp %>% 
+  kable() %>% 
+  kable_classic(full_width = FALSE)
+
+```
+In total, `r temp %>% summarize(sum = sum(n)) %>% pull()` instances were coded by both coders.
+In `r temp %>%  filter(agree == 1) %>% summarize(sum = sum(n)) %>% pull()`/`r temp %>%  filter(!is.na(agree)) %>% summarize(sum = sum(n)) %>% pull()` cases, the raters agreed on their rating. 
+
+# Inspecting Mismatches
+```{r}
+dat %>% 
+  filter(agree == 0) %>% 
+  kable() %>% 
+  kable_classic(full_width = FALSE)
+```
+In the first paper, the inference criterion of the 12th analysis yields a mismatch. Based on visual inspection of the dataset, this is probably because codebot did not rate the default significance level settings of the given function as a match to the stated significance level.
+Disagreements in the second paper were all related to zero order correlation analyses. 
+
+```{r}
+temp <- dat %>% 
+  filter(analysis_id %in% c(1:28) & paper_id == 2 ) %>% 
+  count(agree, human, codebot, dim)
+
+temp %>% 
+  rename(dimension = dim) %>% 
+  kable() %>% 
+  kable_classic(full_width = FALSE)
+```
+
+For the zero-order correlation analyses, codebot coded `r temp %>% filter(is.na(human) & !is.na(codebot) & dim == "transformation" ) %>%  summarize (sum = sum(n)) %>% pull()` transformations that were not present in the text. When skimming the quoted code in the dataset, there is no evidence for a missed transformation by the human coder. 
+The `r temp %>% filter(is.na(agree) & is.na(human)& dim == "variable specification") %>%  summarize (sum = sum(n)) %>% pull ()` variable specification NAs for CodeBot are due to the fact that data would have been needed to assess the match. In the `r temp %>% filter(is.na(human) & !is.na(codebot)& dim == "inference criteria") %>%  summarize (sum = sum(n)) %>% pull ()` cases where CodeBot coded inference criteria as a match and the human coded nothing, CodeBot registered code from unrelated analyses like the power analyses or t-tests with alpha levels spelled out, even though this did not match the analysis in question. 
+For the inference criteria from the zero order correlations which were not coded by the human it quoted "90% power for r > .282, and 95% power for r > .312 " as the specified alpha, which is not necessarily explicit enough. In three cases, it had some problems with judging default alpha settings in functions. In five cases, it quoted something but the judgement is not given -> unclear whether it is NA or not judged. Generally, reasoning for CodeBot would be useful.  
+
+# Estimating Agreement Rate
+```{r}
+model <- glmer(agree ~ (1|paper_id),
+              data = dat,
+              family = binomial)
+glmm <- report(model)
+
+res <- tibble(probability_intercept = plogis(fixef(model)[1]), #converts the log odds of the fixed effect intercept
+                intercept = fixef(model)[1])
+```
+*EasyStats Report Output:* `r report(model)`
+
+Transforming the intercept back to a probability value means that, in the cases where human and CodeBot both coded an observation, the probability of them agreeing in their judgement of "matchingness" was `r round_up((res[1,1]*100),2) %>% pull()`% (95% CI [`r round_up(plogis(3.06)*100,2)`,`r round_up(plogis(5.04)*100,2)`]).
+
+
+# Session info
+```{r}
+sessionInfo()
+```

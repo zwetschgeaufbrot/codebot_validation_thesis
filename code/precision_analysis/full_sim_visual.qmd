@@ -1,0 +1,262 @@
+---
+title: "Visualisation of Full Sample Precision Analysis Results"
+author: "Anna T. Wittmann"
+date: today
+format:
+  html:
+    code-fold: false
+    highlight-style: haddock
+    theme: flatly
+    toc: true
+    toc-location: left
+execute:
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+# Turn off scientific notation globally
+options(scipen = 999)
+```
+
+# Dependencies
+
+```{r}
+# packages and setup here
+
+#load simulation results
+full_simulation_unnested <- readRDS("../../data/raw/precision_analysis/full_simulation_unnested.rds") 
+#load data for estimates and ci
+simulation_ci_estimates <- readRDS("../../data/processed/precision_analysis/simulation_ci_estimates.rds")
+
+library(kableExtra)
+library(ggplot2)
+library(viridis)
+library(patchwork)
+library(scales) # breaks pretty
+library(dplyr) # for %>% 
+library(apa7)
+library(flextable)
+```
+# Inspect parameters with CIs smaller than 0.05
+
+```{r}
+simulation_ci_estimates %>% 
+  filter(ci_width_prob <=0.05) %>% 
+  count()
+# 150/315 unique parameter combinations have CI narrower than 0.05 
+
+simulation_ci_estimates %>% 
+  filter(ci_width_prob<=0.05) %>% 
+  group_by(sample_size) %>% 
+  count() %>% 
+  kable() %>% 
+  kable_classic(full_width = FALSE)
+```
+150/315 parameter combinations have CIs narrower than or equal to 0.05. Sample size (n_ci_0.05/n_total): 40(11/45); 50(17/45); 60(20/45), 70(24/45); 80-100(26/45). Descriptively speaking, there seams to be no significant increase in precision above 80 papers. The next question is for which sample size.
+
+## apa7 table
+
+```{r}
+set_flextable_defaults(
+  theme_fun = theme_apa,
+  font.family = "Times New Roman",
+  text.align = "center",
+  table_align = "left"
+)
+
+simulation_ci_estimates %>% 
+  filter(ci_width_prob<=0.05) %>% 
+  group_by(sample_size) %>% 
+  count() %>% 
+  flextable() %>% 
+  save_as_image(path = "../../data/outputs/plots/n_table.png")
+
+```
+
+
+# Visually inspect differences between sample sizes
+
+```{r}
+p40 <- simulation_ci_estimates %>% 
+  mutate(paper_random_effect = as.factor(paper_random_effect),
+         sample_size = as.factor(sample_size),
+         effect_size = as.factor(effect_size)) %>% 
+  
+  filter(sample_size == 40) %>% 
+  
+  ggplot(aes(x = effect_size, 
+             y = ci_width_prob, 
+             color = paper_random_effect))+
+  labs (title = "N = 40", 
+        x = "Effect size",
+        y = "CI width [decimal]",
+        color = "Paper effect")+
+  geom_point(alpha = 1)+
+  geom_hline(yintercept = 0.05, 
+             color = "hotpink4", 
+             linetype = "dashed")+
+  theme_grey()+
+  scale_color_viridis_d(direction = 1, 
+                        option = "D")
+
+p50 <- simulation_ci_estimates %>% 
+  mutate(paper_random_effect = as.factor(paper_random_effect),
+         sample_size = as.factor(sample_size),
+         effect_size = as.factor(effect_size)) %>% 
+  
+  filter(sample_size == 50) %>% 
+  
+  ggplot(aes(x = effect_size, 
+             y = ci_width_prob, 
+             color = paper_random_effect))+
+  labs (title = "N = 50", 
+        x = "Effect size",
+        y = "CI width [decimal]",
+        color = "Paper effect")+
+  geom_point(alpha = 1)+
+  geom_hline(yintercept = 0.05, 
+             color = "hotpink4", 
+             linetype = "dashed")+
+  theme_grey()+
+  scale_color_viridis_d(direction = 1, 
+                        option = "D")
+
+p60 <- simulation_ci_estimates %>% 
+  mutate(paper_random_effect = as.factor(paper_random_effect),
+         sample_size = as.factor(sample_size),
+         effect_size = as.factor(effect_size)) %>% 
+  
+  filter(sample_size == 60) %>% 
+  
+  ggplot(aes(x = effect_size, 
+             y = ci_width_prob, 
+             color = paper_random_effect))+
+  labs (title = "N = 60", 
+        x = "Effect size",
+        y = "CI width [decimal]",
+        color = "Paper effect")+
+  geom_point(alpha = 1)+
+  geom_hline(yintercept = 0.05, 
+             color = "hotpink4", 
+             linetype = "dashed")+
+  theme_grey()+
+  scale_color_viridis_d(direction = 1, 
+                        option = "D")
+
+p70 <- simulation_ci_estimates %>% 
+  mutate(paper_random_effect = as.factor(paper_random_effect),
+         sample_size = as.factor(sample_size),
+         effect_size = as.factor(effect_size)) %>% 
+  
+  filter(sample_size == 70) %>% 
+  
+  ggplot(aes(x = effect_size, 
+             y = ci_width_prob, 
+             color = paper_random_effect))+
+  labs (title = "N = 70", 
+        x = "Effect size",
+        y = "CI width [decimal]",
+        color = "Paper effect")+
+  geom_point(alpha = 1)+
+  geom_hline(yintercept = 0.05, 
+             color = "hotpink4", 
+             linetype = "dashed")+
+  theme_grey()+
+  scale_color_viridis_d(direction = 1, 
+                        option = "D")
+
+(p40+p50)/(p60+p70) + plot_layout(guides = "collect")
+```
+# Comparing samples 80 to 100
+
+```{r}
+p80 <- simulation_ci_estimates %>% 
+  filter(sample_size == 80) %>% 
+  
+  ggplot(aes(x = effect_size, 
+             y = ci_width_prob, 
+             color = paper_random_effect))+
+  labs(title = "N = 80", 
+        x = "Effect Size",
+        y = "CI Width [Decimal]",
+        color = "Paper Effect")+
+  geom_point(alpha = 1)+
+  scale_x_continuous(
+    breaks = seq(0, 1, by = 0.1))+
+  scale_y_continuous(
+    breaks = seq(0, 0.125, by = 0.025))+
+  coord_cartesian(
+    xlim = c(0, 1),
+    ylim = c(0, 0.125)
+  )+
+  geom_hline(yintercept = 0.05, 
+             color = "hotpink4", 
+             linetype = "dashed")+
+  theme_grey()+
+  scale_color_viridis_c(breaks = seq(0.1, 0.9, by = 0.2),
+                        direction = 1,
+                        end = 0.9,
+                        option = "D")+
+  theme(text=element_text(size=10,  family="sans"))
+
+
+p90 <- p40 <- simulation_ci_estimates %>% 
+  mutate(paper_random_effect = as.factor(paper_random_effect),
+         sample_size = as.factor(sample_size),
+         effect_size = as.factor(effect_size)) %>% 
+  
+  filter(sample_size == 90) %>% 
+  
+  ggplot(aes(x = effect_size, 
+             y = ci_width_prob, 
+             color = paper_random_effect))+
+  labs (title = "N = 90", 
+        x = "Effect size",
+        y = "CI width [decimal]",
+        color = "Paper effect")+
+  geom_point(alpha = 1)+
+  geom_hline(yintercept = 0.05, 
+             color = "hotpink4", 
+             linetype = "dashed")+
+  theme_grey()+
+  scale_color_viridis_d(direction = 1, 
+                        option = "D")
+
+p100 <- simulation_ci_estimates %>% 
+  mutate(paper_random_effect = as.factor(paper_random_effect),
+         sample_size = as.factor(sample_size),
+         effect_size = as.factor(effect_size)) %>% 
+  
+  filter(sample_size == 100) %>% 
+  
+  ggplot(aes(x = effect_size, 
+             y = ci_width_prob, 
+             color = paper_random_effect))+
+  labs (title = "N = 100", 
+        x = "Effect Size",
+        y = "CI Width [decimal]",
+        color = "Paper Effect")+
+  geom_point(alpha = 1)+
+  geom_hline(yintercept = 0.05, 
+             color = "hotpink4", 
+             linetype = "dashed")+
+  theme_grey()+
+  scale_color_viridis_d(direction = 1, 
+                        option = "D")
+
+p80+p90/p100 + plot_layout(guides = "collect")
+```
+# Save N = 80 plot
+```{r}
+p80
+ggsave("../../data/outputs/plots/p80.png")
+```
+
+# Session info
+
+```{r}
+sessionInfo()
+```

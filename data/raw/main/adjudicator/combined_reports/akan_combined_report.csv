@@ -1,0 +1,238 @@
+analysis_id,dimension,human_manuscript_content,human_manuscript_location,human_code_content,human_code_location,human_match_judgement,codebot_brief_description,codebot_manuscript_content,codebot_manuscript_location,codebot_code_content,codebot_code_location,codebot_match_judgement,codebot_human_agreement
+1,model specification,"To formally analyze these data, we conducted a two-way (Face
+Race × Perceiver Race) between-subjects analysis of variance. The race of the faces did not have a significant effect on ratings of similarity, F(1, 351) = 1.49, p = .223, with a mean difference (White − Black) of 0.11 (95% confidence interval, CI [−0.08, 0.28]). The CI indicates that any potential effect is likely to be quite small, given that all population effect sizes greater than 0.28 are rejected by the sample with α = .05.",0.0,"anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)
+                summary(anova_result)",similarity_analysis_o.Rmd:151-153,1,"A two-way between-subjects ANOVA tested effects of Face Race (Black vs. White face set) and Perceiver Race (Black vs. White participants) on each participant’s mean similarity rating across all rated pairs. The analysis yielded no main effect of face race, a significant main effect of perceiver race (White perceivers gave higher similarity ratings overall), and a non-significant interaction, with F(1, 351) = 1.49, p = .223 for face race, F(1, 351) = 66.50, p < .0001 for perceiver race, and F(1, 351) = 1.58, p = .209 for the interaction. These results were used to argue that any face-race effect on raw similarity ratings was very small.","To formally analyze these data, we conducted a two-way (Face Race × Perceiver Race) between-subjects analysis of variance.",,"anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)
+
+summary(anova_result)",,1,1
+1,variable specification,"To formally analyze these data, we conducted a two-way (Face
+Race × Perceiver Race) between-subjects analysis of variance. The race of the faces did not have a significant effect on ratings of similarity, F(1, 351) = 1.49, p = .223, with a mean difference (White − Black) of 0.11 (95% confidence interval, CI [−0.08, 0.28]). The CI indicates that any potential effect is likely to be quite small, given that all population effect sizes greater than 0.28 are rejected by the sample with α = .05.",0.0,"#mean rating across 250 trials by each participant
+sub_ratings<- rating_data%>%
+  group_by(run_id_2)%>%
+  summarise(mean_rating = mean(rating), .groups = 'drop')%>%
+      left_join(
+        rating_data%>%
+          select(run_id_2, face_race, sub_race)%>%
+          distinct(run_id_2, .keep_all = TRUE),
+          by = ""run_id_2"")
+
+
+sub_rating_sum<- sub_ratings%>%
+  group_by(sub_race, face_race)%>%
+  summarise(mean_rating = mean(mean_rating))
+
+
+anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)
+
+summary(anova_result)",similarity_analysis_o.Rmd:135-153,1,"A two-way between-subjects ANOVA tested effects of Face Race (Black vs. White face set) and Perceiver Race (Black vs. White participants) on each participant’s mean similarity rating across all rated pairs. The analysis yielded no main effect of face race, a significant main effect of perceiver race (White perceivers gave higher similarity ratings overall), and a non-significant interaction, with F(1, 351) = 1.49, p = .223 for face race, F(1, 351) = 66.50, p < .0001 for perceiver race, and F(1, 351) = 1.58, p = .209 for the interaction. These results were used to argue that any face-race effect on raw similarity ratings was very small.","We computed the mean similarity rating provided by each participant across all the face pairs they rated on experimental trials. To formally analyze these data, we conducted a two-way (Face Race × Perceiver Race) between-subjects analysis of variance.",,"rating_data <- data_allS%>%
+  filter(s_trial_type==""rating"")%>%
+  select(""run_id"",""run_id_2"",""sub_race"", ""face_race"",""trial_index"",""rt"",""response"",""s_face_1"", ""s_face_2"",""s_pair_id"",""s_left_right"")%>%
+  filter(!str_detect(s_pair_id, 'a'))%>% #get rid of attention check trials (a1, a2, ...)
+  mutate_at(c('trial_index', 'rt', 'response','s_pair_id'), as.numeric)%>%
+  mutate(rating = response+1)
+
+#mean rating across 250 trials by each participant
+sub_ratings<- rating_data%>%
+  group_by(run_id_2)%>%
+  summarise(mean_rating = mean(rating), .groups = 'drop')%>%
+      left_join(
+        rating_data%>%
+          select(run_id_2, face_race, sub_race)%>%
+          distinct(run_id_2, .keep_all = TRUE),
+          by = ""run_id_2"")
+
+anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)",,1,1
+1,transformation,,,,similarity_analysis_o.Rmd,,"A two-way between-subjects ANOVA tested effects of Face Race (Black vs. White face set) and Perceiver Race (Black vs. White participants) on each participant’s mean similarity rating across all rated pairs. The analysis yielded no main effect of face race, a significant main effect of perceiver race (White perceivers gave higher similarity ratings overall), and a non-significant interaction, with F(1, 351) = 1.49, p = .223 for face race, F(1, 351) = 66.50, p < .0001 for perceiver race, and F(1, 351) = 1.58, p = .209 for the interaction. These results were used to argue that any face-race effect on raw similarity ratings was very small.",We computed the mean similarity rating provided by each participant across all the face pairs they rated on experimental trials.,,"rating_data <- data_allS%>%
+  filter(s_trial_type==""rating"")%>%
+  select(""run_id"",""run_id_2"",""sub_race"", ""face_race"",""trial_index"",""rt"",""response"",""s_face_1"", ""s_face_2"",""s_pair_id"",""s_left_right"")%>%
+  filter(!str_detect(s_pair_id, 'a'))%>% #get rid of attention check trials (a1, a2, ...)
+  mutate_at(c('trial_index', 'rt', 'response','s_pair_id'), as.numeric)%>%
+  mutate(rating = response+1)
+
+#mean rating across 250 trials by each participant
+sub_ratings<- rating_data%>%
+  group_by(run_id_2)%>%
+  summarise(mean_rating = mean(rating), .groups = 'drop')%>%
+      left_join(
+        rating_data%>%
+          select(run_id_2, face_race, sub_race)%>%
+          distinct(run_id_2, .keep_all = TRUE),
+          by = ""run_id_2"")
+
+anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)",,1,
+1,variable specification,"To formally analyze these data, we conducted a two-way (Face
+Race × Perceiver Race) between-subjects analysis of variance. The race of the faces did not have a significant effect on ratings of similarity, F(1, 351) = 1.49, p = .223, with a mean difference (White − Black) of 0.11 (95% confidence interval, CI [−0.08, 0.28]). The CI indicates that any potential effect is likely to be quite small, given that all population effect sizes greater than 0.28 are rejected by the sample with α = .05.",0.0,"#mean rating across 250 trials by each participant
+sub_ratings<- rating_data%>%
+  group_by(run_id_2)%>%
+  summarise(mean_rating = mean(rating), .groups = 'drop')%>%
+      left_join(
+        rating_data%>%
+          select(run_id_2, face_race, sub_race)%>%
+          distinct(run_id_2, .keep_all = TRUE),
+          by = ""run_id_2"")
+
+
+sub_rating_sum<- sub_ratings%>%
+  group_by(sub_race, face_race)%>%
+  summarise(mean_rating = mean(mean_rating))
+
+
+anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)
+
+summary(anova_result)",similarity_analysis_o.Rmd:135-153,1,"A two-way between-subjects ANOVA tested effects of Face Race (Black vs. White face set) and Perceiver Race (Black vs. White participants) on each participant’s mean similarity rating across all rated pairs. The analysis yielded no main effect of face race, a significant main effect of perceiver race (White perceivers gave higher similarity ratings overall), and a non-significant interaction, with F(1, 351) = 1.49, p = .223 for face race, F(1, 351) = 66.50, p < .0001 for perceiver race, and F(1, 351) = 1.58, p = .209 for the interaction. These results were used to argue that any face-race effect on raw similarity ratings was very small.","We computed the mean similarity rating provided by each participant across all the face pairs they rated on experimental trials. To formally analyze these data, we conducted a two-way (Face Race × Perceiver Race) between-subjects analysis of variance.",,"rating_data <- data_allS%>%
+  filter(s_trial_type==""rating"")%>%
+  select(""run_id"",""run_id_2"",""sub_race"", ""face_race"",""trial_index"",""rt"",""response"",""s_face_1"", ""s_face_2"",""s_pair_id"",""s_left_right"")%>%
+  filter(!str_detect(s_pair_id, 'a'))%>% #get rid of attention check trials (a1, a2, ...)
+  mutate_at(c('trial_index', 'rt', 'response','s_pair_id'), as.numeric)%>%
+  mutate(rating = response+1)
+
+#mean rating across 250 trials by each participant
+sub_ratings<- rating_data%>%
+  group_by(run_id_2)%>%
+  summarise(mean_rating = mean(rating), .groups = 'drop')%>%
+      left_join(
+        rating_data%>%
+          select(run_id_2, face_race, sub_race)%>%
+          distinct(run_id_2, .keep_all = TRUE),
+          by = ""run_id_2"")
+
+anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)",,1,1
+1,transformation,,,,similarity_analysis_o.Rmd,,"A two-way between-subjects ANOVA tested effects of Face Race (Black vs. White face set) and Perceiver Race (Black vs. White participants) on each participant’s mean similarity rating across all rated pairs. The analysis yielded no main effect of face race, a significant main effect of perceiver race (White perceivers gave higher similarity ratings overall), and a non-significant interaction, with F(1, 351) = 1.49, p = .223 for face race, F(1, 351) = 66.50, p < .0001 for perceiver race, and F(1, 351) = 1.58, p = .209 for the interaction. These results were used to argue that any face-race effect on raw similarity ratings was very small.",We computed the mean similarity rating provided by each participant across all the face pairs they rated on experimental trials.,,"rating_data <- data_allS%>%
+  filter(s_trial_type==""rating"")%>%
+  select(""run_id"",""run_id_2"",""sub_race"", ""face_race"",""trial_index"",""rt"",""response"",""s_face_1"", ""s_face_2"",""s_pair_id"",""s_left_right"")%>%
+  filter(!str_detect(s_pair_id, 'a'))%>% #get rid of attention check trials (a1, a2, ...)
+  mutate_at(c('trial_index', 'rt', 'response','s_pair_id'), as.numeric)%>%
+  mutate(rating = response+1)
+
+#mean rating across 250 trials by each participant
+sub_ratings<- rating_data%>%
+  group_by(run_id_2)%>%
+  summarise(mean_rating = mean(rating), .groups = 'drop')%>%
+      left_join(
+        rating_data%>%
+          select(run_id_2, face_race, sub_race)%>%
+          distinct(run_id_2, .keep_all = TRUE),
+          by = ""run_id_2"")
+
+anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)",,1,
+1,variable specification,"To formally analyze these data, we conducted a two-way (Face
+Race × Perceiver Race) between-subjects analysis of variance. The race of the faces did not have a significant effect on ratings of similarity, F(1, 351) = 1.49, p = .223, with a mean difference (White − Black) of 0.11 (95% confidence interval, CI [−0.08, 0.28]). The CI indicates that any potential effect is likely to be quite small, given that all population effect sizes greater than 0.28 are rejected by the sample with α = .05.",0.0,"#mean rating across 250 trials by each participant
+sub_ratings<- rating_data%>%
+  group_by(run_id_2)%>%
+  summarise(mean_rating = mean(rating), .groups = 'drop')%>%
+      left_join(
+        rating_data%>%
+          select(run_id_2, face_race, sub_race)%>%
+          distinct(run_id_2, .keep_all = TRUE),
+          by = ""run_id_2"")
+
+
+sub_rating_sum<- sub_ratings%>%
+  group_by(sub_race, face_race)%>%
+  summarise(mean_rating = mean(mean_rating))
+
+
+anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)
+
+summary(anova_result)",similarity_analysis_o.Rmd:135-153,1,"A two-way between-subjects ANOVA tested effects of Face Race (Black vs. White face set) and Perceiver Race (Black vs. White participants) on each participant’s mean similarity rating across all rated pairs. The analysis yielded no main effect of face race, a significant main effect of perceiver race (White perceivers gave higher similarity ratings overall), and a non-significant interaction, with F(1, 351) = 1.49, p = .223 for face race, F(1, 351) = 66.50, p < .0001 for perceiver race, and F(1, 351) = 1.58, p = .209 for the interaction. These results were used to argue that any face-race effect on raw similarity ratings was very small.","We computed the mean similarity rating provided by each participant across all the face pairs they rated on experimental trials. To formally analyze these data, we conducted a two-way (Face Race × Perceiver Race) between-subjects analysis of variance.",,"rating_data <- data_allS%>%
+  filter(s_trial_type==""rating"")%>%
+  select(""run_id"",""run_id_2"",""sub_race"", ""face_race"",""trial_index"",""rt"",""response"",""s_face_1"", ""s_face_2"",""s_pair_id"",""s_left_right"")%>%
+  filter(!str_detect(s_pair_id, 'a'))%>% #get rid of attention check trials (a1, a2, ...)
+  mutate_at(c('trial_index', 'rt', 'response','s_pair_id'), as.numeric)%>%
+  mutate(rating = response+1)
+
+#mean rating across 250 trials by each participant
+sub_ratings<- rating_data%>%
+  group_by(run_id_2)%>%
+  summarise(mean_rating = mean(rating), .groups = 'drop')%>%
+      left_join(
+        rating_data%>%
+          select(run_id_2, face_race, sub_race)%>%
+          distinct(run_id_2, .keep_all = TRUE),
+          by = ""run_id_2"")
+
+anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)",,1,1
+1,transformation,"On each trial, participants saw two face images and rated their
+similarity to each other on a Likert scale ranging from 1 (very
+dissimilar) to 7 (very similar). [...] We computed the mean similarity rating provided by each participant across all the face pairs they rated on experimental trials.",0.0,"#mean rating across 250 trials by each participant
+sub_ratings<- rating_data%>%
+  group_by(run_id_2)%>%
+  summarise(mean_rating = mean(rating), .groups = 'drop')%>%
+      left_join(
+        rating_data%>%
+          select(run_id_2, face_race, sub_race)%>%
+          distinct(run_id_2, .keep_all = TRUE),
+          by = ""run_id_2"")
+
+
+sub_rating_sum<- sub_ratings%>%
+  group_by(sub_race, face_race)%>%
+  summarise(mean_rating = mean(mean_rating))
+
+
+anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)
+
+summary(anova_result)",similarity_analysis_o.Rmd:135-153,1,"A two-way between-subjects ANOVA tested effects of Face Race (Black vs. White face set) and Perceiver Race (Black vs. White participants) on each participant’s mean similarity rating across all rated pairs. The analysis yielded no main effect of face race, a significant main effect of perceiver race (White perceivers gave higher similarity ratings overall), and a non-significant interaction, with F(1, 351) = 1.49, p = .223 for face race, F(1, 351) = 66.50, p < .0001 for perceiver race, and F(1, 351) = 1.58, p = .209 for the interaction. These results were used to argue that any face-race effect on raw similarity ratings was very small.",We computed the mean similarity rating provided by each participant across all the face pairs they rated on experimental trials.,,"rating_data <- data_allS%>%
+  filter(s_trial_type==""rating"")%>%
+  select(""run_id"",""run_id_2"",""sub_race"", ""face_race"",""trial_index"",""rt"",""response"",""s_face_1"", ""s_face_2"",""s_pair_id"",""s_left_right"")%>%
+  filter(!str_detect(s_pair_id, 'a'))%>% #get rid of attention check trials (a1, a2, ...)
+  mutate_at(c('trial_index', 'rt', 'response','s_pair_id'), as.numeric)%>%
+  mutate(rating = response+1)
+
+#mean rating across 250 trials by each participant
+sub_ratings<- rating_data%>%
+  group_by(run_id_2)%>%
+  summarise(mean_rating = mean(rating), .groups = 'drop')%>%
+      left_join(
+        rating_data%>%
+          select(run_id_2, face_race, sub_race)%>%
+          distinct(run_id_2, .keep_all = TRUE),
+          by = ""run_id_2"")
+
+anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)",,1,1
+1,inference criterion,"To formally analyze these data, we conducted a two-way (Face
+Race × Perceiver Race) between-subjects analysis of variance. The race of the faces did not have a significant effect on ratings of similarity, F(1, 351) = 1.49, p = .223, with a mean difference (White − Black) of 0.11 (95% confidence interval, CI [−0.08, 0.28]). The CI indicates that any potential effect is likely to be quite small, given that all population effect sizes greater than 0.28 are rejected by the sample with α = .05.",0.0,"#mean rating across 250 trials by each participant
+sub_ratings<- rating_data%>%
+  group_by(run_id_2)%>%
+  summarise(mean_rating = mean(rating), .groups = 'drop')%>%
+      left_join(
+        rating_data%>%
+          select(run_id_2, face_race, sub_race)%>%
+          distinct(run_id_2, .keep_all = TRUE),
+          by = ""run_id_2"")
+
+
+sub_rating_sum<- sub_ratings%>%
+  group_by(sub_race, face_race)%>%
+  summarise(mean_rating = mean(mean_rating))
+
+
+anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)
+
+summary(anova_result)",similarity_analysis_o.Rmd:135-153,1,"A two-way between-subjects ANOVA tested effects of Face Race (Black vs. White face set) and Perceiver Race (Black vs. White participants) on each participant’s mean similarity rating across all rated pairs. The analysis yielded no main effect of face race, a significant main effect of perceiver race (White perceivers gave higher similarity ratings overall), and a non-significant interaction, with F(1, 351) = 1.49, p = .223 for face race, F(1, 351) = 66.50, p < .0001 for perceiver race, and F(1, 351) = 1.58, p = .209 for the interaction. These results were used to argue that any face-race effect on raw similarity ratings was very small.","The race of the faces did not have a significant effect on ratings of similarity, F(1, 351) = 1.49, p = .223, with a mean difference (White − Black) of 0.11 (95% confidence interval, CI [−0.08, 0.28]). The CI indicates that any potential effect is likely to be quite small, given that all population effect sizes greater than 0.28 are rejected by the sample with α = .05. ... The difference was 0.22 (95% CI [−0.12, 0.56]), which ruled out large or moderate interaction effects at the α = .05 level and was consistent with a null or negligibly small interaction effect.",,"anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)
+
+summary(anova_result)
+
+mse <- 0.67  # MSE from ANOVA
+df_residual <- 351  # Residual degrees of freedom
+
+n_bfbs <- 88  
+n_bfws <- 91
+n_wfbs <- 88
+n_wfws <- 88
+#means
+m_bfbs<-2.1942
+m_bfws<-2.7935
+m_wfbs<-2.1959
+m_wfws<-3.0135
+
+t_crit <- qt(0.975, df = df_residual)
+se<- sqrt((mse / n_bfbs) + (mse / n_bfws) + (mse / n_wfbs) + (mse / n_wfws))
+
+#CI for face race
+t.test(mean_rating ~ face_race, var.equal = TRUE, data = sub_ratings)
+#CI for sub race
+t.test(mean_rating ~ sub_race, var.equal = TRUE, data = sub_ratings)
+#CI for interaction
+interaction_diff <- (m_wfws - m_bfws) - (m_wfbs - m_bfbs)
+lower_ci <- interaction_diff - t_crit * se
+upper_ci <- interaction_diff + t_crit * se",,1,1

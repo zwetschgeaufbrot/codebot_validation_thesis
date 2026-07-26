@@ -1,0 +1,590 @@
+analysis_id,dimension,human_manuscript_content,human_manuscript_location,human_code_content,human_code_location,human_match_judgement,codebot_brief_description,codebot_manuscript_content,codebot_manuscript_location,codebot_code_content,codebot_code_location,codebot_match_judgement,codebot_human_agreement
+1,model specification,"To assess whether the level of difficulty in the first task (Stroop task; easy, hard) influenced participants’ performance in the secondary task (flanker), we conducted two 2 (preceding Stroop type: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures ANOVAs 5. One ANOVA analyzed participants’ error rate as the dependent variable, while the other focused on the reaction time. >...] η²p",0.0,"anova_error <- aov_ez(id = ""participant"",
+                      dv = ""error_rate_flanker"",
+                      within = c(""task"", ""congruence_flanker""),
+                      data = df_flanker)
+summary(anova_error)
+
+
+# Partial Eta Squared
+eta_squared(anova_error, partial = TRUE)",results_script.R:393-401,1,"A 2 (preceding Stroop type: easy vs. hard) × 2 (flanker congruence: congruent vs. incongruent) repeated-measures ANOVA assessed how these factors affected flanker-task error rates. Error rate was the dependent variable; both factors were within-subject. The analysis found a significant main effect of flanker congruence (F(1,94) = 31.85, p < .001, η²p = .25) but no significant main effect of preceding Stroop type and no interaction, indicating no carryover of Stroop difficulty to flanker error rates.","To assess whether the level of difficulty in the first task (Stroop task; easy, hard) influenced participants’ performance in the secondary task (flanker), we conducted two 2 (preceding Stroop type: easy Stroop, hard Stroop) x 2 (flanker type: congruent, incongruent) repeated measures ANOVAs5. One ANOVA analyzed participants’ error rate as the dependent variable, while the other focused on the reaction time.",,"# 4.1. Error rate --------------------------------------------------------------
+
+
+# Analysis: 2 (Stroop task: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures Anova
+
+# Results: No significant effect of Stroop task on flanker error rate
+
+library(afex) 
+
+anova_error <- aov_ez(id = ""participant"",
+                      dv = ""error_rate_flanker"",
+                      within = c(""task"", ""congruence_flanker""),
+                      data = df_flanker)
+summary(anova_error)
+
+
+# Partial Eta Squared
+eta_squared(anova_error, partial = TRUE)",,1,1
+1,variable specification,"To assess whether the level of difficulty in the first task (Stroop task; easy, hard) influenced participants’ performance in the secondary task (flanker), we conducted two 2 (preceding Stroop type: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures ANOVAs 5. One ANOVA analyzed participants’ error rate as the dependent variable, while the other focused on the reaction time.",0.0,"  df <- import(""data_block_level.csv"") [...]  df_flanker <- df |>
+    pivot_longer(
+      cols = c(error_rate_flanker_congruent, error_rate_flanker_incongruent,
+               rt_flanker_congruent, rt_flanker_incongruent,
+               rt_flanker_sd_congruent, rt_flanker_sd_incongruent),
+      names_to = c("".value"", ""congruence""),
+      names_pattern = ""^(.*)_(congruent|incongruent)$"")
+      
+  df_flanker <- df_flanker|>
+    rename (congruence_flanker = congruence)
+  
+
+df_flanker <- df_flanker |>
+  group_by(participant, task,congruence_flanker) |>
+  summarise(across(c(effort, effort_boredom, effort_difficulty, boredom, 
+                     difficulty, fatigue,error_rate_flanker,rt_flanker ), 
+                   mean, na.rm = TRUE), 
+            .groups = ""drop"")
+
+
+# 4.1. Error rate --------------------------------------------------------------
+
+
+# Analysis: 2 (Stroop task: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures Anova
+
+# Results: No significant effect of Stroop task on flanker error rate
+
+library(afex) 
+
+anova_error <- aov_ez(id = ""participant"",
+                      dv = ""error_rate_flanker"",
+                      within = c(""task"", ""congruence_flanker""),
+                      data = df_flanker)
+summary(anova_error)
+
+
+# Partial Eta Squared
+eta_squared(anova_error, partial = TRUE)",results_script.R:28-364-401,1,"A 2 (preceding Stroop type: easy vs. hard) × 2 (flanker congruence: congruent vs. incongruent) repeated-measures ANOVA assessed how these factors affected flanker-task error rates. Error rate was the dependent variable; both factors were within-subject. The analysis found a significant main effect of flanker congruence (F(1,94) = 31.85, p < .001, η²p = .25) but no significant main effect of preceding Stroop type and no interaction, indicating no carryover of Stroop difficulty to flanker error rates.","To assess whether the level of difficulty in the first task (Stroop task; easy, hard) influenced participants’ performance in the secondary task (flanker), we conducted two 2 (preceding Stroop type: easy Stroop, hard Stroop; fixed effect) x 2 (flanker type: congruent, incongruent; fixed effect) repeated measures ANOVAs. One ANOVA analyzed participants’ error rate as the dependent variable, while the other focused on the reaction time.
+
+The ANOVA on error rates revealed a significant effect of flanker congruency, F(1, 94) = 31.85, p < .001, η²p = .25, indicating that participants made more errors in incongruent (M = 0.07, SD = 0.15) compared to congruent trials (M = 0.01, SD = 0.02; flanker effect). The main effect of preceding Stroop type (easy Stroop, hard Stroop), F(1, 94) = 1.29, p = .259, η²p = .01, and the interaction between preceding Stroop type and flanker congruency was not significant, F(1, 94) = 0.68, p = .412, η²p = .007, suggesting that the difficulty level of the Stroop did not impact error rates in the flanker task.",,"# create long format of flanker data 
+  
+  df_flanker <- df |>
+    pivot_longer(
+      cols = c(error_rate_flanker_congruent, error_rate_flanker_incongruent,
+               rt_flanker_congruent, rt_flanker_incongruent,
+               rt_flanker_sd_congruent, rt_flanker_sd_incongruent),
+      names_to = c("".value"", ""congruence""),
+      names_pattern = ""^(.*)_(congruent|incongruent)$"")
+      
+  df_flanker <- df_flanker|>
+    rename (congruence_flanker = congruence)
+  
+
+df_flanker <- df_flanker |>
+  group_by(participant, task,congruence_flanker) |>
+  summarise(across(c(effort, effort_boredom, effort_difficulty, boredom, 
+                     difficulty, fatigue,error_rate_flanker,rt_flanker ), 
+                   mean, na.rm = TRUE), 
+            .groups = ""drop"")
+...
+# Analysis: 2 (Stroop task: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures Anova
+
+library(afex) 
+
+anova_error <- aov_ez(id = ""participant"",
+                      dv = ""error_rate_flanker"",
+                      within = c(""task"", ""congruence_flanker""),
+                      data = df_flanker)
+summary(anova_error)",,1,1
+1,transformation,"Error rates and reaction times were calculated as the mean values across all completed trials, including correct and incorrect responses4.",0.0,"  df <- import(""data_block_level.csv"") [...]  df_flanker <- df |>
+    pivot_longer(
+      cols = c(error_rate_flanker_congruent, error_rate_flanker_incongruent,
+               rt_flanker_congruent, rt_flanker_incongruent,
+               rt_flanker_sd_congruent, rt_flanker_sd_incongruent),
+      names_to = c("".value"", ""congruence""),
+      names_pattern = ""^(.*)_(congruent|incongruent)$"")
+      
+  df_flanker <- df_flanker|>
+    rename (congruence_flanker = congruence)
+  
+
+df_flanker <- df_flanker |>
+  group_by(participant, task,congruence_flanker) |>
+  summarise(across(c(effort, effort_boredom, effort_difficulty, boredom, 
+                     difficulty, fatigue,error_rate_flanker,rt_flanker ), 
+                   mean, na.rm = TRUE), 
+            .groups = ""drop"")
+
+
+# 4.1. Error rate --------------------------------------------------------------
+
+
+# Analysis: 2 (Stroop task: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures Anova
+
+# Results: No significant effect of Stroop task on flanker error rate
+
+library(afex) 
+
+anova_error <- aov_ez(id = ""participant"",
+                      dv = ""error_rate_flanker"",
+                      within = c(""task"", ""congruence_flanker""),
+                      data = df_flanker)
+summary(anova_error)
+
+
+# Partial Eta Squared
+eta_squared(anova_error, partial = TRUE)",results_script.R:28-364-401,1,"A 2 (preceding Stroop type: easy vs. hard) × 2 (flanker congruence: congruent vs. incongruent) repeated-measures ANOVA assessed how these factors affected flanker-task error rates. Error rate was the dependent variable; both factors were within-subject. The analysis found a significant main effect of flanker congruence (F(1,94) = 31.85, p < .001, η²p = .25) but no significant main effect of preceding Stroop type and no interaction, indicating no carryover of Stroop difficulty to flanker error rates.","Replacement participants were recruited to achieve the calculated sample size when participants dropped out, when their z-transformed error rate in the Stroop task exceeded three standard deviations from the mean of all participants, or when errors occurred in the recording of oculomotor data (i.e., participants for whom the calibration procedure did not work correctly, indicated by an average error in measuring horizontal and vertical eye positions exceeding an angular accuracy of 0.8°). ... Error rates and reaction times were calculated as the mean values across all completed trials, including correct and incorrect responses⁴.",,"df_flanker <- df |>
+    pivot_longer(
+      cols = c(error_rate_flanker_congruent, error_rate_flanker_incongruent,
+               rt_flanker_congruent, rt_flanker_incongruent,
+               rt_flanker_sd_congruent, rt_flanker_sd_incongruent),
+      names_to = c("".value"", ""congruence""),
+      names_pattern = ""^(.*)_(congruent|incongruent)$"")
+      
+  df_flanker <- df_flanker|>
+    rename (congruence_flanker = congruence)
+  
+
+df_flanker <- df_flanker |>
+  group_by(participant, task,congruence_flanker) |>
+  summarise(across(c(effort, effort_boredom, effort_difficulty, boredom, 
+                     difficulty, fatigue,error_rate_flanker,rt_flanker ), 
+                   mean, na.rm = TRUE), 
+            .groups = ""drop"")
+
+anova_error <- aov_ez(id = ""participant"",
+                      dv = ""error_rate_flanker"",
+                      within = c(""task"", ""congruence_flanker""),
+                      data = df_flanker)",,,
+1,variable specification,"To assess whether the level of difficulty in the first task (Stroop task; easy, hard) influenced participants’ performance in the secondary task (flanker), we conducted two 2 (preceding Stroop type: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures ANOVAs 5. One ANOVA analyzed participants’ error rate as the dependent variable, while the other focused on the reaction time.",0.0,"df <- import(""data_block_level.csv"") [...] anova_error <- aov_ez(id = ""participant"",
+                      dv = ""error_rate_flanker"",
+                      within = c(""task"", ""congruence_flanker""),
+                      data = df_flanker)
+summary(anova_error)
+
+
+# Partial Eta Squared
+eta_squared(anova_error, partial = TRUE)",results_script.R:28;393-401,1,"A 2 (preceding Stroop type: easy vs. hard) × 2 (flanker congruence: congruent vs. incongruent) repeated-measures ANOVA assessed how these factors affected flanker-task error rates. Error rate was the dependent variable; both factors were within-subject. The analysis found a significant main effect of flanker congruence (F(1,94) = 31.85, p < .001, η²p = .25) but no significant main effect of preceding Stroop type and no interaction, indicating no carryover of Stroop difficulty to flanker error rates.","To assess whether the level of difficulty in the first task (Stroop task; easy, hard) influenced participants’ performance in the secondary task (flanker), we conducted two 2 (preceding Stroop type: easy Stroop, hard Stroop; fixed effect) x 2 (flanker type: congruent, incongruent; fixed effect) repeated measures ANOVAs. One ANOVA analyzed participants’ error rate as the dependent variable, while the other focused on the reaction time.
+
+The ANOVA on error rates revealed a significant effect of flanker congruency, F(1, 94) = 31.85, p < .001, η²p = .25, indicating that participants made more errors in incongruent (M = 0.07, SD = 0.15) compared to congruent trials (M = 0.01, SD = 0.02; flanker effect). The main effect of preceding Stroop type (easy Stroop, hard Stroop), F(1, 94) = 1.29, p = .259, η²p = .01, and the interaction between preceding Stroop type and flanker congruency was not significant, F(1, 94) = 0.68, p = .412, η²p = .007, suggesting that the difficulty level of the Stroop did not impact error rates in the flanker task.",,"# create long format of flanker data 
+  
+  df_flanker <- df |>
+    pivot_longer(
+      cols = c(error_rate_flanker_congruent, error_rate_flanker_incongruent,
+               rt_flanker_congruent, rt_flanker_incongruent,
+               rt_flanker_sd_congruent, rt_flanker_sd_incongruent),
+      names_to = c("".value"", ""congruence""),
+      names_pattern = ""^(.*)_(congruent|incongruent)$"")
+      
+  df_flanker <- df_flanker|>
+    rename (congruence_flanker = congruence)
+  
+
+df_flanker <- df_flanker |>
+  group_by(participant, task,congruence_flanker) |>
+  summarise(across(c(effort, effort_boredom, effort_difficulty, boredom, 
+                     difficulty, fatigue,error_rate_flanker,rt_flanker ), 
+                   mean, na.rm = TRUE), 
+            .groups = ""drop"")
+...
+# Analysis: 2 (Stroop task: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures Anova
+
+library(afex) 
+
+anova_error <- aov_ez(id = ""participant"",
+                      dv = ""error_rate_flanker"",
+                      within = c(""task"", ""congruence_flanker""),
+                      data = df_flanker)
+summary(anova_error)",,1,1
+1,transformation,,,,,,"A 2 (preceding Stroop type: easy vs. hard) × 2 (flanker congruence: congruent vs. incongruent) repeated-measures ANOVA assessed how these factors affected flanker-task error rates. Error rate was the dependent variable; both factors were within-subject. The analysis found a significant main effect of flanker congruence (F(1,94) = 31.85, p < .001, η²p = .25) but no significant main effect of preceding Stroop type and no interaction, indicating no carryover of Stroop difficulty to flanker error rates.","Replacement participants were recruited to achieve the calculated sample size when participants dropped out, when their z-transformed error rate in the Stroop task exceeded three standard deviations from the mean of all participants, or when errors occurred in the recording of oculomotor data (i.e., participants for whom the calibration procedure did not work correctly, indicated by an average error in measuring horizontal and vertical eye positions exceeding an angular accuracy of 0.8°). ... Error rates and reaction times were calculated as the mean values across all completed trials, including correct and incorrect responses⁴.",,"df_flanker <- df |>
+    pivot_longer(
+      cols = c(error_rate_flanker_congruent, error_rate_flanker_incongruent,
+               rt_flanker_congruent, rt_flanker_incongruent,
+               rt_flanker_sd_congruent, rt_flanker_sd_incongruent),
+      names_to = c("".value"", ""congruence""),
+      names_pattern = ""^(.*)_(congruent|incongruent)$"")
+      
+  df_flanker <- df_flanker|>
+    rename (congruence_flanker = congruence)
+  
+
+df_flanker <- df_flanker |>
+  group_by(participant, task,congruence_flanker) |>
+  summarise(across(c(effort, effort_boredom, effort_difficulty, boredom, 
+                     difficulty, fatigue,error_rate_flanker,rt_flanker ), 
+                   mean, na.rm = TRUE), 
+            .groups = ""drop"")
+
+anova_error <- aov_ez(id = ""participant"",
+                      dv = ""error_rate_flanker"",
+                      within = c(""task"", ""congruence_flanker""),
+                      data = df_flanker)",,,
+1,variable specification,"To assess whether the level of difficulty in the first task (Stroop task; easy, hard) influenced participants’ performance in the secondary task (flanker), we conducted two 2 (preceding Stroop type: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures ANOVAs 5. One ANOVA analyzed participants’ error rate as the dependent variable, while the other focused on the reaction time.",0.0,"df <- import(""data_block_level.csv"") [...] anova_error <- aov_ez(id = ""participant"",
+                      dv = ""error_rate_flanker"",
+                      within = c(""task"", ""congruence_flanker""),
+                      data = df_flanker)
+summary(anova_error)
+
+
+# Partial Eta Squared
+eta_squared(anova_error, partial = TRUE)",results_script.R:28;393-401,1,"A 2 (preceding Stroop type: easy vs. hard) × 2 (flanker congruence: congruent vs. incongruent) repeated-measures ANOVA assessed how these factors affected flanker-task error rates. Error rate was the dependent variable; both factors were within-subject. The analysis found a significant main effect of flanker congruence (F(1,94) = 31.85, p < .001, η²p = .25) but no significant main effect of preceding Stroop type and no interaction, indicating no carryover of Stroop difficulty to flanker error rates.","To assess whether the level of difficulty in the first task (Stroop task; easy, hard) influenced participants’ performance in the secondary task (flanker), we conducted two 2 (preceding Stroop type: easy Stroop, hard Stroop; fixed effect) x 2 (flanker type: congruent, incongruent; fixed effect) repeated measures ANOVAs. One ANOVA analyzed participants’ error rate as the dependent variable, while the other focused on the reaction time.
+
+The ANOVA on error rates revealed a significant effect of flanker congruency, F(1, 94) = 31.85, p < .001, η²p = .25, indicating that participants made more errors in incongruent (M = 0.07, SD = 0.15) compared to congruent trials (M = 0.01, SD = 0.02; flanker effect). The main effect of preceding Stroop type (easy Stroop, hard Stroop), F(1, 94) = 1.29, p = .259, η²p = .01, and the interaction between preceding Stroop type and flanker congruency was not significant, F(1, 94) = 0.68, p = .412, η²p = .007, suggesting that the difficulty level of the Stroop did not impact error rates in the flanker task.",,"# create long format of flanker data 
+  
+  df_flanker <- df |>
+    pivot_longer(
+      cols = c(error_rate_flanker_congruent, error_rate_flanker_incongruent,
+               rt_flanker_congruent, rt_flanker_incongruent,
+               rt_flanker_sd_congruent, rt_flanker_sd_incongruent),
+      names_to = c("".value"", ""congruence""),
+      names_pattern = ""^(.*)_(congruent|incongruent)$"")
+      
+  df_flanker <- df_flanker|>
+    rename (congruence_flanker = congruence)
+  
+
+df_flanker <- df_flanker |>
+  group_by(participant, task,congruence_flanker) |>
+  summarise(across(c(effort, effort_boredom, effort_difficulty, boredom, 
+                     difficulty, fatigue,error_rate_flanker,rt_flanker ), 
+                   mean, na.rm = TRUE), 
+            .groups = ""drop"")
+...
+# Analysis: 2 (Stroop task: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures Anova
+
+library(afex) 
+
+anova_error <- aov_ez(id = ""participant"",
+                      dv = ""error_rate_flanker"",
+                      within = c(""task"", ""congruence_flanker""),
+                      data = df_flanker)
+summary(anova_error)",,1,1
+1,transformation,,,,,,"A 2 (preceding Stroop type: easy vs. hard) × 2 (flanker congruence: congruent vs. incongruent) repeated-measures ANOVA assessed how these factors affected flanker-task error rates. Error rate was the dependent variable; both factors were within-subject. The analysis found a significant main effect of flanker congruence (F(1,94) = 31.85, p < .001, η²p = .25) but no significant main effect of preceding Stroop type and no interaction, indicating no carryover of Stroop difficulty to flanker error rates.","Replacement participants were recruited to achieve the calculated sample size when participants dropped out, when their z-transformed error rate in the Stroop task exceeded three standard deviations from the mean of all participants, or when errors occurred in the recording of oculomotor data (i.e., participants for whom the calibration procedure did not work correctly, indicated by an average error in measuring horizontal and vertical eye positions exceeding an angular accuracy of 0.8°). ... Error rates and reaction times were calculated as the mean values across all completed trials, including correct and incorrect responses⁴.",,"df_flanker <- df |>
+    pivot_longer(
+      cols = c(error_rate_flanker_congruent, error_rate_flanker_incongruent,
+               rt_flanker_congruent, rt_flanker_incongruent,
+               rt_flanker_sd_congruent, rt_flanker_sd_incongruent),
+      names_to = c("".value"", ""congruence""),
+      names_pattern = ""^(.*)_(congruent|incongruent)$"")
+      
+  df_flanker <- df_flanker|>
+    rename (congruence_flanker = congruence)
+  
+
+df_flanker <- df_flanker |>
+  group_by(participant, task,congruence_flanker) |>
+  summarise(across(c(effort, effort_boredom, effort_difficulty, boredom, 
+                     difficulty, fatigue,error_rate_flanker,rt_flanker ), 
+                   mean, na.rm = TRUE), 
+            .groups = ""drop"")
+
+anova_error <- aov_ez(id = ""participant"",
+                      dv = ""error_rate_flanker"",
+                      within = c(""task"", ""congruence_flanker""),
+                      data = df_flanker)",,,
+1,inference criterion,Statistical significance for all analyses was evaluated at a = .05 (two-sided),0.0,"anova_error <- aov_ez(id = ""participant"",
+                      dv = ""error_rate_flanker"",
+                      within = c(""task"", ""congruence_flanker""),
+                      data = df_flanker)
+summary(anova_error)
+
+
+# Partial Eta Squared
+eta_squared(anova_error, partial = TRUE)",results_script.R:393-401,1,"A 2 (preceding Stroop type: easy vs. hard) × 2 (flanker congruence: congruent vs. incongruent) repeated-measures ANOVA assessed how these factors affected flanker-task error rates. Error rate was the dependent variable; both factors were within-subject. The analysis found a significant main effect of flanker congruence (F(1,94) = 31.85, p < .001, η²p = .25) but no significant main effect of preceding Stroop type and no interaction, indicating no carryover of Stroop difficulty to flanker error rates.",Statistical significance for all analyses was evaluated at α = .05 (two-sided)⁴.,,"# Function to calculate mean and 95% CI
+  mean_ci <- function(x, conf.level = 0.95) {
+    m <- mean(x, na.rm = TRUE)
+    se <- sd(x, na.rm = TRUE) / sqrt(length(na.omit(x)))
+    alpha <- 1 - conf.level
+    error_margin <- qt(1 - alpha / 2, df = length(na.omit(x)) - 1) * se
+    return(data.frame(y = m, ymin = m - error_margin, ymax = m + error_margin))
+  }
+  
+  # Plot with CI 
+  ggplot(df_flanker, aes(x = task, y = error_rate_flanker, fill = congruence_flanker)) +
+    stat_summary(fun = mean, geom = ""bar"", position = position_dodge(), alpha = 0.7) +
+    stat_summary(fun.data = mean_ci, geom = ""errorbar"", 
+                 position = position_dodge(width = 0.9), width = 0.2) +
+    labs(x = ""Preceding Stroop Task"", y = ""Error Rate"", fill = ""Flanker Congruence"") +
+    theme_minimal()",,1,1
+2,model specification,"To assess whether the level of difficulty in the first task (Stroop task; easy, hard) influenced participants’ performance in the secondary task (flanker), we conducted two 2 (preceding Stroop type: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures ANOVAs 5. One ANOVA analyzed participants’ error rate as the dependent variable, while the other focused on the reaction time. >...] η²p",0.0,"anova_rt <- aov_ez(id = ""participant"",
+                   dv = ""rt_flanker"",
+                   within = c(""task"", ""congruence_flanker""),
+                   data = df_flanker)
+summary(anova_rt)
+
+
+# Partial Eta Squared
+eta_squared(anova_rt, partial = TRUE)",results_script.R:452-460,1,"A second 2 (preceding Stroop type: easy vs. hard) × 2 (flanker congruence: congruent vs. incongruent) repeated-measures ANOVA examined reaction times in the flanker task. Reaction time was the dependent variable. There was a robust main effect of congruence (F(1,94) = 107.61, p < .001, η²p = .53; slower responses on incongruent vs. congruent trials) but no significant main effect of preceding Stroop type and no interaction, again suggesting no reliable ego-depletion-like effect of Stroop difficulty on flanker RT.","To assess whether the level of difficulty in the first task (Stroop task; easy, hard) influenced participants’ performance in the secondary task (flanker), we conducted two 2 (preceding Stroop type: easy Stroop, hard Stroop) x 2 (flanker type: congruent, incongruent) repeated measures ANOVAs5. One ANOVA analyzed participants’ error rate as the dependent variable, while the other focused on the reaction time.",,"# 4.2. Reaction time ----------------------------------------------------------
+
+
+# Analysis: 2 (Stroop task: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures Anova
+
+# Results: No significant effect of Stroop task on flanker reaction time
+
+
+anova_rt <- aov_ez(id = ""participant"",
+                   dv = ""rt_flanker"",
+                   within = c(""task"", ""congruence_flanker""),
+                   data = df_flanker)
+summary(anova_rt)
+
+
+# Partial Eta Squared
+eta_squared(anova_rt, partial = TRUE)",,1,1
+2,variable specification,"To assess whether the level of difficulty in the first task (Stroop task; easy, hard) influenced participants’ performance in the secondary task (flanker), we conducted two 2 (preceding Stroop type: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures ANOVAs 5. One ANOVA analyzed participants’ error rate as the dependent variable, while the other focused on the reaction time.",0.0," df <- import(""data_block_level.csv"") [...]   df_flanker <- df |>
+    pivot_longer(
+      cols = c(error_rate_flanker_congruent, error_rate_flanker_incongruent,
+               rt_flanker_congruent, rt_flanker_incongruent,
+               rt_flanker_sd_congruent, rt_flanker_sd_incongruent),
+      names_to = c("".value"", ""congruence""),
+      names_pattern = ""^(.*)_(congruent|incongruent)$"")
+      
+  df_flanker <- df_flanker|>
+    rename (congruence_flanker = congruence)
+  
+
+df_flanker <- df_flanker |>
+  group_by(participant, task,congruence_flanker) |>
+  summarise(across(c(effort, effort_boredom, effort_difficulty, boredom, 
+                     difficulty, fatigue,error_rate_flanker,rt_flanker ), 
+                   mean, na.rm = TRUE), 
+            .groups = ""drop"")  [...] anova_rt <- aov_ez(id = ""participant"",
+                   dv = ""rt_flanker"",
+                   within = c(""task"", ""congruence_flanker""),
+                   data = df_flanker)
+summary(anova_rt)
+
+
+# Partial Eta Squared
+eta_squared(anova_rt, partial = TRUE)",results_script.R:28;364-381;452-460,1,"A second 2 (preceding Stroop type: easy vs. hard) × 2 (flanker congruence: congruent vs. incongruent) repeated-measures ANOVA examined reaction times in the flanker task. Reaction time was the dependent variable. There was a robust main effect of congruence (F(1,94) = 107.61, p < .001, η²p = .53; slower responses on incongruent vs. congruent trials) but no significant main effect of preceding Stroop type and no interaction, again suggesting no reliable ego-depletion-like effect of Stroop difficulty on flanker RT.","To assess whether the level of difficulty in the first task (Stroop task; easy, hard) influenced participants’ performance in the secondary task (flanker), we conducted two 2 (preceding Stroop type: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures ANOVAs5. One ANOVA analyzed participants’ error rate as the dependent variable, while the other focused on the reaction time.
+
+Similarly, the ANOVA on reaction times revealed a significant main effect of flanker congruence, F(1, 94) = 107.61, p < .001, η²⯑ = .53, indicating that participants required more time to respond in incongruent (M = 515.80, SD = 118.66) compared to congruent trials (M = 454.13, SD = 78.01). The main effect of preceding Stroop type (easy Stroop, hard Stroop), F(1, 94) = 1.21, p = .274, η²⯑ = .01, and the interaction between previous Stroop type and flanker congruence were not significant, F(1, 94) = 0.74, p = .393, η²⯑ = .008, suggesting that the difficulty of the previous Stroop task did not impact reaction times in the flanker task.",,"# 4.2. Reaction time ----------------------------------------------------------
+
+# Analysis: 2 (Stroop task: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures Anova
+
+# Results: No significant effect of Stroop task on flanker reaction time
+
+
+anova_rt <- aov_ez(id = ""participant"",
+                   dv = ""rt_flanker"",
+                   within = c(""task"", ""congruence_flanker""),
+                   data = df_flanker)
+summary(anova_rt)
+
+
+# Calculate M and SD
+
+df_flanker |> 
+  group_by(task, congruence_flanker) |> 
+  get_summary_stats(rt_flanker, type = ""mean_sd"") |> 
+  mutate(mean = format(mean, nsmall = 2), sd = format(sd, nsmall = 2))",,1,1
+2,transformation,"Error rates and re action times were calculated as the mean values across all completed trials, including correct and incorrect re sponses4.",0.0," df <- import(""data_block_level.csv"") [...]   df_flanker <- df |>
+    pivot_longer(
+      cols = c(error_rate_flanker_congruent, error_rate_flanker_incongruent,
+               rt_flanker_congruent, rt_flanker_incongruent,
+               rt_flanker_sd_congruent, rt_flanker_sd_incongruent),
+      names_to = c("".value"", ""congruence""),
+      names_pattern = ""^(.*)_(congruent|incongruent)$"")
+      
+  df_flanker <- df_flanker|>
+    rename (congruence_flanker = congruence)
+  
+
+df_flanker <- df_flanker |>
+  group_by(participant, task,congruence_flanker) |>
+  summarise(across(c(effort, effort_boredom, effort_difficulty, boredom, 
+                     difficulty, fatigue,error_rate_flanker,rt_flanker ), 
+                   mean, na.rm = TRUE), 
+            .groups = ""drop"")  [...]",results_script.R:28;364-381,1,"A second 2 (preceding Stroop type: easy vs. hard) × 2 (flanker congruence: congruent vs. incongruent) repeated-measures ANOVA examined reaction times in the flanker task. Reaction time was the dependent variable. There was a robust main effect of congruence (F(1,94) = 107.61, p < .001, η²p = .53; slower responses on incongruent vs. congruent trials) but no significant main effect of preceding Stroop type and no interaction, again suggesting no reliable ego-depletion-like effect of Stroop difficulty on flanker RT.","Error rates and reaction times were calculated as the mean values across all completed trials, including correct and incorrect responses⁴.",,"# create long format of flanker data 
+  
+  df_flanker <- df |>
+    pivot_longer(
+      cols = c(error_rate_flanker_congruent, error_rate_flanker_incongruent,
+               rt_flanker_congruent, rt_flanker_incongruent,
+               rt_flanker_sd_congruent, rt_flanker_sd_incongruent),
+      names_to = c("".value"", ""congruence""),
+      names_pattern = ""^(.*)_(congruent|incongruent)$"")
+      
+  df_flanker <- df_flanker|>
+    rename (congruence_flanker = congruence)
+  
+
+df_flanker <- df_flanker |>
+  group_by(participant, task,congruence_flanker) |>
+  summarise(across(c(effort, effort_boredom, effort_difficulty, boredom, 
+                     difficulty, fatigue,error_rate_flanker,rt_flanker ), 
+                   mean, na.rm = TRUE), 
+            .groups = ""drop"")
+...
+anova_rt <- aov_ez(id = ""participant"",
+                   dv = ""rt_flanker"",
+                   within = c(""task"", ""congruence_flanker""),
+                   data = df_flanker)",,1,1
+2,variable specification,"To assess whether the level of difficulty in the first task (Stroop task; easy, hard) influenced participants’ performance in the secondary task (flanker), we conducted two 2 (preceding Stroop type: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures ANOVAs 5. One ANOVA analyzed participants’ error rate as the dependent variable, while the other focused on the reaction time.",0.0," df <- import(""data_block_level.csv"") [...]   df_flanker <- df |>
+    pivot_longer(
+      cols = c(error_rate_flanker_congruent, error_rate_flanker_incongruent,
+               rt_flanker_congruent, rt_flanker_incongruent,
+               rt_flanker_sd_congruent, rt_flanker_sd_incongruent),
+      names_to = c("".value"", ""congruence""),
+      names_pattern = ""^(.*)_(congruent|incongruent)$"")
+      
+  df_flanker <- df_flanker|>
+    rename (congruence_flanker = congruence)
+  
+
+df_flanker <- df_flanker |>
+  group_by(participant, task,congruence_flanker) |>
+  summarise(across(c(effort, effort_boredom, effort_difficulty, boredom, 
+                     difficulty, fatigue,error_rate_flanker,rt_flanker ), 
+                   mean, na.rm = TRUE), 
+            .groups = ""drop"")  [...] anova_rt <- aov_ez(id = ""participant"",
+                   dv = ""rt_flanker"",
+                   within = c(""task"", ""congruence_flanker""),
+                   data = df_flanker)
+summary(anova_rt)
+
+
+# Partial Eta Squared
+eta_squared(anova_rt, partial = TRUE)",results_script.R:28;364-381;452-460,1,"A second 2 (preceding Stroop type: easy vs. hard) × 2 (flanker congruence: congruent vs. incongruent) repeated-measures ANOVA examined reaction times in the flanker task. Reaction time was the dependent variable. There was a robust main effect of congruence (F(1,94) = 107.61, p < .001, η²p = .53; slower responses on incongruent vs. congruent trials) but no significant main effect of preceding Stroop type and no interaction, again suggesting no reliable ego-depletion-like effect of Stroop difficulty on flanker RT.","To assess whether the level of difficulty in the first task (Stroop task; easy, hard) influenced participants’ performance in the secondary task (flanker), we conducted two 2 (preceding Stroop type: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures ANOVAs5. One ANOVA analyzed participants’ error rate as the dependent variable, while the other focused on the reaction time.
+
+Similarly, the ANOVA on reaction times revealed a significant main effect of flanker congruence, F(1, 94) = 107.61, p < .001, η²⯑ = .53, indicating that participants required more time to respond in incongruent (M = 515.80, SD = 118.66) compared to congruent trials (M = 454.13, SD = 78.01). The main effect of preceding Stroop type (easy Stroop, hard Stroop), F(1, 94) = 1.21, p = .274, η²⯑ = .01, and the interaction between previous Stroop type and flanker congruence were not significant, F(1, 94) = 0.74, p = .393, η²⯑ = .008, suggesting that the difficulty of the previous Stroop task did not impact reaction times in the flanker task.",,"# 4.2. Reaction time ----------------------------------------------------------
+
+# Analysis: 2 (Stroop task: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures Anova
+
+# Results: No significant effect of Stroop task on flanker reaction time
+
+
+anova_rt <- aov_ez(id = ""participant"",
+                   dv = ""rt_flanker"",
+                   within = c(""task"", ""congruence_flanker""),
+                   data = df_flanker)
+summary(anova_rt)
+
+
+# Calculate M and SD
+
+df_flanker |> 
+  group_by(task, congruence_flanker) |> 
+  get_summary_stats(rt_flanker, type = ""mean_sd"") |> 
+  mutate(mean = format(mean, nsmall = 2), sd = format(sd, nsmall = 2))",,1,1
+2,transformation,,,,,,"A second 2 (preceding Stroop type: easy vs. hard) × 2 (flanker congruence: congruent vs. incongruent) repeated-measures ANOVA examined reaction times in the flanker task. Reaction time was the dependent variable. There was a robust main effect of congruence (F(1,94) = 107.61, p < .001, η²p = .53; slower responses on incongruent vs. congruent trials) but no significant main effect of preceding Stroop type and no interaction, again suggesting no reliable ego-depletion-like effect of Stroop difficulty on flanker RT.","Error rates and reaction times were calculated as the mean values across all completed trials, including correct and incorrect responses⁴.",,"# create long format of flanker data 
+  
+  df_flanker <- df |>
+    pivot_longer(
+      cols = c(error_rate_flanker_congruent, error_rate_flanker_incongruent,
+               rt_flanker_congruent, rt_flanker_incongruent,
+               rt_flanker_sd_congruent, rt_flanker_sd_incongruent),
+      names_to = c("".value"", ""congruence""),
+      names_pattern = ""^(.*)_(congruent|incongruent)$"")
+      
+  df_flanker <- df_flanker|>
+    rename (congruence_flanker = congruence)
+  
+
+df_flanker <- df_flanker |>
+  group_by(participant, task,congruence_flanker) |>
+  summarise(across(c(effort, effort_boredom, effort_difficulty, boredom, 
+                     difficulty, fatigue,error_rate_flanker,rt_flanker ), 
+                   mean, na.rm = TRUE), 
+            .groups = ""drop"")
+...
+anova_rt <- aov_ez(id = ""participant"",
+                   dv = ""rt_flanker"",
+                   within = c(""task"", ""congruence_flanker""),
+                   data = df_flanker)",,1,
+2,variable specification,"To assess whether the level of difficulty in the first task (Stroop task; easy, hard) influenced participants’ performance in the secondary task (flanker), we conducted two 2 (preceding Stroop type: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures ANOVAs 5. One ANOVA analyzed participants’ error rate as the dependent variable, while the other focused on the reaction time.",0.0," df <- import(""data_block_level.csv"") [...]   df_flanker <- df |>
+    pivot_longer(
+      cols = c(error_rate_flanker_congruent, error_rate_flanker_incongruent,
+               rt_flanker_congruent, rt_flanker_incongruent,
+               rt_flanker_sd_congruent, rt_flanker_sd_incongruent),
+      names_to = c("".value"", ""congruence""),
+      names_pattern = ""^(.*)_(congruent|incongruent)$"")
+      
+  df_flanker <- df_flanker|>
+    rename (congruence_flanker = congruence)
+  
+
+df_flanker <- df_flanker |>
+  group_by(participant, task,congruence_flanker) |>
+  summarise(across(c(effort, effort_boredom, effort_difficulty, boredom, 
+                     difficulty, fatigue,error_rate_flanker,rt_flanker ), 
+                   mean, na.rm = TRUE), 
+            .groups = ""drop"")  [...] anova_rt <- aov_ez(id = ""participant"",
+                   dv = ""rt_flanker"",
+                   within = c(""task"", ""congruence_flanker""),
+                   data = df_flanker)
+summary(anova_rt)
+
+
+# Partial Eta Squared
+eta_squared(anova_rt, partial = TRUE)",results_script.R:28;364-381;452-460,1,"A second 2 (preceding Stroop type: easy vs. hard) × 2 (flanker congruence: congruent vs. incongruent) repeated-measures ANOVA examined reaction times in the flanker task. Reaction time was the dependent variable. There was a robust main effect of congruence (F(1,94) = 107.61, p < .001, η²p = .53; slower responses on incongruent vs. congruent trials) but no significant main effect of preceding Stroop type and no interaction, again suggesting no reliable ego-depletion-like effect of Stroop difficulty on flanker RT.","To assess whether the level of difficulty in the first task (Stroop task; easy, hard) influenced participants’ performance in the secondary task (flanker), we conducted two 2 (preceding Stroop type: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures ANOVAs5. One ANOVA analyzed participants’ error rate as the dependent variable, while the other focused on the reaction time.
+
+Similarly, the ANOVA on reaction times revealed a significant main effect of flanker congruence, F(1, 94) = 107.61, p < .001, η²⯑ = .53, indicating that participants required more time to respond in incongruent (M = 515.80, SD = 118.66) compared to congruent trials (M = 454.13, SD = 78.01). The main effect of preceding Stroop type (easy Stroop, hard Stroop), F(1, 94) = 1.21, p = .274, η²⯑ = .01, and the interaction between previous Stroop type and flanker congruence were not significant, F(1, 94) = 0.74, p = .393, η²⯑ = .008, suggesting that the difficulty of the previous Stroop task did not impact reaction times in the flanker task.",,"# 4.2. Reaction time ----------------------------------------------------------
+
+# Analysis: 2 (Stroop task: easy, hard) x 2 (flanker type: congruent, incongruent) repeated measures Anova
+
+# Results: No significant effect of Stroop task on flanker reaction time
+
+
+anova_rt <- aov_ez(id = ""participant"",
+                   dv = ""rt_flanker"",
+                   within = c(""task"", ""congruence_flanker""),
+                   data = df_flanker)
+summary(anova_rt)
+
+
+# Calculate M and SD
+
+df_flanker |> 
+  group_by(task, congruence_flanker) |> 
+  get_summary_stats(rt_flanker, type = ""mean_sd"") |> 
+  mutate(mean = format(mean, nsmall = 2), sd = format(sd, nsmall = 2))",,1,1
+2,transformation,,,,,,"A second 2 (preceding Stroop type: easy vs. hard) × 2 (flanker congruence: congruent vs. incongruent) repeated-measures ANOVA examined reaction times in the flanker task. Reaction time was the dependent variable. There was a robust main effect of congruence (F(1,94) = 107.61, p < .001, η²p = .53; slower responses on incongruent vs. congruent trials) but no significant main effect of preceding Stroop type and no interaction, again suggesting no reliable ego-depletion-like effect of Stroop difficulty on flanker RT.","Error rates and reaction times were calculated as the mean values across all completed trials, including correct and incorrect responses⁴.",,"# create long format of flanker data 
+  
+  df_flanker <- df |>
+    pivot_longer(
+      cols = c(error_rate_flanker_congruent, error_rate_flanker_incongruent,
+               rt_flanker_congruent, rt_flanker_incongruent,
+               rt_flanker_sd_congruent, rt_flanker_sd_incongruent),
+      names_to = c("".value"", ""congruence""),
+      names_pattern = ""^(.*)_(congruent|incongruent)$"")
+      
+  df_flanker <- df_flanker|>
+    rename (congruence_flanker = congruence)
+  
+
+df_flanker <- df_flanker |>
+  group_by(participant, task,congruence_flanker) |>
+  summarise(across(c(effort, effort_boredom, effort_difficulty, boredom, 
+                     difficulty, fatigue,error_rate_flanker,rt_flanker ), 
+                   mean, na.rm = TRUE), 
+            .groups = ""drop"")
+...
+anova_rt <- aov_ez(id = ""participant"",
+                   dv = ""rt_flanker"",
+                   within = c(""task"", ""congruence_flanker""),
+                   data = df_flanker)",,1,
+2,inference criterion,Statistical significance for all analyses was evaluated at a = .05 (two-sided),0.0,"anova_rt <- aov_ez(id = ""participant"",
+                   dv = ""rt_flanker"",
+                   within = c(""task"", ""congruence_flanker""),
+                   data = df_flanker)
+summary(anova_rt)
+
+
+# Partial Eta Squared
+eta_squared(anova_rt, partial = TRUE)",results_script.R:452-460,1,"A second 2 (preceding Stroop type: easy vs. hard) × 2 (flanker congruence: congruent vs. incongruent) repeated-measures ANOVA examined reaction times in the flanker task. Reaction time was the dependent variable. There was a robust main effect of congruence (F(1,94) = 107.61, p < .001, η²p = .53; slower responses on incongruent vs. congruent trials) but no significant main effect of preceding Stroop type and no interaction, again suggesting no reliable ego-depletion-like effect of Stroop difficulty on flanker RT.",Statistical significance for all analyses was evaluated at α = .05 (two-sided)⁴.,,"# Function to calculate mean and 95% CI
+  mean_ci <- function(x, conf.level = 0.95) {
+    m <- mean(x, na.rm = TRUE)
+    se <- sd(x, na.rm = TRUE) / sqrt(length(na.omit(x)))
+    alpha <- 1 - conf.level
+    error_margin <- qt(1 - alpha / 2, df = length(na.omit(x)) - 1) * se
+    return(data.frame(y = m, ymin = m - error_margin, ymax = m + error_margin))
+  }
+  
+  # Note: CI function already defined in ""4.1. Error rate""
+
+  # Plot with CI for reaction time
+  ggplot(df_flanker, aes(x = task, y = rt_flanker, fill = congruence_flanker)) +
+    stat_summary(fun = mean, geom = ""bar"", position = position_dodge(), alpha = 0.7) +
+    stat_summary(fun.data = mean_ci, geom = ""errorbar"", 
+                 position = position_dodge(width = 0.9), width = 0.2) +
+    labs(x = ""Preceding Stroop Task"", y = ""Reaction Time"", fill = ""Flanker Congruence"") +
+    theme_minimal()",,1,1

@@ -1,0 +1,200 @@
+---
+title: "processing"
+author: "anna wittmann"
+date: today
+format:
+  html:
+    code-fold: true
+    highlight-style: haddock
+    theme: flatly
+    toc: true
+    toc-location: left
+execute:
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+# Turn off scientific notation globally
+options(scipen = 999)
+```
+
+# Dependencies
+```{r}
+# packages and setup here
+library(readr) # read in csv
+library(dplyr) # pipe and wrangling
+library(janitor) # remove NA row
+library(stringr) # string operations
+
+anvari <- read_csv("../../data/raw/pilot/combined_reports/anvari_2023_combined_report.csv")
+elson <- read_csv("../../data/raw/pilot/combined_reports/elson_2020_combined_report.csv")
+
+```
+
+*GOAL* A tidy dataset that holds the observations from both papers
+
+# Extract meaningful variables
+## Anvari
+```{r}
+# extract column names
+anvari %>% 
+  colnames() %>% 
+  dput()
+
+# select id, dimension, respective judgement, match judgement
+dat1 <- anvari %>% 
+  select(analysis_id, dimension, human_match_judgement, codebot_match_judgement, codebot_human_agreement) %>% 
+  rename(id = analysis_id,
+         dim = dimension,
+         human = human_match_judgement,
+         codebot = codebot_match_judgement,
+         agree = codebot_human_agreement)
+
+# from 189 obs on 14 vars to 189 obs on 5 vars
+
+# cleanup ids, take care of missing ones
+dat1 <- dat1 %>% 
+  mutate(aux = c(1:189))
+
+# add missing ids
+dat1 <- dat1 %>%  
+  mutate(id = case_when(aux %in% c(115:121) ~ "A19",
+                        aux %in% c(178:183) ~ "A27",
+                        aux %in% c(184:189) ~ "A28",
+                        id == "nan" ~ NA_character_,
+                        .default = id))
+# sanity check
+dat1 %>% 
+  count(id) %>% 
+  dput()
+
+# remove NA row
+dat1 <- dat1 %>%
+  select(-aux) %>% # remove auxilary hard coded variable
+  remove_empty(which = "rows")
+
+# recode ids
+dat1 <- dat1 %>% 
+  mutate(id = str_remove(id, "A"))
+
+# make numbers numerical
+dat1 <- dat1 %>% 
+  mutate(id = as.numeric(id),
+         human = as.numeric(human),
+         codebot = as.numeric(codebot),
+         agree = as.numeric(agree)
+         )
+# add column for papername
+dat1 <- dat1 %>% 
+  mutate(paper = "1")
+```
+
+## Elson
+```{r}
+# select id, dimension, respective judgement, match judgement
+dat2 <- elson %>% 
+  
+  select(analysis_id, dimension, human_match_judgement, codebot_match_judgement, codebot_human_agreement) %>% 
+  
+  rename(id = analysis_id,
+         dim = dimension,
+         human = human_match_judgement,
+         codebot = codebot_match_judgement,
+         agree = codebot_human_agreement) %>% 
+  
+  mutate(human = as.numeric(human),
+         codebot = as.numeric(codebot),
+         agree = as.numeric(agree))
+
+# from 332 obs on 14 vars to 332 obs on 5 vars
+
+dat2 %>% 
+  count(id)
+# no NA present
+
+
+dat2 <- dat2 %>% 
+  mutate(id = case_when(id == "A1.1" ~1,
+                        id == "A1.2"~ 2,
+                        id == "A1.3"~ 3, 
+                        id == "A1.4"~ 4, 
+                        id == "A1.5"~ 5, 
+                        id == "A1.6"~ 6, 
+                        id == "A1.7"~ 7, 
+                        id == "A1.8"~ 8, 
+                        id == "A1.9"~ 9,
+                        id == "A1.10"~ 10, 
+                        id == "A1.11"~ 11, 
+                        id == "A1.12"~ 12, 
+                        id == "A1.13"~ 13, 
+                        id == "A1.14"~ 14,
+                        id == "A1.15"~ 15,
+                        id == "A1.16"~ 16,
+                        id == "A1.17"~ 17, 
+                        id == "A1.18"~ 18, 
+                        id == "A1.19"~ 19,  
+                        id == "A1.20"~ 21,
+                        id == "A1.21"~ 22,
+                        id == "A1.22"~ 23,
+                        id == "A1.23"~ 24, 
+                        id == "A1.24"~ 25, 
+                        id == "A1.25"~ 26, 
+                        id == "A1.26"~ 27, 
+                        id == "A1.27"~ 28,
+                        id == "A1.28"~ 29,
+                        
+                        id == "A2.1"~ 31, 
+                        id == "A2.2"~ 32, 
+                        id == "A2.3"~ 33, 
+                        id == "A2.4"~ 34, 
+                        id == "A2.5"~ 35, 
+                        id == "A2.6"~ 36, 
+                        id == "A2.7"~ 37,
+                       
+                        id == "A3.1"~ 38,  
+                        id == "A3.2"~ 39, 
+                        id == "A3.3"~ 41, 
+                        id == "A3.4"~ 42, 
+                        id == "A3.5"~ 43, 
+                        id == "A3.6"~ 44, 
+                        id == "A3.7"~ 45, 
+                        id == "A3.8"~ 46, 
+                        id == "A3.9"~ 47,
+                        id == "A3.10"~ 48,
+                        id == "A3.11"~ 49,
+                        id == "A3.12"~ 50, 
+                        id == "A3.13"~ 51, 
+                        id == "A3.14"~ 52,
+                        .default = NA_integer_))
+
+dat2 %>% 
+  count(id)
+# no duplicate or missing ids
+
+# add column for papername
+dat2 <- dat2 %>% 
+  mutate(paper = "2")
+
+```
+
+## combining the two dataframes
+```{r}
+dat <- bind_rows(dat1,dat2) %>% 
+  rename(analysis_id = id,
+         paper_id = paper)
+```
+
+*DATA IS NOW TIDY* each variable is a column, each row is an observation and each cell is a single measurement
+
+```{r}
+saveRDS(dat, "../../data/processed/res_pilot.rds")
+```
+
+
+# Session info
+```{r}
+sessionInfo()
+```

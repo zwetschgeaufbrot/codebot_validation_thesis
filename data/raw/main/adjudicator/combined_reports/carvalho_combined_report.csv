@@ -1,0 +1,710 @@
+analysis_id,dimension,human_manuscript_content,human_manuscript_location,human_code_content,human_code_location,human_match_judgement,codebot_brief_description,codebot_manuscript_content,codebot_manuscript_location,codebot_code_content,codebot_code_location,codebot_match_judgement,codebot_human_agreement
+1,model specification,"Children in the Generating Predictions group correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). Similarly, children in the Retrieve group also correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). To investigate these differences, we used a two-sample t-test for null hypothesis significance testing, and an equivalence test, via two one-sided tests with α-level of .05. [...] t(86) = −0.05, p = .961, d = −0.010, 95% CI[−0.43,0.41],",0.0,"# Pretest performance (overall)
+
+```{r}
+t.test(data$Pre.test.overall[data$Condition==""GENERATE""],data$Pre.test.overall[data$Condition==""RETRIEVE""],var.equal = T)
+library(effsize)
+cohen.d(data$Pre.test.overall[data$Condition==""GENERATE""],data$Pre.test.overall[data$Condition==""RETRIEVE""])",generate-v-retrieve-analyses.Rmd:52-57,1,"A two-sample t-test compared overall pretest accuracy (proportion of 12 items correct, including critical and catch items) between children in the Generating Predictions condition and those in the Retrieve condition to verify baseline equivalence of prior knowledge. The test evaluated whether the mean proportion correct differed between conditions before the lesson.","To investigate these differences, we used a two-sample t-test for null hypothesis significance testing, and an equivalence test, via two one-sided tests with α-level of .05.",,"t.test(data$Pre.test.overall[data$Condition==""GENERATE""],data$Pre.test.overall[data$Condition==""RETRIEVE""],var.equal = T)
+library(effsize)
+cohen.d(data$Pre.test.overall[data$Condition==""GENERATE""],data$Pre.test.overall[data$Condition==""RETRIEVE""])",,1,1
+1,variable specification,"Children in the Generating Predictions group correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). Similarly, children in the Retrieve group also correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). To investigate these differences, we used a two-sample t-test for null hypothesis significance testing, and an equivalence test, via two one-sided tests with α-level of .05. [...] t(86) = −0.05, p = .961, d = −0.010, 95% CI[−0.43,0.41],",0.0,"# Pretest performance (overall)
+
+```{r}
+t.test(data$Pre.test.overall[data$Condition==""GENERATE""],data$Pre.test.overall[data$Condition==""RETRIEVE""],var.equal = T)
+library(effsize)
+cohen.d(data$Pre.test.overall[data$Condition==""GENERATE""],data$Pre.test.overall[data$Condition==""RETRIEVE""])",generate-v-retrieve-analyses.Rmd:52-57,1,"A two-sample t-test compared overall pretest accuracy (proportion of 12 items correct, including critical and catch items) between children in the Generating Predictions condition and those in the Retrieve condition to verify baseline equivalence of prior knowledge. The test evaluated whether the mean proportion correct differed between conditions before the lesson.","Children in the Generating Predictions group correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). Similarly, children in the Retrieve group also correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). To investigate these differences, we used a two-sample t-test for null hypothesis significance testing, and an equivalence test, via two one-sided tests with α-level of .05.",,"t.test(data$Pre.test.overall[data$Condition==""GENERATE""],data$Pre.test.overall[data$Condition==""RETRIEVE""],var.equal = T)
+library(effsize)
+cohen.d(data$Pre.test.overall[data$Condition==""GENERATE""],data$Pre.test.overall[data$Condition==""RETRIEVE""])
+
+# age effects?
+m_pre_age <- lm(Pre.test.overall~Condition*FIXED.GRADE.LEVEL,data=data)
+summary(m_pre_age)",,1,1
+1,transformation,,,,generate-v-retrieve-analyses.Rmd,,"A two-sample t-test compared overall pretest accuracy (proportion of 12 items correct, including critical and catch items) between children in the Generating Predictions condition and those in the Retrieve condition to verify baseline equivalence of prior knowledge. The test evaluated whether the mean proportion correct differed between conditions before the lesson.","Children in the Generating Predictions group correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). Similarly, children in the Retrieve group also correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). … Accuracy by question type and a total score was calculated. Participants who had 50% or less accuracy on the catch trials were excluded from the analyses (n = 2, one participant from each condition).",,"data <- read.csv(""Generate vs. Retrieve Study Data.csv"")
+data <- data[which(data$Pretest.Catch>.60),]
+
+t.test(data$Pre.test.overall[data$Condition==""GENERATE""],data$Pre.test.overall[data$Condition==""RETRIEVE""],var.equal = T)",,0,
+1,variable specification,"Children in the Generating Predictions group correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). Similarly, children in the Retrieve group also correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). To investigate these differences, we used a two-sample t-test for null hypothesis significance testing, and an equivalence test, via two one-sided tests with α-level of .05. [...] t(86) = −0.05, p = .961, d = −0.010, 95% CI[−0.43,0.41],",0.0,"# Pretest performance (overall)
+
+```{r}
+t.test(data$Pre.test.overall[data$Condition==""GENERATE""],data$Pre.test.overall[data$Condition==""RETRIEVE""],var.equal = T)
+library(effsize)
+cohen.d(data$Pre.test.overall[data$Condition==""GENERATE""],data$Pre.test.overall[data$Condition==""RETRIEVE""])",generate-v-retrieve-analyses.Rmd:52-57,1,"A two-sample t-test compared overall pretest accuracy (proportion of 12 items correct, including critical and catch items) between children in the Generating Predictions condition and those in the Retrieve condition to verify baseline equivalence of prior knowledge. The test evaluated whether the mean proportion correct differed between conditions before the lesson.","Children in the Generating Predictions group correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). Similarly, children in the Retrieve group also correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). To investigate these differences, we used a two-sample t-test for null hypothesis significance testing, and an equivalence test, via two one-sided tests with α-level of .05.",,"t.test(data$Pre.test.overall[data$Condition==""GENERATE""],data$Pre.test.overall[data$Condition==""RETRIEVE""],var.equal = T)
+library(effsize)
+cohen.d(data$Pre.test.overall[data$Condition==""GENERATE""],data$Pre.test.overall[data$Condition==""RETRIEVE""])
+
+# age effects?
+m_pre_age <- lm(Pre.test.overall~Condition*FIXED.GRADE.LEVEL,data=data)
+summary(m_pre_age)",,1,1
+1,transformation,Accuracy by question type and a total score was calculated,0.0,,generate-v-retrieve-analyses.Rmd,,"A two-sample t-test compared overall pretest accuracy (proportion of 12 items correct, including critical and catch items) between children in the Generating Predictions condition and those in the Retrieve condition to verify baseline equivalence of prior knowledge. The test evaluated whether the mean proportion correct differed between conditions before the lesson.","Children in the Generating Predictions group correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). Similarly, children in the Retrieve group also correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). … Accuracy by question type and a total score was calculated. Participants who had 50% or less accuracy on the catch trials were excluded from the analyses (n = 2, one participant from each condition).",,"data <- read.csv(""Generate vs. Retrieve Study Data.csv"")
+data <- data[which(data$Pretest.Catch>.60),]
+
+t.test(data$Pre.test.overall[data$Condition==""GENERATE""],data$Pre.test.overall[data$Condition==""RETRIEVE""],var.equal = T)",,0,
+1,inference criterion,"Children in the Generating Predictions group correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). Similarly, children in the Retrieve group also correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). To investigate these differences, we used a two-sample t-test for null hypothesis significance testing, and an equivalence test, via two one-sided tests with α-level of .05. [...] t(86) = −0.05, p = .961, d = −0.010, 95% CI[−0.43,0.41],",0.0,"# Pretest performance (overall)
+
+```{r}
+t.test(data$Pre.test.overall[data$Condition==""GENERATE""],data$Pre.test.overall[data$Condition==""RETRIEVE""],var.equal = T)
+library(effsize)
+cohen.d(data$Pre.test.overall[data$Condition==""GENERATE""],data$Pre.test.overall[data$Condition==""RETRIEVE""])",generate-v-retrieve-analyses.Rmd:52-57,1,"A two-sample t-test compared overall pretest accuracy (proportion of 12 items correct, including critical and catch items) between children in the Generating Predictions condition and those in the Retrieve condition to verify baseline equivalence of prior knowledge. The test evaluated whether the mean proportion correct differed between conditions before the lesson.","To investigate these differences, we used a two-sample t-test for null hypothesis significance testing, and an equivalence test, via two one-sided tests with α-level of .05. These tested the null hypotheses that true mean difference is equal to 0 (null hypothesis significance testing), and true mean difference is more extreme than −0.1667 and 0.1667, equivalent to one question difference in the pretest, on average, between the two conditions (two one-sided tests).",,"t.test(data$Pre.test.overall[data$Condition==""GENERATE""],data$Pre.test.overall[data$Condition==""RETRIEVE""],var.equal = T)",,0,0
+2,model specification,"Children in the Generating Predictions group correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). Similarly, children in the Retrieve group also correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). To investigate these differences, we used a two-sample t-test for null hypothesis significance testing, and an equivalence test, via two one-sided tests with α-level of .05. [...] t(86) = −12, p < .01, mean difference = −0.0013, 90% CI [−0.048, 0.045]; Hedges’g(av) = −0.010, 90% CI [−0.36, 0.34].",0.0,,generate-v-retrieve-analyses.Rmd,,,,,,,,
+2,variable specification,"Children in the Generating Predictions group correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). Similarly, children in the Retrieve group also correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). To investigate these differences, we used a two-sample t-test for null hypothesis significance testing, and an equivalence test, via two one-sided tests with α-level of .05. [...] t(86) = −12, p < .01, mean difference = −0.0013, 90% CI [−0.048, 0.045]; Hedges’g(av) = −0.010, 90% CI [−0.36, 0.34].",0.0,,generate-v-retrieve-analyses.Rmd,,,,,,,,
+2,transformation,,,,generate-v-retrieve-analyses.Rmd,,,,,,,,
+2,variable specification,"Children in the Generating Predictions group correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). Similarly, children in the Retrieve group also correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). To investigate these differences, we used a two-sample t-test for null hypothesis significance testing, and an equivalence test, via two one-sided tests with α-level of .05. [...] t(86) = −12, p < .01, mean difference = −0.0013, 90% CI [−0.048, 0.045]; Hedges’g(av) = −0.010, 90% CI [−0.36, 0.34].",0.0,,generate-v-retrieve-analyses.Rmd,,,,,,,,
+2,transformation,Accuracy by question type and a total score was calculated,0.0,,generate-v-retrieve-analyses.Rmd,,,,,,,,
+2,inference criterion,"Children in the Generating Predictions group correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). Similarly, children in the Retrieve group also correctly answered on average eight out of 12 questions at pretest (M = 0.64, 95% CI [0.62, 0.66]). To investigate these differences, we used a two-sample t-test for null hypothesis significance testing, and an equivalence test, via two one-sided tests with α-level of .05. [...] t(86) = −12, p < .01, mean difference = −0.0013, 90% CI [−0.048, 0.045]; Hedges’g(av) = −0.010, 90% CI [−0.36, 0.34].",0.0,,generate-v-retrieve-analyses.Rmd,,,,,,,,
+3,model specification,"Across both groups, children were also highly and equally accurateon the catch trials at pretest for both the Generating Predictions,M = 0.96, 95% CI [0.95, 0.98], and Retrieve groups, M = 0.96, 95%CI [0.95, 0.98]. To test this equivalence, we used a true mean difference between −0.2 and 0.2 (equivalent to one question accuracy difference between the groups). We found that performance was statistically equivalent between the two groups, t(86) = −12, p < .01, mean difference = 0, 90% CI [−0.028, 0.028]; Hedges’ g(av) = 0, 90% CI [−0.359, 0.359].",0.0,"# Pretest performance (catch trials)
+
+```{r}
+t.test(data$Pretest.Catch[data$Condition==""GENERATE""],data$Pretest.Catch[data$Condition==""RETRIEVE""],var.equal = T)
+cohen.d(data$Pretest.Catch[data$Condition==""GENERATE""],data$Pretest.Catch[data$Condition==""RETRIEVE""])",generate-v-retrieve-analyses.Rmd:73-77,0,"A TOST equivalence test was conducted on pretest catch-trial accuracy (proportion correct on 5 catch items) to determine whether performance on these easier control items was equivalent between the Generating Predictions and Retrieve conditions. Equivalence bounds were set at ±0.2 (approximately one item difference), and the test evaluated if the mean difference in catch accuracy fell within this range.","To investigate these differences, we used a two-sample t-test for null hypothesis significance testing, and an equivalence test, via two one-sided tests with α-level of .05. ... To test this equivalence, we used a true mean difference between−0.2 and 0.2 (equivalent to one question accuracy difference between the groups).",,,,,
+3,variable specification,"Across both groups, children were also highly and equally accurateon the catch trials at pretest for both the Generating Predictions,M = 0.96, 95% CI [0.95, 0.98], and Retrieve groups, M = 0.96, 95%CI [0.95, 0.98]. To test this equivalence, we used a true mean difference between −0.2 and 0.2 (equivalent to one question accuracy difference between the groups). We found that performance was statistically equivalent between the two groups, t(86) = −12, p < .01, mean difference = 0, 90% CI [−0.028, 0.028]; Hedges’ g(av) = 0, 90% CI [−0.359, 0.359].",0.0,"# Pretest performance (catch trials)
+
+```{r}
+t.test(data$Pretest.Catch[data$Condition==""GENERATE""],data$Pretest.Catch[data$Condition==""RETRIEVE""],var.equal = T)
+cohen.d(data$Pretest.Catch[data$Condition==""GENERATE""],data$Pretest.Catch[data$Condition==""RETRIEVE""])",generate-v-retrieve-analyses.Rmd:73-77,1,"A TOST equivalence test was conducted on pretest catch-trial accuracy (proportion correct on 5 catch items) to determine whether performance on these easier control items was equivalent between the Generating Predictions and Retrieve conditions. Equivalence bounds were set at ±0.2 (approximately one item difference), and the test evaluated if the mean difference in catch accuracy fell within this range.","Across both groups, children were also highly and equally accurate on the catch trials at pretest for both the Generating Predictions, M = 0.96, 95% CI [0.95, 0.98], and Retrieve groups, M = 0.96, 95% CI [0.95, 0.98]. To test this equivalence, we used a true mean difference between−0.2 and 0.2 (equivalent to one question accuracy difference between the groups). We found that performance was statistically equivalent between the two groups,t(86) = −12, p < .01, mean difference = 0, 90% CI [ −0.028, 0.028]; Hedges’ g(av) = 0, 90% CI [ −0.359, 0.359].",,,,,
+3,transformation,,,,generate-v-retrieve-analyses.Rmd,,"A TOST equivalence test was conducted on pretest catch-trial accuracy (proportion correct on 5 catch items) to determine whether performance on these easier control items was equivalent between the Generating Predictions and Retrieve conditions. Equivalence bounds were set at ±0.2 (approximately one item difference), and the test evaluated if the mean difference in catch accuracy fell within this range.","Across both groups, children were also highly and equally accurate on the catch trials at pretest for both the Generating Predictions, M = 0.96, 95% CI [0.95, 0.98], and Retrieve groups, M = 0.96, 95% CI [0.95, 0.98]. To test this equivalence, we used a true mean difference between −0.2 and 0.2 (equivalent to one question accuracy difference between the groups). We found that performance was statistically equivalent between the two groups, t(86) = −12, p < .01, mean difference = 0, 90% CI [−0.028, 0.028]; Hedges’ g(av) = 0, 90% CI [−0.359, 0.359].",,"{""code_value"":""data <- read.csv(\""Generate vs. Retrieve Study Data.csv\"")\n\n# Exclude participants who did not understand task (less than <.60 on the pretest catch trials)\n\n# Removes two participants 7 and 47\n\ndata <- data[which(data$Pretest.Catch>.60),]\n\n# Pretest performance (catch trials)\n\nt.test(data$Pretest.Catch[data$Condition==\""GENERATE\""],data$Pretest.Catch[data$Condition==\""RETRIEVE\""],var.equal = T)\ncohen.d(data$Pretest.Catch[data$Condition==\""GENERATE\""],data$Pretest.Catch[data$Condition==\""RETRIEVE\""])\n"",""evidence"":{""code_path"":""/Users/jamie/git/codebot-for-psychology/data/raw/main/codebot/materials/codebot_pairs/carvalho/generate-v-retrieve-analyses.Rmd"",""code_lines"":""data <- read.csv(\""Generate vs. Retrieve Study Data.csv\"")\n\n# Exclude participants who did not understand task (less than <.60 on the pretest catch trials)\n\n# Removes two participants 7 and 47\n\ndata <- data[which(data$Pretest.Catch>.60),]\n\n# Pretest performance (catch trials)\n\nt.test(data$Pretest.Catch[data$Condition==\""GENERATE\""],data$Pretest.Catch[data$Condition==\""RETRIEVE\""],var.equal = T)\ncohen.d(data$Pretest.Catch[data$Condition==\""GENERATE\""],data$Pretest.Catch[data$Condition==\""RETRIEVE\""])”}}",,,
+3,variable specification,"Across both groups, children were also highly and equally accurateon the catch trials at pretest for both the Generating Predictions,M = 0.96, 95% CI [0.95, 0.98], and Retrieve groups, M = 0.96, 95%CI [0.95, 0.98]. To test this equivalence, we used a true mean difference between −0.2 and 0.2 (equivalent to one question accuracy difference between the groups). We found that performance was statistically equivalent between the two groups, t(86) = −12, p < .01, mean difference = 0, 90% CI [−0.028, 0.028]; Hedges’ g(av) = 0, 90% CI [−0.359, 0.359].",0.0,"# Pretest performance (catch trials)
+
+```{r}
+t.test(data$Pretest.Catch[data$Condition==""GENERATE""],data$Pretest.Catch[data$Condition==""RETRIEVE""],var.equal = T)
+cohen.d(data$Pretest.Catch[data$Condition==""GENERATE""],data$Pretest.Catch[data$Condition==""RETRIEVE""])",generate-v-retrieve-analyses.Rmd:73-77,1,"A TOST equivalence test was conducted on pretest catch-trial accuracy (proportion correct on 5 catch items) to determine whether performance on these easier control items was equivalent between the Generating Predictions and Retrieve conditions. Equivalence bounds were set at ±0.2 (approximately one item difference), and the test evaluated if the mean difference in catch accuracy fell within this range.","Across both groups, children were also highly and equally accurate on the catch trials at pretest for both the Generating Predictions, M = 0.96, 95% CI [0.95, 0.98], and Retrieve groups, M = 0.96, 95% CI [0.95, 0.98]. To test this equivalence, we used a true mean difference between−0.2 and 0.2 (equivalent to one question accuracy difference between the groups). We found that performance was statistically equivalent between the two groups,t(86) = −12, p < .01, mean difference = 0, 90% CI [ −0.028, 0.028]; Hedges’ g(av) = 0, 90% CI [ −0.359, 0.359].",,,,,
+3,transformation,Accuracy by question type and a total score was calculated,0.0,,generate-v-retrieve-analyses.Rmd,,"A TOST equivalence test was conducted on pretest catch-trial accuracy (proportion correct on 5 catch items) to determine whether performance on these easier control items was equivalent between the Generating Predictions and Retrieve conditions. Equivalence bounds were set at ±0.2 (approximately one item difference), and the test evaluated if the mean difference in catch accuracy fell within this range.","Across both groups, children were also highly and equally accurate on the catch trials at pretest for both the Generating Predictions, M = 0.96, 95% CI [0.95, 0.98], and Retrieve groups, M = 0.96, 95% CI [0.95, 0.98]. To test this equivalence, we used a true mean difference between −0.2 and 0.2 (equivalent to one question accuracy difference between the groups). We found that performance was statistically equivalent between the two groups, t(86) = −12, p < .01, mean difference = 0, 90% CI [−0.028, 0.028]; Hedges’ g(av) = 0, 90% CI [−0.359, 0.359].",,"{""code_value"":""data <- read.csv(\""Generate vs. Retrieve Study Data.csv\"")\n\n# Exclude participants who did not understand task (less than <.60 on the pretest catch trials)\n\n# Removes two participants 7 and 47\n\ndata <- data[which(data$Pretest.Catch>.60),]\n\n# Pretest performance (catch trials)\n\nt.test(data$Pretest.Catch[data$Condition==\""GENERATE\""],data$Pretest.Catch[data$Condition==\""RETRIEVE\""],var.equal = T)\ncohen.d(data$Pretest.Catch[data$Condition==\""GENERATE\""],data$Pretest.Catch[data$Condition==\""RETRIEVE\""])\n"",""evidence"":{""code_path"":""/Users/jamie/git/codebot-for-psychology/data/raw/main/codebot/materials/codebot_pairs/carvalho/generate-v-retrieve-analyses.Rmd"",""code_lines"":""data <- read.csv(\""Generate vs. Retrieve Study Data.csv\"")\n\n# Exclude participants who did not understand task (less than <.60 on the pretest catch trials)\n\n# Removes two participants 7 and 47\n\ndata <- data[which(data$Pretest.Catch>.60),]\n\n# Pretest performance (catch trials)\n\nt.test(data$Pretest.Catch[data$Condition==\""GENERATE\""],data$Pretest.Catch[data$Condition==\""RETRIEVE\""],var.equal = T)\ncohen.d(data$Pretest.Catch[data$Condition==\""GENERATE\""],data$Pretest.Catch[data$Condition==\""RETRIEVE\""])”}}",,,
+3,inference criterion,"Across both groups, children were also highly and equally accurateon the catch trials at pretest for both the Generating Predictions,M = 0.96, 95% CI [0.95, 0.98], and Retrieve groups, M = 0.96, 95%CI [0.95, 0.98]. To test this equivalence, we used a true mean difference between −0.2 and 0.2 (equivalent to one question accuracy difference between the groups). We found that performance was statistically equivalent between the two groups, t(86) = −12, p < .01, mean difference = 0, 90% CI [−0.028, 0.028]; Hedges’ g(av) = 0, 90% CI [−0.359, 0.359].",0.0,"# Pretest performance (catch trials)
+
+```{r}
+t.test(data$Pretest.Catch[data$Condition==""GENERATE""],data$Pretest.Catch[data$Condition==""RETRIEVE""],var.equal = T)
+cohen.d(data$Pretest.Catch[data$Condition==""GENERATE""],data$Pretest.Catch[data$Condition==""RETRIEVE""])",generate-v-retrieve-analyses.Rmd:73-77,1,"A TOST equivalence test was conducted on pretest catch-trial accuracy (proportion correct on 5 catch items) to determine whether performance on these easier control items was equivalent between the Generating Predictions and Retrieve conditions. Equivalence bounds were set at ±0.2 (approximately one item difference), and the test evaluated if the mean difference in catch accuracy fell within this range.","Across both groups, children were also highly and equally accurate on the catch trials at pretest for both the Generating Predictions, M = 0.96, 95% CI [0.95, 0.98], and Retrieve groups, M = 0.96, 95% CI [0.95, 0.98]. To test this equivalence, we used a true mean difference between −0.2 and 0.2 (equivalent to one question accuracy difference between the groups). We found that performance was statistically equivalent between the two groups, t(86) = −12, p < .01, mean difference = 0, 90% CI [−0.028, 0.028]; Hedges’ g(av) = 0, 90% CI [−0.359, 0.359].",,"# Pretest performance (catch trials)
+
+```{r}
+t.test(data$Pretest.Catch[data$Condition==""GENERATE""],data$Pretest.Catch[data$Condition==""RETRIEVE""],var.equal = T)
+cohen.d(data$Pretest.Catch[data$Condition==""GENERATE""],data$Pretest.Catch[data$Condition==""RETRIEVE""])
+```",,0,0
+4,model specification,"Consistent with this prediction, children were more accurate on the lesson classification pages in the Retrieve group (M = 0.81, 95% CI [0.79, 0.82]) than in the Generating Predictions group (M = 0.67, 95% CI [0.64, 0.70]), t(86) = −3.93, p = .0002, d = 0.84, 95% CI [0.40, 1.28],",0.0,"# Lesson performance (overall)
+
+```{r}
+t.test(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""],var.equal = T)
+cohen.d(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""])",generate-v-retrieve-analyses.Rmd:80-84,1,A two-sample t-test compared accuracy on the eight lesson classification pages (proportion of correct insect classifications during the lesson) between the Retrieve and Generating Predictions conditions. The analysis tested whether children were more accurate when asked to retrieve after instruction versus generate predictions before instruction during the lesson itself.,"Consistent with this prediction, children were more accurate on the lesson classification pages in the Retrieve group (M = 0.81, 95% CI [0.79, 0.82]) than in the Generating Predictions group (M = 0.67, 95% CI [0.64, 0.70]), t(86) = −3.93, p = .0002, d = 0.84, 95% CI [0.40, 1.28], suggesting that as anticipated, generating a response is more error-prone than immediate retrieval.",,"# Lesson performance (overall)
+
+```{r}
+t.test(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""],var.equal = T)
+cohen.d(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""])
+```",,1,1
+4,variable specification,"Consistent with this prediction, children were more accurate on the lesson classification pages in the Retrieve group (M = 0.81, 95% CI [0.79, 0.82]) than in the Generating Predictions group (M = 0.67, 95% CI [0.64, 0.70]), t(86) = −3.93, p = .0002, d = 0.84, 95% CI [0.40, 1.28],",0.0,"# Lesson performance (overall)
+
+```{r}
+t.test(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""],var.equal = T)
+cohen.d(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""])",generate-v-retrieve-analyses.Rmd:80-84,1,A two-sample t-test compared accuracy on the eight lesson classification pages (proportion of correct insect classifications during the lesson) between the Retrieve and Generating Predictions conditions. The analysis tested whether children were more accurate when asked to retrieve after instruction versus generate predictions before instruction during the lesson itself.,"Consistent with this prediction, children were more accurate on the lesson classification pages in the Retrieve group (M = 0.81, 95% CI [0.79, 0.82]) than in the Generating Predictions group (M = 0.67, 95% CI [0.64, 0.70]), t(86) = −3.93, p = .0002, d = 0.84, 95% CI [0.40, 1.28], suggesting that as anticipated, generating a response is more error-prone than immediate retrieval.",,"# Lesson performance (overall)
+
+t.test(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""],var.equal = T)
+cohen.d(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""])
+
+# age effects?
+m_age <- lm(Lesson.Means~Condition*FIXED.GRADE.LEVEL,data=data)
+summary(m_age)",,1,1
+4,transformation,,,,generate-v-retrieve-analyses.Rmd,,A two-sample t-test compared accuracy on the eight lesson classification pages (proportion of correct insect classifications during the lesson) between the Retrieve and Generating Predictions conditions. The analysis tested whether children were more accurate when asked to retrieve after instruction versus generate predictions before instruction during the lesson itself.,"Consistent with this prediction, children were more accurate on the lesson classiﬁcation pages in the Retrieve group (M = 0.81, 95% CI [0.79, 0.82]) than in the Generating Predictions group (M = 0.67, 95% CI [0.64, 0.70]), t(86) = −3.93, p = .0002, d = 0.84, 95% CI [0.40, 1.28], suggesting that as anticipated, generating a response is more error-prone than immediate retrieval.",,"data <- read.csv(""Generate vs. Retrieve Study Data.csv"")
+
+# Exclude participants who did not understand task (less than <.60 on the pretest catch trials)
+
+# Removes two participants 7 and 47
+
+data <- data[which(data$Pretest.Catch>.60),]
+
+# Lesson performance (overall)
+
+t.test(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""],var.equal = T)
+cohen.d(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""])
+
+# age effects?
+m_age <- lm(Lesson.Means~Condition*FIXED.GRADE.LEVEL,data=data)
+summary(m_age)
+library(effectsize)
+effectsize(m_age)
+confint(m_age)
+
+mean(data$Lesson.Means[data$FIXED.GRADE.LEVEL==""K""])
+sd(data$Lesson.Means[data$FIXED.GRADE.LEVEL==""K""])
+
+mean(data$Lesson.Means[data$FIXED.GRADE.LEVEL==""P""])
+sd(data$Lesson.Means[data$FIXED.GRADE.LEVEL==""P""])",,,
+4,variable specification,"Consistent with this prediction, children were more accurate on the lesson classification pages in the Retrieve group (M = 0.81, 95% CI [0.79, 0.82]) than in the Generating Predictions group (M = 0.67, 95% CI [0.64, 0.70]), t(86) = −3.93, p = .0002, d = 0.84, 95% CI [0.40, 1.28],",0.0,"# Lesson performance (overall)
+
+```{r}
+t.test(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""],var.equal = T)
+cohen.d(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""])",generate-v-retrieve-analyses.Rmd:80-84,1,A two-sample t-test compared accuracy on the eight lesson classification pages (proportion of correct insect classifications during the lesson) between the Retrieve and Generating Predictions conditions. The analysis tested whether children were more accurate when asked to retrieve after instruction versus generate predictions before instruction during the lesson itself.,"Consistent with this prediction, children were more accurate on the lesson classification pages in the Retrieve group (M = 0.81, 95% CI [0.79, 0.82]) than in the Generating Predictions group (M = 0.67, 95% CI [0.64, 0.70]), t(86) = −3.93, p = .0002, d = 0.84, 95% CI [0.40, 1.28], suggesting that as anticipated, generating a response is more error-prone than immediate retrieval.",,"# Lesson performance (overall)
+
+t.test(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""],var.equal = T)
+cohen.d(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""])
+
+# age effects?
+m_age <- lm(Lesson.Means~Condition*FIXED.GRADE.LEVEL,data=data)
+summary(m_age)",,1,1
+4,transformation,,0.0,,generate-v-retrieve-analyses.Rmd,,A two-sample t-test compared accuracy on the eight lesson classification pages (proportion of correct insect classifications during the lesson) between the Retrieve and Generating Predictions conditions. The analysis tested whether children were more accurate when asked to retrieve after instruction versus generate predictions before instruction during the lesson itself.,"Consistent with this prediction, children were more accurate on the lesson classiﬁcation pages in the Retrieve group (M = 0.81, 95% CI [0.79, 0.82]) than in the Generating Predictions group (M = 0.67, 95% CI [0.64, 0.70]), t(86) = −3.93, p = .0002, d = 0.84, 95% CI [0.40, 1.28], suggesting that as anticipated, generating a response is more error-prone than immediate retrieval.",,"data <- read.csv(""Generate vs. Retrieve Study Data.csv"")
+
+# Exclude participants who did not understand task (less than <.60 on the pretest catch trials)
+
+# Removes two participants 7 and 47
+
+data <- data[which(data$Pretest.Catch>.60),]
+
+# Lesson performance (overall)
+
+t.test(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""],var.equal = T)
+cohen.d(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""])
+
+# age effects?
+m_age <- lm(Lesson.Means~Condition*FIXED.GRADE.LEVEL,data=data)
+summary(m_age)
+library(effectsize)
+effectsize(m_age)
+confint(m_age)
+
+mean(data$Lesson.Means[data$FIXED.GRADE.LEVEL==""K""])
+sd(data$Lesson.Means[data$FIXED.GRADE.LEVEL==""K""])
+
+mean(data$Lesson.Means[data$FIXED.GRADE.LEVEL==""P""])
+sd(data$Lesson.Means[data$FIXED.GRADE.LEVEL==""P""])",,,
+4,inference criterion,"Consistent with this prediction, children were more accurate on the lesson classification pages in the Retrieve group (M = 0.81, 95% CI [0.79, 0.82]) than in the Generating Predictions group (M = 0.67, 95% CI [0.64, 0.70]), t(86) = −3.93, p = .0002, d = 0.84, 95% CI [0.40, 1.28],",0.0,"# Lesson performance (overall)
+
+```{r}
+t.test(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""],var.equal = T)
+cohen.d(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""])",generate-v-retrieve-analyses.Rmd:80-84,1,A two-sample t-test compared accuracy on the eight lesson classification pages (proportion of correct insect classifications during the lesson) between the Retrieve and Generating Predictions conditions. The analysis tested whether children were more accurate when asked to retrieve after instruction versus generate predictions before instruction during the lesson itself.,"Consistent with this prediction, children were more accurate on the lesson classification pages in the Retrieve group (M = 0.81, 95% CI [0.79, 0.82]) than in the Generating Predictions group (M = 0.67, 95% CI [0.64, 0.70]), t(86) = −3.93, p = .0002, d = 0.84, 95% CI [0.40, 1.28], suggesting that as anticipated, generating a response is more error-prone than immediate retrieval.",,"t.test(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""],var.equal = T)
+cohen.d(data$Lesson.Means[data$Condition==""GENERATE""],data$Lesson.Means[data$Condition==""RETRIEVE""])",,1,1
+5,model specification,"Using this measure, we found that children in the Generating
+Predictions group spent on average a larger proportion of time
+fixating the lesson materials (M = 0.60, 95% CI [0.58, 0.62]) than
+children in the Retrieve group (M = 0.54, 95% CI [0.50, 0.57]),
+t(69) = 8.08, p < .0001, d = 1.92, 95% CI [1.35,2.49].",0.0,"t.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],var.equal = T)
+cohen.d(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",generate-v-retrieve-analyses.Rmd:133-134,1,"A two-sample t-test compared the proportion of time children fixated on the lesson slides (total fixation duration divided by total lesson time, as an eye-tracking based measure of global attention) between the Generating Predictions and Retrieve conditions. This test assessed whether generating predictions increased overall looking time to the instructional materials relative to retrieval practice.","Using this measure, we found that children in the Generating Predictions group spent on average a larger proportion of time ﬁxating the lesson materials ( M = 0.60, 95% CI [0.58, 0.62]) than children in the Retrieve group ( M = 0.54, 95% CI [0.50, 0.57]), t(69) = 8.08, p < .0001, d = 1.92, 95% CI [1.35,2.49].",,"t.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],var.equal = T)
+cohen.d(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",,1,1
+5,variable specification,"Using this measure, we found that children in the Generating
+Predictions group spent on average a larger proportion of time
+fixating the lesson materials (M = 0.60, 95% CI [0.58, 0.62]) than
+children in the Retrieve group (M = 0.54, 95% CI [0.50, 0.57]),
+t(69) = 8.08, p < .0001, d = 1.92, 95% CI [1.35,2.49].",0.0,"t.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],var.equal = T)
+cohen.d(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",generate-v-retrieve-analyses.Rmd:133-134,1,"A two-sample t-test compared the proportion of time children fixated on the lesson slides (total fixation duration divided by total lesson time, as an eye-tracking based measure of global attention) between the Generating Predictions and Retrieve conditions. This test assessed whether generating predictions increased overall looking time to the instructional materials relative to retrieval practice.","As a measure of initial activation/encoding during the lesson, we calculated for each child the proportion of time fixating on the lesson materials by dividing the fixation time by the total time in the lesson. Using this measure, we found that children in the Generating Predictions group spent on average a larger proportion of time fixating the lesson materials (M = 0.60, 95% CI [0.58, 0.62]) than children in the Retrieve group (M = 0.54, 95% CI [0.50, 0.57]), t(69) = 8.08, p < .0001, d = 1.92, 95% CI [1.35,2.49]. Thus, generating a prediction before instruction led to greater attention to the materials than retrieving a response after instruction.",,"# Looking time during lesson (eyetracking data)
+length(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+length(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+mean_fixation_generate <- mean(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+mean_fixation_retrieve <- mean(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+...
+
+t.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],var.equal = T)
+cohen.d(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",,0,0
+5,transformation,,,,generate-v-retrieve-analyses.Rmd,,"A two-sample t-test compared the proportion of time children fixated on the lesson slides (total fixation duration divided by total lesson time, as an eye-tracking based measure of global attention) between the Generating Predictions and Retrieve conditions. This test assessed whether generating predictions increased overall looking time to the instructional materials relative to retrieval practice.","For each participant, the proportion of time fixating to the lesson was then calculated (total fixation to lesson slide areas of interests/total lesson time).",,"mean_fixation_generate <- mean(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+mean_fixation_retrieve <- mean(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+highci_fixation_generate <- mean(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])+std.error(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+lowci_fixation_generate <- mean(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])-std.error(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+highci_fixation_retrieve <- mean(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])+std.error(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+lowci_fixation_retrieve <- mean(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])-std.error(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+t.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],var.equal = T)
+cohen.d(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",,0,
+5,variable specification,"Using this measure, we found that children in the Generating
+Predictions group spent on average a larger proportion of time
+fixating the lesson materials (M = 0.60, 95% CI [0.58, 0.62]) than
+children in the Retrieve group (M = 0.54, 95% CI [0.50, 0.57]),
+t(69) = 8.08, p < .0001, d = 1.92, 95% CI [1.35,2.49].",0.0,"t.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],var.equal = T)
+cohen.d(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",generate-v-retrieve-analyses.Rmd:133-134,1,"A two-sample t-test compared the proportion of time children fixated on the lesson slides (total fixation duration divided by total lesson time, as an eye-tracking based measure of global attention) between the Generating Predictions and Retrieve conditions. This test assessed whether generating predictions increased overall looking time to the instructional materials relative to retrieval practice.","As a measure of initial activation/encoding during the lesson, we calculated for each child the proportion of time fixating on the lesson materials by dividing the fixation time by the total time in the lesson. Using this measure, we found that children in the Generating Predictions group spent on average a larger proportion of time fixating the lesson materials (M = 0.60, 95% CI [0.58, 0.62]) than children in the Retrieve group (M = 0.54, 95% CI [0.50, 0.57]), t(69) = 8.08, p < .0001, d = 1.92, 95% CI [1.35,2.49]. Thus, generating a prediction before instruction led to greater attention to the materials than retrieving a response after instruction.",,"# Looking time during lesson (eyetracking data)
+length(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+length(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+mean_fixation_generate <- mean(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+mean_fixation_retrieve <- mean(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+...
+
+t.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],var.equal = T)
+cohen.d(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",,0,0
+5,transformation,"As a measure of initial activation/encoding during the lesson, we
+calculated for each child the proportion of time fixating on the lesson
+materials by dividing the fixation time by the total time in the lesson",0.0,,generate-v-retrieve-analyses.Rmd,,"A two-sample t-test compared the proportion of time children fixated on the lesson slides (total fixation duration divided by total lesson time, as an eye-tracking based measure of global attention) between the Generating Predictions and Retrieve conditions. This test assessed whether generating predictions increased overall looking time to the instructional materials relative to retrieval practice.","For each participant, the proportion of time fixating to the lesson was then calculated (total fixation to lesson slide areas of interests/total lesson time).",,"mean_fixation_generate <- mean(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+mean_fixation_retrieve <- mean(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+highci_fixation_generate <- mean(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])+std.error(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+lowci_fixation_generate <- mean(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])-std.error(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+highci_fixation_retrieve <- mean(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])+std.error(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+lowci_fixation_retrieve <- mean(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])-std.error(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+t.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],var.equal = T)
+cohen.d(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",,0,
+5,inference criterion,"Using this measure, we found that children in the Generating
+Predictions group spent on average a larger proportion of time
+fixating the lesson materials (M = 0.60, 95% CI [0.58, 0.62]) than
+children in the Retrieve group (M = 0.54, 95% CI [0.50, 0.57]),
+t(69) = 8.08, p < .0001, d = 1.92, 95% CI [1.35,2.49].",0.0,"t.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],var.equal = T)
+cohen.d(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",generate-v-retrieve-analyses.Rmd:133-134,1,"A two-sample t-test compared the proportion of time children fixated on the lesson slides (total fixation duration divided by total lesson time, as an eye-tracking based measure of global attention) between the Generating Predictions and Retrieve conditions. This test assessed whether generating predictions increased overall looking time to the instructional materials relative to retrieval practice.","Using this measure, we found that children in the Generating Predictions group spent on average a larger proportion of time fixating the lesson materials ( M = 0.60, 95% CI [0.58, 0.62]) than children in the Retrieve group ( M = 0.54, 95% CI [0.50, 0.57]), t(69) = 8.08, p < .0001, d = 1.92, 95% CI [1.35,2.49].",,"library(plotrix)
+
+highci_fixation_generate <- mean(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])+std.error(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+lowci_fixation_generate <- mean(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])-std.error(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+highci_fixation_retrieve <- mean(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])+std.error(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+lowci_fixation_retrieve <- mean(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])-std.error(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+mean_fixation_generate
+mean_fixation_retrieve
+highci_fixation_generate
+lowci_fixation_generate
+highci_fixation_retrieve
+lowci_fixation_retrieve
+
+t.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],var.equal = T)
+cohen.d(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Lesson.Means[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",,0,0
+6,model specification,"Moreover, looking time was more varied in the Retrieve group
+(interquartile range [IQR] = 0.223) than in the Generate Predictions
+group (IQR = 0.110) and the proportion of time fixating during the
+lesson was positively correlated with immediate posttest performance
+for the Generating Predictions group, r2 = .43, p = .0007,
+95% CI [.13, .66], but not for the Retrieve group, r2 = .08, p = .637,
+95% CI [−.26, .41].",0.0,"cor.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",generate-v-retrieve-analyses.Rmd:136,1,"A bivariate correlation analysis examined the association between the proportion of time fixating on the lesson materials and immediate posttest performance (proportion correct on critical items) within the Generating Predictions condition only. The analysis quantified how strongly greater looking time during the lesson predicted better posttest performance for children who generated predictions (r² = .43, p = .0007, 95% CI [.13, .66]).","Moreover, looking time was more varied in the Retrieve group (interquartile range [IQR] = 0.223) than in the Generate Predictions group (IQR = 0.110) and the proportion of time fixating during the lesson was positively correlated with immediate posttest performance for the Generating Predictions group, r2 = .43, p = .0007, 95% CI [.13, .66], but not for the Retrieve group, r2 = .08, p = .637, 95% CI [ −.26, .41].",,"cor.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+m1a <- lm(`Post.test.w.o.Fillers`~Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&data$Condition==""GENERATE"",])
+summary(m1a)
+confint(m1a)
+
+effectsize(m1a)",,1,1
+6,variable specification,"Moreover, looking time was more varied in the Retrieve group
+(interquartile range [IQR] = 0.223) than in the Generate Predictions
+group (IQR = 0.110) and the proportion of time fixating during the
+lesson was positively correlated with immediate posttest performance
+for the Generating Predictions group, r2 = .43, p = .0007,
+95% CI [.13, .66], but not for the Retrieve group, r2 = .08, p = .637,
+95% CI [−.26, .41].",0.0,"cor.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",generate-v-retrieve-analyses.Rmd:136,1,"A bivariate correlation analysis examined the association between the proportion of time fixating on the lesson materials and immediate posttest performance (proportion correct on critical items) within the Generating Predictions condition only. The analysis quantified how strongly greater looking time during the lesson predicted better posttest performance for children who generated predictions (r² = .43, p = .0007, 95% CI [.13, .66]).","Moreover, looking time was more varied in the Retrieve group (interquartile range [IQR] = 0.223) than in the Generate Predictions group (IQR = 0.110) and the proportion of time fixating during the lesson was positively correlated with immediate posttest performance for the Generating Predictions group, r2 = .43, p = .0007, 95% CI [.13, .66], but not for the Retrieve group, r2 = .08, p = .637, 95% CI [−.26, .41].",,"cor.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+cor.test(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",,1,1
+6,transformation,"As a measure of initial activation/encoding during the lesson, we
+calculated for each child the proportion of time fixating on the lesson
+materials by dividing the fixation time by the total time in the lesson",0.0,,generate-v-retrieve-analyses.Rmd,,"A bivariate correlation analysis examined the association between the proportion of time fixating on the lesson materials and immediate posttest performance (proportion correct on critical items) within the Generating Predictions condition only. The analysis quantified how strongly greater looking time during the lesson predicted better posttest performance for children who generated predictions (r² = .43, p = .0007, 95% CI [.13, .66]).","As a measure of initial activation/encoding during the lesson, we calculated for each child the proportion of time fixating on the lesson materials by dividing the fixation time by the total time in the lesson. ... Immediate Posttest performance includes only critical trials.",,"length(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+mean_fixation_generate <- mean(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+highci_fixation_generate <- mean(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])+std.error(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+lowci_fixation_generate <- mean(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])-std.error(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+cor.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+m1a <- lm(`Post.test.w.o.Fillers`~Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&data$Condition==""GENERATE"",])",,0,
+6,variable specification,"Moreover, looking time was more varied in the Retrieve group
+(interquartile range [IQR] = 0.223) than in the Generate Predictions
+group (IQR = 0.110) and the proportion of time fixating during the
+lesson was positively correlated with immediate posttest performance
+for the Generating Predictions group, r2 = .43, p = .0007,
+95% CI [.13, .66], but not for the Retrieve group, r2 = .08, p = .637,
+95% CI [−.26, .41].",0.0,"cor.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",generate-v-retrieve-analyses.Rmd:136,1,"A bivariate correlation analysis examined the association between the proportion of time fixating on the lesson materials and immediate posttest performance (proportion correct on critical items) within the Generating Predictions condition only. The analysis quantified how strongly greater looking time during the lesson predicted better posttest performance for children who generated predictions (r² = .43, p = .0007, 95% CI [.13, .66]).","Moreover, looking time was more varied in the Retrieve group (interquartile range [IQR] = 0.223) than in the Generate Predictions group (IQR = 0.110) and the proportion of time fixating during the lesson was positively correlated with immediate posttest performance for the Generating Predictions group, r2 = .43, p = .0007, 95% CI [.13, .66], but not for the Retrieve group, r2 = .08, p = .637, 95% CI [−.26, .41].",,"cor.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+cor.test(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",,1,1
+6,transformation,,,,generate-v-retrieve-analyses.Rmd,,"A bivariate correlation analysis examined the association between the proportion of time fixating on the lesson materials and immediate posttest performance (proportion correct on critical items) within the Generating Predictions condition only. The analysis quantified how strongly greater looking time during the lesson predicted better posttest performance for children who generated predictions (r² = .43, p = .0007, 95% CI [.13, .66]).","As a measure of initial activation/encoding during the lesson, we calculated for each child the proportion of time fixating on the lesson materials by dividing the fixation time by the total time in the lesson. ... Immediate Posttest performance includes only critical trials.",,"length(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+mean_fixation_generate <- mean(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+highci_fixation_generate <- mean(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])+std.error(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+lowci_fixation_generate <- mean(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])-std.error(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+cor.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+m1a <- lm(`Post.test.w.o.Fillers`~Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&data$Condition==""GENERATE"",])",,0,
+6,inference criterion,"Moreover, looking time was more varied in the Retrieve group
+(interquartile range [IQR] = 0.223) than in the Generate Predictions
+group (IQR = 0.110) and the proportion of time fixating during the
+lesson was positively correlated with immediate posttest performance
+for the Generating Predictions group, r2 = .43, p = .0007,
+95% CI [.13, .66], but not for the Retrieve group, r2 = .08, p = .637,
+95% CI [−.26, .41].",0.0,"cor.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",generate-v-retrieve-analyses.Rmd:136,1,"A bivariate correlation analysis examined the association between the proportion of time fixating on the lesson materials and immediate posttest performance (proportion correct on critical items) within the Generating Predictions condition only. The analysis quantified how strongly greater looking time during the lesson predicted better posttest performance for children who generated predictions (r² = .43, p = .0007, 95% CI [.13, .66]).","Moreover, looking time was more varied in the Retrieve group (interquartile range [IQR] = 0.223) than in the Generate Predictions group (IQR = 0.110) and the proportion of time ﬁxating during the lesson was positively correlated with immediate posttest performance for the Generating Predictions group, r2 = .43, p = .0007, 95% CI [.13, .66], but not for the Retrieve group, r2 = .08, p = .637, 95% CI [−.26, .41].",,"cor.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+cor.test(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",,1,1
+7,model specification,"Moreover, looking time was more varied in the Retrieve group
+(interquartile range [IQR] = 0.223) than in the Generate Predictions
+group (IQR = 0.110) and the proportion of time fixating during the
+lesson was positively correlated with immediate posttest performance
+for the Generating Predictions group, r2 = .43, p = .0007,
+95% CI [.13, .66], but not for the Retrieve group, r2 = .08, p = .637,
+95% CI [−.26, .41].",0.0,"cor.test(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",generate-v-retrieve-analyses.Rmd:138,1,"A bivariate correlation analysis examined the association between the proportion of time fixating on the lesson materials and immediate posttest performance (proportion correct on critical items) within the Retrieve condition only. This tested whether attention, as measured by looking time, predicted posttest performance for children in the retrieval practice condition (r² = .08, p = .637, 95% CI [−.26, .41]).","Moreover, looking time was more varied in the Retrieve group (interquartile range [IQR] = 0.223) than in the Generate Predictions group (IQR = 0.110) and the proportion of time fixating during the lesson was positively correlated with immediate posttest performance for the Generating Predictions group, r2 = .43, p = .0007, 95% CI [.13, .66], but not for the Retrieve group, r2 = .08, p = .637, 95% CI [−.26, .41].",,"cor.test(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",,1,1
+7,variable specification,"Moreover, looking time was more varied in the Retrieve group
+(interquartile range [IQR] = 0.223) than in the Generate Predictions
+group (IQR = 0.110) and the proportion of time fixating during the
+lesson was positively correlated with immediate posttest performance
+for the Generating Predictions group, r2 = .43, p = .0007,
+95% CI [.13, .66], but not for the Retrieve group, r2 = .08, p = .637,
+95% CI [−.26, .41].",0.0,"cor.test(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",generate-v-retrieve-analyses.Rmd:138,1,"A bivariate correlation analysis examined the association between the proportion of time fixating on the lesson materials and immediate posttest performance (proportion correct on critical items) within the Retrieve condition only. This tested whether attention, as measured by looking time, predicted posttest performance for children in the retrieval practice condition (r² = .08, p = .637, 95% CI [−.26, .41]).","Moreover, looking time was more varied in the Retrieve group (interquartile range [IQR] = 0.223) than in the Generate Predictions group (IQR = 0.110) and the proportion of time fixating during the lesson was positively correlated with immediate posttest performance for the Generating Predictions group, r2 = .43, p = .0007, 95% CI [.13, .66], but not for the Retrieve group, r2 = .08, p = .637, 95% CI [−.26, .41].",,"cor.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+cor.test(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",,1,1
+7,transformation,"As a measure of initial activation/encoding during the lesson, we
+calculated for each child the proportion of time fixating on the lesson
+materials by dividing the fixation time by the total time in the lesson",0.0,,generate-v-retrieve-analyses.Rmd,,"A bivariate correlation analysis examined the association between the proportion of time fixating on the lesson materials and immediate posttest performance (proportion correct on critical items) within the Retrieve condition only. This tested whether attention, as measured by looking time, predicted posttest performance for children in the retrieval practice condition (r² = .08, p = .637, 95% CI [−.26, .41]).","As a measure of initial activation/encoding during the lesson, we calculated for each child the proportion of time fixating on the lesson materials by dividing the fixation time by the total time in the lesson.
+
+Immediate Posttest performance includes only critical trials.",,"length(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+cor.test(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+m1b <- lm(`Post.test.w.o.Fillers`~Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&data$Condition==""RETRIEVE"",])",,0,
+7,variable specification,"Moreover, looking time was more varied in the Retrieve group
+(interquartile range [IQR] = 0.223) than in the Generate Predictions
+group (IQR = 0.110) and the proportion of time fixating during the
+lesson was positively correlated with immediate posttest performance
+for the Generating Predictions group, r2 = .43, p = .0007,
+95% CI [.13, .66], but not for the Retrieve group, r2 = .08, p = .637,
+95% CI [−.26, .41].",0.0,"cor.test(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",generate-v-retrieve-analyses.Rmd:138,1,"A bivariate correlation analysis examined the association between the proportion of time fixating on the lesson materials and immediate posttest performance (proportion correct on critical items) within the Retrieve condition only. This tested whether attention, as measured by looking time, predicted posttest performance for children in the retrieval practice condition (r² = .08, p = .637, 95% CI [−.26, .41]).","Moreover, looking time was more varied in the Retrieve group (interquartile range [IQR] = 0.223) than in the Generate Predictions group (IQR = 0.110) and the proportion of time fixating during the lesson was positively correlated with immediate posttest performance for the Generating Predictions group, r2 = .43, p = .0007, 95% CI [.13, .66], but not for the Retrieve group, r2 = .08, p = .637, 95% CI [−.26, .41].",,"cor.test(data$Total.Proportion.of.Fixation[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""GENERATE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+cor.test(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",,1,1
+7,transformation,,,,generate-v-retrieve-analyses.Rmd,,"A bivariate correlation analysis examined the association between the proportion of time fixating on the lesson materials and immediate posttest performance (proportion correct on critical items) within the Retrieve condition only. This tested whether attention, as measured by looking time, predicted posttest performance for children in the retrieval practice condition (r² = .08, p = .637, 95% CI [−.26, .41]).","As a measure of initial activation/encoding during the lesson, we calculated for each child the proportion of time fixating on the lesson materials by dividing the fixation time by the total time in the lesson.
+
+Immediate Posttest performance includes only critical trials.",,"length(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+cor.test(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])
+
+m1b <- lm(`Post.test.w.o.Fillers`~Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&data$Condition==""RETRIEVE"",])",,0,
+7,inference criterion,"Moreover, looking time was more varied in the Retrieve group
+(interquartile range [IQR] = 0.223) than in the Generate Predictions
+group (IQR = 0.110) and the proportion of time fixating during the
+lesson was positively correlated with immediate posttest performance
+for the Generating Predictions group, r2 = .43, p = .0007,
+95% CI [.13, .66], but not for the Retrieve group, r2 = .08, p = .637,
+95% CI [−.26, .41].",0.0,"cor.test(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",generate-v-retrieve-analyses.Rmd:138,1,"A bivariate correlation analysis examined the association between the proportion of time fixating on the lesson materials and immediate posttest performance (proportion correct on critical items) within the Retrieve condition only. This tested whether attention, as measured by looking time, predicted posttest performance for children in the retrieval practice condition (r² = .08, p = .637, 95% CI [−.26, .41]).","Moreover, looking time was more varied in the Retrieve group (interquartile range [IQR] = 0.223) than in the Generate Predictions group (IQR = 0.110) and the proportion of time fixating during the lesson was positively correlated with immediate posttest performance for the Generating Predictions group, r2 = .43, p = .0007, 95% CI [.13, .66], but not for the Retrieve group, r2 = .08, p = .637, 95% CI [−.26, .41].",,"cor.test(data$Total.Proportion.of.Fixation[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)],data$Post.test.w.o.Fillers[data$Condition==""RETRIEVE""&data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)])",,1,1
+8,model specification,"In line with our hypothesis and predictions that the benefit of
+generating predictions versus retrieval for learning will depend on
+attention control and initial encoding, we analyzed the independent
+and combined effects that lesson format (Generating Predictions vs.
+Retrieve) and encoding during the lesson have on immediate
+posttest performance using a regression model predicting posttest
+performance in the critical trials with condition (dummy-coded,
+Generate = 0, Retrieve = 1) and proportion of time fixating the
+study materials (as a measure of initial encoding and attention), as
+well as their interaction, as predictors. The results of the regression
+analyses are presented in Table 1.",0.0,"# Effect of condition and lesson engagement on posttest performance
+
+```{r}
+m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+summary(m1)
+confint(m1)",generate-v-retrieve-analyses.Rmd:142-147,1,"A multiple linear regression predicted immediate posttest performance on critical items (proportion correct) from learning condition (Generating Predictions vs. Retrieve), proportion of time fixating on the lesson materials, and their interaction. Standardized coefficients showed a positive main effect of being in the Retrieve condition (β = 0.42), a positive effect of greater fixation proportion (β = 0.63), and a significant negative interaction term (β = −0.57), indicating that the benefit of retrieval over prediction was larger at lower levels of attention and diminished at higher fixation levels.","In line with our hypothesis and predictions that the benefit of generating predictions versus retrieval for learning will depend on attention control and initial encoding, we analyzed the independent and combined effects that lesson format (Generating Predictions vs. Retrieve) and encoding during the lesson have on immediate posttest performance using a regression model predicting posttest performance in the critical trials with condition (dummy-coded, Generate = 0, Retrieve = 1) and proportion of time fixating the study materials (as a measure of initial encoding and attention), as well as their interaction, as predictors.",,"m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+summary(m1)
+confint(m1)
+
+library(effectsize)
+effectsize(m1)",,,
+8,variable specification,"In line with our hypothesis and predictions that the benefit of
+generating predictions versus retrieval for learning will depend on
+attention control and initial encoding, we analyzed the independent
+and combined effects that lesson format (Generating Predictions vs.
+Retrieve) and encoding during the lesson have on immediate
+posttest performance using a regression model predicting posttest
+performance in the critical trials with condition (dummy-coded,
+Generate = 0, Retrieve = 1) and proportion of time fixating the
+study materials (as a measure of initial encoding and attention), as
+well as their interaction, as predictors. The results of the regression
+analyses are presented in Table 1.",0.0,"# Effect of condition and lesson engagement on posttest performance
+
+```{r}
+m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+summary(m1)
+confint(m1)",generate-v-retrieve-analyses.Rmd:142-147,1,"A multiple linear regression predicted immediate posttest performance on critical items (proportion correct) from learning condition (Generating Predictions vs. Retrieve), proportion of time fixating on the lesson materials, and their interaction. Standardized coefficients showed a positive main effect of being in the Retrieve condition (β = 0.42), a positive effect of greater fixation proportion (β = 0.63), and a significant negative interaction term (β = −0.57), indicating that the benefit of retrieval over prediction was larger at lower levels of attention and diminished at higher fixation levels.","In line with our hypothesis and predictions that the beneýt of generating predictions versus retrieval for learning will depend on attention control and initial encoding, we analyzed the independent and combined effects that lesson format (Generating Predictions vs. Retrieve) and encoding during the lesson have on immediate posttest performance in the critical trials with condition (dummy-coded, Generate = 0, Retrieve = 1) and proportion of time fixating the study materials (as a measure of initial encoding and attention), as well as their interaction, as predictors.",,"m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+summary(m1)
+confint(m1)
+
+library(effectsize)
+effectsize(m1)
+library(car)
+vif(m1,type=c(""predictor""))
+
+library(sjPlot)
+library(ggplot2)
+interplot <- plot_model(m1, type = ""int"", mdrt.values = ""meansd"") 
+
+m1a <- lm(`Post.test.w.o.Fillers`~Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&data$Condition==""GENERATE"",])
+summary(m1a)
+confint(m1a)
+
+effectsize(m1a)
+
+m1b <- lm(`Post.test.w.o.Fillers`~Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&data$Condition==""RETRIEVE"",])
+summary(m1b)
+confint(m1b)
+
+effectsize(m1b)
+
+library(emmeans)
+EMM <- emmeans(m1, ~ Condition*Total.Proportion.of.Fixation, at = list(Total.Proportion.of.Fixation=c(0.41,0.57,0.73)))",,,
+8,transformation,,,,generate-v-retrieve-analyses.Rmd,,"A multiple linear regression predicted immediate posttest performance on critical items (proportion correct) from learning condition (Generating Predictions vs. Retrieve), proportion of time fixating on the lesson materials, and their interaction. Standardized coefficients showed a positive main effect of being in the Retrieve condition (β = 0.42), a positive effect of greater fixation proportion (β = 0.63), and a significant negative interaction term (β = −0.57), indicating that the benefit of retrieval over prediction was larger at lower levels of attention and diminished at higher fixation levels.","For each participant, the proportion of time fixating to the lesson was then calculated (total fixation to lesson slide areas of interests/total lesson time).
+
+In line with our hypothesis and predictions that the benefit of generating predictions versus retrieval for learning will depend on attention control and initial encoding, we analyzed the independent and combined effects that lesson format (Generating Predictions vs. Retrieve) and encoding during the lesson have on immediate posttest performance using a regression model predicting posttest performance in the critical trials with condition (dummy-coded, Generate = 0, Retrieve = 1) and proportion of time fixating the study materials (as a measure of initial encoding and attention), as well as their interaction, as predictors.
+
+Immediate Posttest performance includes only critical trials.
+
+Note. Estimates are standardized.",,"data <- data[which(data$Pretest.Catch>.60),]
+
+m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+
+m1a <- lm(`Post.test.w.o.Fillers`~Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&data$Condition==""GENERATE"",])
+
+m1b <- lm(`Post.test.w.o.Fillers`~Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&data$Condition==""RETRIEVE"",])
+
+ggplot(data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&!is.na(data$Condition),], aes(x = `Total.Proportion.of.Fixation`, y = `Post.test.w.o.Fillers`,colour=Condition)) +geom_point(size = 4) + stat_smooth(method = ""lm"")",,0,
+8,variable specification,"In line with our hypothesis and predictions that the benefit of
+generating predictions versus retrieval for learning will depend on
+attention control and initial encoding, we analyzed the independent
+and combined effects that lesson format (Generating Predictions vs.
+Retrieve) and encoding during the lesson have on immediate
+posttest performance using a regression model predicting posttest
+performance in the critical trials with condition (dummy-coded,
+Generate = 0, Retrieve = 1) and proportion of time fixating the
+study materials (as a measure of initial encoding and attention), as
+well as their interaction, as predictors. The results of the regression
+analyses are presented in Table 1.",0.0,"# Effect of condition and lesson engagement on posttest performance
+
+```{r}
+m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+summary(m1)
+confint(m1)",generate-v-retrieve-analyses.Rmd:142-147,1,"A multiple linear regression predicted immediate posttest performance on critical items (proportion correct) from learning condition (Generating Predictions vs. Retrieve), proportion of time fixating on the lesson materials, and their interaction. Standardized coefficients showed a positive main effect of being in the Retrieve condition (β = 0.42), a positive effect of greater fixation proportion (β = 0.63), and a significant negative interaction term (β = −0.57), indicating that the benefit of retrieval over prediction was larger at lower levels of attention and diminished at higher fixation levels.","In line with our hypothesis and predictions that the beneýt of generating predictions versus retrieval for learning will depend on attention control and initial encoding, we analyzed the independent and combined effects that lesson format (Generating Predictions vs. Retrieve) and encoding during the lesson have on immediate posttest performance in the critical trials with condition (dummy-coded, Generate = 0, Retrieve = 1) and proportion of time fixating the study materials (as a measure of initial encoding and attention), as well as their interaction, as predictors.",,"m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+summary(m1)
+confint(m1)
+
+library(effectsize)
+effectsize(m1)
+library(car)
+vif(m1,type=c(""predictor""))
+
+library(sjPlot)
+library(ggplot2)
+interplot <- plot_model(m1, type = ""int"", mdrt.values = ""meansd"") 
+
+m1a <- lm(`Post.test.w.o.Fillers`~Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&data$Condition==""GENERATE"",])
+summary(m1a)
+confint(m1a)
+
+effectsize(m1a)
+
+m1b <- lm(`Post.test.w.o.Fillers`~Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&data$Condition==""RETRIEVE"",])
+summary(m1b)
+confint(m1b)
+
+effectsize(m1b)
+
+library(emmeans)
+EMM <- emmeans(m1, ~ Condition*Total.Proportion.of.Fixation, at = list(Total.Proportion.of.Fixation=c(0.41,0.57,0.73)))",,,
+8,transformation,"In line with our hypothesis and predictions that the benefit of
+generating predictions versus retrieval for learning will depend on
+attention control and initial encoding, we analyzed the independent
+and combined effects that lesson format (Generating Predictions vs.
+Retrieve) and encoding during the lesson have on immediate
+posttest performance using a regression model predicting posttest
+performance in the critical trials with condition (dummy-coded,
+Generate = 0, Retrieve = 1) and proportion of time fixating the
+study materials (as a measure of initial encoding and attention), as
+well as their interaction, as predictors. The results of the regression
+analyses are presented in Table 1.",0.0,,generate-v-retrieve-analyses.Rmd,,"A multiple linear regression predicted immediate posttest performance on critical items (proportion correct) from learning condition (Generating Predictions vs. Retrieve), proportion of time fixating on the lesson materials, and their interaction. Standardized coefficients showed a positive main effect of being in the Retrieve condition (β = 0.42), a positive effect of greater fixation proportion (β = 0.63), and a significant negative interaction term (β = −0.57), indicating that the benefit of retrieval over prediction was larger at lower levels of attention and diminished at higher fixation levels.","For each participant, the proportion of time fixating to the lesson was then calculated (total fixation to lesson slide areas of interests/total lesson time).
+
+In line with our hypothesis and predictions that the benefit of generating predictions versus retrieval for learning will depend on attention control and initial encoding, we analyzed the independent and combined effects that lesson format (Generating Predictions vs. Retrieve) and encoding during the lesson have on immediate posttest performance using a regression model predicting posttest performance in the critical trials with condition (dummy-coded, Generate = 0, Retrieve = 1) and proportion of time fixating the study materials (as a measure of initial encoding and attention), as well as their interaction, as predictors.
+
+Immediate Posttest performance includes only critical trials.
+
+Note. Estimates are standardized.",,"data <- data[which(data$Pretest.Catch>.60),]
+
+m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+
+m1a <- lm(`Post.test.w.o.Fillers`~Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&data$Condition==""GENERATE"",])
+
+m1b <- lm(`Post.test.w.o.Fillers`~Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&data$Condition==""RETRIEVE"",])
+
+ggplot(data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&!is.na(data$Condition),], aes(x = `Total.Proportion.of.Fixation`, y = `Post.test.w.o.Fillers`,colour=Condition)) +geom_point(size = 4) + stat_smooth(method = ""lm"")",,0,
+8,variable specification,"In line with our hypothesis and predictions that the benefit of
+generating predictions versus retrieval for learning will depend on
+attention control and initial encoding, we analyzed the independent
+and combined effects that lesson format (Generating Predictions vs.
+Retrieve) and encoding during the lesson have on immediate
+posttest performance using a regression model predicting posttest
+performance in the critical trials with condition (dummy-coded,
+Generate = 0, Retrieve = 1) and proportion of time fixating the
+study materials (as a measure of initial encoding and attention), as
+well as their interaction, as predictors. The results of the regression
+analyses are presented in Table 1.",0.0,"# Effect of condition and lesson engagement on posttest performance
+
+```{r}
+m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+summary(m1)
+confint(m1)",generate-v-retrieve-analyses.Rmd:142-147,1,"A multiple linear regression predicted immediate posttest performance on critical items (proportion correct) from learning condition (Generating Predictions vs. Retrieve), proportion of time fixating on the lesson materials, and their interaction. Standardized coefficients showed a positive main effect of being in the Retrieve condition (β = 0.42), a positive effect of greater fixation proportion (β = 0.63), and a significant negative interaction term (β = −0.57), indicating that the benefit of retrieval over prediction was larger at lower levels of attention and diminished at higher fixation levels.","In line with our hypothesis and predictions that the beneýt of generating predictions versus retrieval for learning will depend on attention control and initial encoding, we analyzed the independent and combined effects that lesson format (Generating Predictions vs. Retrieve) and encoding during the lesson have on immediate posttest performance in the critical trials with condition (dummy-coded, Generate = 0, Retrieve = 1) and proportion of time fixating the study materials (as a measure of initial encoding and attention), as well as their interaction, as predictors.",,"m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+summary(m1)
+confint(m1)
+
+library(effectsize)
+effectsize(m1)
+library(car)
+vif(m1,type=c(""predictor""))
+
+library(sjPlot)
+library(ggplot2)
+interplot <- plot_model(m1, type = ""int"", mdrt.values = ""meansd"") 
+
+m1a <- lm(`Post.test.w.o.Fillers`~Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&data$Condition==""GENERATE"",])
+summary(m1a)
+confint(m1a)
+
+effectsize(m1a)
+
+m1b <- lm(`Post.test.w.o.Fillers`~Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&data$Condition==""RETRIEVE"",])
+summary(m1b)
+confint(m1b)
+
+effectsize(m1b)
+
+library(emmeans)
+EMM <- emmeans(m1, ~ Condition*Total.Proportion.of.Fixation, at = list(Total.Proportion.of.Fixation=c(0.41,0.57,0.73)))",,,
+8,transformation,"As a measure of initial activation/encoding during the lesson, we
+calculated for each child the proportion of time fixating on the lesson
+materials by dividing the fixation time by the total time in the lesson",0.0,,generate-v-retrieve-analyses.Rmd,,"A multiple linear regression predicted immediate posttest performance on critical items (proportion correct) from learning condition (Generating Predictions vs. Retrieve), proportion of time fixating on the lesson materials, and their interaction. Standardized coefficients showed a positive main effect of being in the Retrieve condition (β = 0.42), a positive effect of greater fixation proportion (β = 0.63), and a significant negative interaction term (β = −0.57), indicating that the benefit of retrieval over prediction was larger at lower levels of attention and diminished at higher fixation levels.","For each participant, the proportion of time fixating to the lesson was then calculated (total fixation to lesson slide areas of interests/total lesson time).
+
+In line with our hypothesis and predictions that the benefit of generating predictions versus retrieval for learning will depend on attention control and initial encoding, we analyzed the independent and combined effects that lesson format (Generating Predictions vs. Retrieve) and encoding during the lesson have on immediate posttest performance using a regression model predicting posttest performance in the critical trials with condition (dummy-coded, Generate = 0, Retrieve = 1) and proportion of time fixating the study materials (as a measure of initial encoding and attention), as well as their interaction, as predictors.
+
+Immediate Posttest performance includes only critical trials.
+
+Note. Estimates are standardized.",,"data <- data[which(data$Pretest.Catch>.60),]
+
+m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+
+m1a <- lm(`Post.test.w.o.Fillers`~Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&data$Condition==""GENERATE"",])
+
+m1b <- lm(`Post.test.w.o.Fillers`~Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&data$Condition==""RETRIEVE"",])
+
+ggplot(data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation)&!is.na(data$Condition),], aes(x = `Total.Proportion.of.Fixation`, y = `Post.test.w.o.Fillers`,colour=Condition)) +geom_point(size = 4) + stat_smooth(method = ""lm"")",,0,
+8,inference criterion,95% CI,2.0,"# Effect of condition and lesson engagement on posttest performance
+
+```{r}
+m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+summary(m1)
+confint(m1)",generate-v-retrieve-analyses.Rmd:142-147,1,"A multiple linear regression predicted immediate posttest performance on critical items (proportion correct) from learning condition (Generating Predictions vs. Retrieve), proportion of time fixating on the lesson materials, and their interaction. Standardized coefficients showed a positive main effect of being in the Retrieve condition (β = 0.42), a positive effect of greater fixation proportion (β = 0.63), and a significant negative interaction term (β = −0.57), indicating that the benefit of retrieval over prediction was larger at lower levels of attention and diminished at higher fixation levels.","As suggested by the graph in Figure 4 , children in the Retrieve group were more accurate in the critical trials of the immediate posttest (i.e., excluding the catch trials; M = 0.65, 95% CI [0.61, 0.68]) than in the Generating Predictions group ( M = 0.61, 95% CI [0.57, 0.64]), β = 0.42, t(67) = 2.33, p = .023, 95% CI [−0.05,0.89]. Moreover, overall, as seen in Figure 4, children who spent a larger proportion of time fixating on the lesson materials during the lesson were more accurate at the immediate posttest, β = 0.63, t(67) = 2.60, p = .011, 95% CI [0.15,1.12]. Critically, the interaction effect between condition and proportion of time fixating in the lesson on immediate posttest performance was also statistically significant, β = −0.57, t(67) = −2.04, p = .04, 95% CI [ −1.12, −0.01].",,"m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+summary(m1)
+confint(m1)
+
+library(effectsize)
+effectsize(m1)
+
+library(emmeans)
+EMM <- emmeans(m1, ~ Condition*Total.Proportion.of.Fixation, at = list(Total.Proportion.of.Fixation=c(0.41,0.57,0.73)))
+EMM
+
+pairs(EMM, simple = ""Condition"")    # compare treats for each dose -- ""simple effects""
+pairs(EMM, simple = ""Total.Proportion.of.Fixation"")",,1,1
+9,model specification,"This pattern of results was similar when we included age as a factor in
+all the other analyses reported: There was no significant interaction
+between age and condition on pre- or posttest. [...] In line with our hypothesis and predictions that the benefit of
+generating predictions versus retrieval for learning will depend on
+attention control and initial encoding, we analyzed the independent
+and combined effects that lesson format (Generating Predictions vs.
+Retrieve) and encoding during the lesson have on immediate
+posttest performance using a regression model predicting posttest
+performance in the critical trials with condition (dummy-coded,
+Generate = 0, Retrieve = 1) and proportion of time fixating the
+study materials (as a measure of initial encoding and attention), as
+well as their interaction, as predictors. The results of the regression
+analyses are presented in Table 1.",0.0,"# Effect of condition and lesson engagement on posttest performance
+
+```{r}
+m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+summary(m1)
+confint(m1)",generate-v-retrieve-analyses.Rmd:142-147,1,,,,,,,
+9,variable specification,"This pattern of results was similar when we included age as a factor in
+all the other analyses reported: There was no significant interaction
+between age and condition on pre- or posttest. [...] In line with our hypothesis and predictions that the benefit of
+generating predictions versus retrieval for learning will depend on
+attention control and initial encoding, we analyzed the independent
+and combined effects that lesson format (Generating Predictions vs.
+Retrieve) and encoding during the lesson have on immediate
+posttest performance using a regression model predicting posttest
+performance in the critical trials with condition (dummy-coded,
+Generate = 0, Retrieve = 1) and proportion of time fixating the
+study materials (as a measure of initial encoding and attention), as
+well as their interaction, as predictors. The results of the regression
+analyses are presented in Table 1.",0.0,"# age effects?
+m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+m_post_age <- lm(`Post.test.w.o.Fillers`~Condition*FIXED.GRADE.LEVEL,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+summary(m_post_age)
+library(effectsize)
+effectsize(m_post_age)
+confint(m_post_age)",generate-v-retrieve-analyses.Rmd:186-192,1,,,,,,,
+9,transformation,,,,generate-v-retrieve-analyses.Rmd,,,,,,,,
+9,variable specification,"In line with our hypothesis and predictions that the benefit of
+generating predictions versus retrieval for learning will depend on
+attention control and initial encoding, we analyzed the independent
+and combined effects that lesson format (Generating Predictions vs.
+Retrieve) and encoding during the lesson have on immediate
+posttest performance using a regression model predicting posttest
+performance in the critical trials with condition (dummy-coded,
+Generate = 0, Retrieve = 1) and proportion of time fixating the
+study materials (as a measure of initial encoding and attention), as
+well as their interaction, as predictors. The results of the regression
+analyses are presented in Table 1.",0.0,"# age effects?
+m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+m_post_age <- lm(`Post.test.w.o.Fillers`~Condition*FIXED.GRADE.LEVEL,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+summary(m_post_age)
+library(effectsize)
+effectsize(m_post_age)
+confint(m_post_age)",generate-v-retrieve-analyses.Rmd:186-192,1,,,,,,,
+9,transformation,,,,generate-v-retrieve-analyses.Rmd,,,,,,,,
+9,variable specification,"In line with our hypothesis and predictions that the benefit of
+generating predictions versus retrieval for learning will depend on
+attention control and initial encoding, we analyzed the independent
+and combined effects that lesson format (Generating Predictions vs.
+Retrieve) and encoding during the lesson have on immediate
+posttest performance using a regression model predicting posttest
+performance in the critical trials with condition (dummy-coded,
+Generate = 0, Retrieve = 1) and proportion of time fixating the
+study materials (as a measure of initial encoding and attention), as
+well as their interaction, as predictors. The results of the regression
+analyses are presented in Table 1.",0.0,"# age effects?
+m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+m_post_age <- lm(`Post.test.w.o.Fillers`~Condition*FIXED.GRADE.LEVEL,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+summary(m_post_age)
+library(effectsize)
+effectsize(m_post_age)
+confint(m_post_age)",generate-v-retrieve-analyses.Rmd:186-192,1,,,,,,,
+9,transformation,"In line with our hypothesis and predictions that the benefit of
+generating predictions versus retrieval for learning will depend on
+attention control and initial encoding, we analyzed the independent
+and combined effects that lesson format (Generating Predictions vs.
+Retrieve) and encoding during the lesson have on immediate
+posttest performance using a regression model predicting posttest
+performance in the critical trials with condition (dummy-coded,
+Generate = 0, Retrieve = 1) and proportion of time fixating the
+study materials (as a measure of initial encoding and attention), as
+well as their interaction, as predictors. The results of the regression
+analyses are presented in Table 1.",0.0,,generate-v-retrieve-analyses.Rmd,,,,,,,,
+9,variable specification,"In line with our hypothesis and predictions that the benefit of
+generating predictions versus retrieval for learning will depend on
+attention control and initial encoding, we analyzed the independent
+and combined effects that lesson format (Generating Predictions vs.
+Retrieve) and encoding during the lesson have on immediate
+posttest performance using a regression model predicting posttest
+performance in the critical trials with condition (dummy-coded,
+Generate = 0, Retrieve = 1) and proportion of time fixating the
+study materials (as a measure of initial encoding and attention), as
+well as their interaction, as predictors. The results of the regression
+analyses are presented in Table 1.",0.0,"# age effects?
+m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+m_post_age <- lm(`Post.test.w.o.Fillers`~Condition*FIXED.GRADE.LEVEL,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+summary(m_post_age)
+library(effectsize)
+effectsize(m_post_age)
+confint(m_post_age)",generate-v-retrieve-analyses.Rmd:186-192,1,,,,,,,
+9,transformation,"As a measure of initial activation/encoding during the lesson, we
+calculated for each child the proportion of time fixating on the lesson
+materials by dividing the fixation time by the total time in the lesson",0.0,,generate-v-retrieve-analyses.Rmd,,,,,,,,
+9,inference criterion,95% CI,2.0,"# age effects?
+m1 <- lm(`Post.test.w.o.Fillers`~Condition*Total.Proportion.of.Fixation,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+m_post_age <- lm(`Post.test.w.o.Fillers`~Condition*FIXED.GRADE.LEVEL,data=data[data$Gaze.Sample>.50&!is.na(data$Total.Proportion.of.Fixation),])
+summary(m_post_age)
+library(effectsize)
+effectsize(m_post_age)
+confint(m_post_age)",generate-v-retrieve-analyses.Rmd:186-192,1,,,,,,,

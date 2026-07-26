@@ -1,0 +1,212 @@
+---
+title: "Full Simulation Data"
+author: "Anna Wittmann"
+date: today
+format:
+  html:
+    code-fold: false
+    highlight-style: haddock
+    theme: flatly
+    toc: true
+    toc-location: left
+execute:
+  warning: false
+  message: false
+---
+
+# Dependencies and setup
+
+```{r}
+
+library(tidyr)
+library(dplyr)
+library(purrr) 
+library(Matrix)
+library(lme4)
+library(tibble)
+
+# remove all objects from environment 
+rm(list = ls())
+
+# set seed
+set.seed(42)
+
+# Turn off scientific notation globally
+options(scipen = 999)
+
+```
+
+# Function for simulation data
+
+```{r}
+
+generated_data <- function(n_papers, # papers per sample
+                           effect_size, # true rate of agreement [0:1]
+                           paper_random_effect) { # used as sd of the normal distribution where the paper specific effects (paper_effect) are drawn from
+  
+  require(tibble)
+
+  # Decimal number to log odds
+  fixed_log_odds <- qlogis(effect_size) 
+
+  analyses_per_paper <- pmax(1, round(rnorm(n_papers, # pmax simulates analyses p.p., every paper min 1 analysis
+                                            mean = 38.5, # piloting: elson2020 49 and anvari2023 had 28 anaalyses p. p. -> mean = 38.5
+                                            sd = 10.5))) # piloting values: srt(((49-38.5)^2+(28-38.5)^2)/2)
+  
+  # Total number of obs per sample
+  n_obs <- sum(analyses_per_paper)
+  
+  
+  # Create paper ID vector 
+  paper_ids <- rep(1:n_papers, times = analyses_per_paper) # one id per paper & id repeated as many times as number of analyses p. p.
+  
+  # Simulate random intercepts for papers - similarity in analyses from the same paper that is not due to chance
+  paper_effects <- rnorm(n_papers,
+                         mean = 0, 
+                         sd = paper_random_effect)
+  
+  # Assign random intercept to each observation
+  log_odds <- fixed_log_odds + 
+              paper_effects[paper_ids] # all observations belonging to the same paper get assigned the same random intercept 
+  
+  # Get probabilities 
+  probs <- plogis(log_odds) # log odds -> prob
+  
+  # Simulate binary outcome
+  agree <- rbinom(n_obs, size = 1, 
+                  prob = probs)
+  
+  # Tibble containing paper_id and agreement 
+  sim_data <- tibble(
+    paper_id = factor(paper_ids),
+    agree = agree)
+  
+  return(sim_data)
+}
+
+```
+
+# Analysis function
+
+```{r}
+
+# Fit model
+analyze_prob_intercept <- function(data)  {
+  
+  model <- glmer(agree ~ 1 + (1 | paper_id), # random intercept but NOT slope per paper_id
+                 data = data,
+                 family = binomial) # agree: 1/0
+
+  # Back-transform fixed effect to probability
+  # fixed effect is an estimate for the expected agreement between raters of a randomly selected paper from the whole population of papers
+  res <- tibble(probability_intercept = plogis(fixef(model)[1]), #converts the log odds of the fixed effect intercept
+                intercept = fixef(model)[1]) # takes estimated intercept of fixed effect 
+  
+  return(res)
+}
+           
+```
+
+# Expand parameters
+
+```{r}
+
+parameters <- function(x) {
+  res <- expand.grid(
+            sample_size = seq(40, 100, 10),
+            effect_size = seq(.1, .9, .1), # target probability of agreement
+            paper_random_effect = seq(.1, .9, .2),
+            replication = 1:x)                     # x = number of replications
+  return(res)
+}
+
+experiment_parameters_qmd <- parameters(2000)
+
+```
+
+# Full simulation function
+
+```{r}
+
+full_simulation <- function(x) {
+  # data frame with col for each parameter and parameter combinations as values
+  res <- expand.grid(
+            sample_size = seq(40, 100, 10),
+            effect_size = seq(.1, .9, .1),
+            paper_random_effect = seq(.1, .9, .2),
+            replication = 1:x)  |>
+    # add col containing nested generated data for each parameter combination
+    mutate(generated_data = pmap(list(sample_size,
+                                    effect_size,
+                                    paper_random_effect),
+                               generated_data)) |> 
+    # add intercept analysis to res
+    mutate(results = pmap(list(generated_data),      
+                        analyze_prob_intercept)) |>
+    # unnest analysis results
+    unnest(results)   
+  
+  return(res)
+}
+```
+
+# Run and save full simulation
+
+```{r}
+#run simulation
+full_simulation_unnested <- full_simulation(2000) # x <=> n publications/parameter combination
+
+#save results
+saveRDS(full_simulation_unnested, "../data/raw/precision_analysis/full_simulation_unnested.rds" )
+message("Simulation completed and saved.")
+```
+
+# Estimate CIs
+
+```{r}
+
+# assess precision of fixed effect estimation with quantile based CIs (not Monte Carlo standard errors)
+simulation_ci_estimates <- full_simulation_unnested %>% 
+  
+  # group by uniuqe parameter combination
+  group_by(sample_size, 
+           effect_size, 
+           paper_random_effect) %>% 
+  
+  # calculate respective mean for each replication & quantile based CIs & their delta
+  summarize(mean_prob = mean(probability_intercept),
+    
+            prob_q025 = quantile(probability_intercept, 0.025), 
+    
+            prob_q975 = quantile(probability_intercept, 0.975), 
+    
+            ci_width_prob = prob_q975 - prob_q025, 
+            
+            .groups = "drop") # ungroup
+
+
+    # # now the same for log values
+    # mean_intercept = mean(intercept),
+    # 
+    # intercept_q025 = quantile(intercept, 0.025),
+    # 
+    # intercept_q975 = quantile(intercept, 0.975),
+    # 
+    # ci_width_intercept = intercept_q975 - intercept_q025, # not okay, since logit is non linear and gets distorted when back transformed to probabilities 
+    
+
+```
+
+
+# Save simulation CI estimates
+
+```{r}
+saveRDS(simulation_ci_estimates, "../data/raw/precision_analysis/simulation_ci_estimates.rds")
+message("Simulation abgeschlossen und Summary gespeichert.")
+```
+
+# Session info
+
+```{r}
+sessionInfo()
+```
