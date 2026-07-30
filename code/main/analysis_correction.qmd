@@ -45,13 +45,13 @@ library(tibble)
 df_base <- read_csv("../../data/raw/main/codebot/output/all_papers.csv")
 
 # read in processed main data from combined reports
-df <- read_rds("../../data/processed/res_main.rds")
+df <- read_rds("../../data/processed/main/res_main_correction1.rds")
 
 # load all necessary data frames for Q4
-carvalho <- read_csv("../../data/raw/main/codebot/output/carvalho.csv")
-nguyen <- read_csv("../../data/raw/main/codebot/output/nguyen.csv")
-cha <- read_csv("../../data/raw/main/codebot/output/cha.csv")
-helm <- read_csv("../../data/raw/main/codebot/output/helm.csv")
+#carvalho <- read_csv("../../data/raw/main/codebot/output/carvalho.csv")
+#nguyen <- read_csv("../../data/raw/main/codebot/output/nguyen.csv")
+#cha <- read_csv("../../data/raw/main/codebot/output/cha.csv")
+#helm <- read_csv("../../data/raw/main/codebot/output/helm.csv")
 ```
 
 # Taking a Look at the Combined Reports Data
@@ -215,7 +215,8 @@ both_na <- df %>%
 
 model <- df %>% 
   # exclude data, see processing
-  filter(exclude == FALSE & !is.na(codebot_human_agreement))%>% 
+  filter(exclude == FALSE & codebot_human_agreement %in% c(1,0)) |> 
+  #filter(exclude == FALSE & !is.na(codebot_human_agreement))%>% 
   # rename variable to match preregistered formula
   rename(agree = codebot_human_agreement) %>% 
   glmer(agree ~ 1 + (1|paper_id),

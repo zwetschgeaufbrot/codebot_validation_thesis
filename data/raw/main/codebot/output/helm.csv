@@ -1,0 +1,1332 @@
+paper_id,analysis_id,brief_description,dimension,paper_value,code_value,match_status,explanation,paper_evidence,code_evidence
+helm,1,"Binary logistic regression in the mock crime study testing identification accuracy (correct vs. incorrect) as a function of participant race (White, Black), lineup race (White, Black), and their interaction. Using the full N=209 sample, the participant race × lineup race interaction was significant (B=1.38, SE=0.63, Wald=4.84, p=.03, OR=3.97), indicating a cross-race effect primarily for White participants.",Model Specification,"To examine whether people were more accurate at identifying a perpetrator of their race than a perpetrator of another race, we conducted a binary logistic regression on identification accuracy (correct vs. incorrect) with participant race (White, Black), lineup race (White, Black), and the interaction between participant race and lineup race as predictors.","## ACCURACY ANALYSES
+# binary logistic regression - target race and participant race only
+acc_glm = glm(Accuracy ~ Target_race*Participant_race, family = ""binomial"", data = df)
+summary(acc_glm)
+exp(cbind(coef(acc_glm), confint(acc_glm)))",match,"The code implements a binary logistic regression with accuracy as the outcome and participant race, lineup/target race, and their interaction as predictors, matching the model described in the paper.",,
+helm,1,"Binary logistic regression in the mock crime study testing identification accuracy (correct vs. incorrect) as a function of participant race (White, Black), lineup race (White, Black), and their interaction. Using the full N=209 sample, the participant race × lineup race interaction was significant (B=1.38, SE=0.63, Wald=4.84, p=.03, OR=3.97), indicating a cross-race effect primarily for White participants.",Variable Specification,"To examine whether people were more accurate at identifying a perpetrator of their race than a perpetrator of another race, we conducted a binary logistic regression on identification accuracy (correct vs. incorrect) with participant race (White, Black), lineup race (White, Black), and the interaction between participant race and lineup race as predictors.","# set factors
+df$Participant_race = ifelse(df$Participant_race == 1, ""White"", ""Black"")
+df$Participant_race = as.factor(df$Participant_race)
+df = within(df, Participant_race <- relevel(Participant_race, ref = ""White""))
+...
+df$Target_race = as.factor(df$Target_race)
+df = within(df, Target_race <- relevel(Target_race, ref = ""White""))
+...
+## ACCURACY ANALYSES
+# binary logistic regression - target race and participant race only
+acc_glm = glm(Accuracy ~ Target_race*Participant_race, family = ""binomial"", data = df)
+summary(acc_glm)
+exp(cbind(coef(acc_glm), confint(acc_glm)))
+
+# target race
+glm_tr = wald.test(Sigma = vcov(acc_glm), b = coef(acc_glm), Terms = 2) 
+glm_tr
+
+# participant race x target race
+glm_ptr = wald.test(Sigma = vcov(acc_glm), b = coef(acc_glm), Terms = 4) 
+round(glm_ptr$result$chi2, 3)
+(emmeans(acc_glm, ~ pairwise ~ Target_race | Participant_race, type = ""response""))",match,"The code fits a binary logistic regression with accuracy as the outcome and participant race, lineup/target race, and their interaction as predictors, matching the paper’s description of the variables and their roles.",,
+helm,1,"Binary logistic regression in the mock crime study testing identification accuracy (correct vs. incorrect) as a function of participant race (White, Black), lineup race (White, Black), and their interaction. Using the full N=209 sample, the participant race × lineup race interaction was significant (B=1.38, SE=0.63, Wald=4.84, p=.03, OR=3.97), indicating a cross-race effect primarily for White participants.",Transformation Specification,"To examine whether people were more accurate at identifying a perpetrator of their race than a perpetrator of another race, we conducted a binary logistic regression on identification accuracy (correct vs. incorrect) with participant race (White, Black), lineup race (White, Black), and the interaction between participant race and lineup race as predictors. ... We ran the analysis on our entire sample, and a reduced sample with equal sample sizes for White and Black participants (i.e., 61 participants in each group).","# data
+df = read.csv(""RaceinEvaluationsofMemory_UnderlyingStimuli_FullDataset.csv"")
+df_red = read.csv(""RaceinEvaluationsofMemory_UnderlyingStimuli_Experiment1Set.csv"")
+
+# set factors
+df$Participant_race = ifelse(df$Participant_race == 1, ""White"", ""Black"")
+df$Participant_race = as.factor(df$Participant_race)
+df = within(df, Participant_race <- relevel(Participant_race, ref = ""White""))
+df %>% group_by(Participant_race) %>% tally() %>% ungroup()
+
+
+df$Target_race = as.factor(df$Target_race)
+df = within(df, Target_race <- relevel(Target_race, ref = ""White""))
+
+df$Lineup_type = ifelse(df$Participant_race == df$Target_race, ""Own-race"", ""Cross-race"")
+
+
+# full vs reduced sample
+df_red$Participant_race = ifelse(df_red$Participant_race == 1, ""White"", ""Black"")
+
+make_cre_summary = function(data){
+  data %>% group_by(Target_race, Participant_race) %>% 
+    summarise(correct = length(which(Accuracy == 1)), total_n = length(Accuracy), acc = (BinomCI(correct, total_n)[1])*100, lowCI = (BinomCI(correct, total_n)[2])*100, highCI = (BinomCI(correct, total_n)[3])*100, confidence = mean(ConfidenceinPick))
+}
+
+
+## ACCURACY ANALYSES
+# binary logistic regression - target race and participant race only
+acc_glm = glm(Accuracy ~ Target_race*Participant_race, family = ""binomial"", data = df)
+summary(acc_glm)
+exp(cbind(coef(acc_glm), confint(acc_glm)))",match,"The code applies only straightforward recoding of participant and target race and appears to implement the full-sample logistic regression as described, while also loading a reduced dataset consistent with the paper’s mention of a reduced, equal-sized sample. No additional data transformations beyond what is implied in the paper (race recoding and use of full vs. reduced sample) are evident in the snippet.",,
+helm,1,"Binary logistic regression in the mock crime study testing identification accuracy (correct vs. incorrect) as a function of participant race (White, Black), lineup race (White, Black), and their interaction. Using the full N=209 sample, the participant race × lineup race interaction was significant (B=1.38, SE=0.63, Wald=4.84, p=.03, OR=3.97), indicating a cross-race effect primarily for White participants.",Inference Specification,"The model revealed a significant interaction between participant race and lineup race (B = 1.38, SE = 0.63, Wald = 4.84, p = .03, odds ratio, OR = 3.97, 95% confidence interval [CI] [1.16, 13.65])... No other effects were significant (p > .05).","## ACCURACY ANALYSES
+# binary logistic regression - target race and participant race only
+acc_glm = glm(Accuracy ~ Target_race*Participant_race, family = ""binomial"", data = df)
+summary(acc_glm)
+exp(cbind(coef(acc_glm), confint(acc_glm)))
+
+# target race
+glm_tr = wald.test(Sigma = vcov(acc_glm), b = coef(acc_glm), Terms = 2) 
+glm_tr
+
+# participant race x target race
+glm_ptr = wald.test(Sigma = vcov(acc_glm), b = coef(acc_glm), Terms = 4) 
+round(glm_ptr$result$chi2, 3)
+(emmeans(acc_glm, ~ pairwise ~ Target_race | Participant_race, type = ""response""))",match,"Both the paper and code use standard null-hypothesis significance testing with p-values and 95% confidence intervals as the basis for inference, and treat effects with p < .05 as significant. There is no indication of any differing alpha level or alternative inferential criterion between the description and implementation.",,
+helm,2,"Binary logistic regression in the mock crime study identical to Analysis 1, but run on a reduced subsample with equal numbers of White and Black participants (61 per group). This model also examined identification accuracy (correct vs. incorrect) predicted by participant race, lineup race, and their interaction, and the key interaction effect between participant race and lineup race replicated the full-sample finding.",Model Specification,"To examine whether people were more accurate at identifying a perpetrator of their race than a perpetrator of another race, we conducted a binary logistic regression on identification accuracy (correct vs. incorrect) with participant race (White, Black), lineup race (White, Black), and the interaction between participant race and lineup race as predictors.","## ACCURACY ANALYSES
+# binary logistic regression - target race and participant race only
+acc_glm = glm(Accuracy ~ Target_race*Participant_race, family = ""binomial"", data = df)
+summary(acc_glm)
+exp(cbind(coef(acc_glm), confint(acc_glm)))",match,"The code implements a binary logistic regression with Accuracy as the outcome and participant/lineup (target) race and their interaction as predictors, which matches the described model specification in the paper.",,
+helm,2,"Binary logistic regression in the mock crime study identical to Analysis 1, but run on a reduced subsample with equal numbers of White and Black participants (61 per group). This model also examined identification accuracy (correct vs. incorrect) predicted by participant race, lineup race, and their interaction, and the key interaction effect between participant race and lineup race replicated the full-sample finding.",Variable Specification,"{""paper_value"": ""To examine whether people were more accurate at identifying a perpetrator of their race than a perpetrator of another race, we conducted a binary logistic regression on identification accuracy (correct vs. incorrect) with participant race (White, Black), lineup race (White, Black), and the interaction between participant race and lineup race as predictors. All analyses were conducted in R 4.2.3. We ran the analysis on our entire sample, and a reduced sample with equal sample sizes for White and Black participants (i.e., 61 participants in each group). We also ran the analysis including Target Presence and all two-way interactions with Target Presence as predictors."", ""evidence"": {""paper_span"": ""Design\nA mock crime study with a 2 (Witness race: White, Black) \u00d7 2 (Lineup race: White, Black) \u00d7 2 (Target presence: present, absent) between-subjects design.\n...\nIdentifying the CRE\nTo examine whether people were more accurate at identifying a perpetrator of their race than a perpetrator of another race, we conducted a\nbinary logistic regression on identi\u00ef\u00ac\u00bewcation accuracy (correct vs. incor-\nrect) with participant race (White, Black), lineup race (White, Black),\nand the interaction between participant race and lineup race as predic-\ntors. All analyses were conducted in R 4.2.3. We ran the analysis on\nour entire sample, and a reduced sample with equal sample sizes for\nWhite and Black participants (i.e., 61 participants in each group).\nWe also ran the analysis including Target Presence and all two-way\ninteractions with Target Presence as predictors. Our key \u00ef\u00ac\u00bwnding of\ninterest (the interaction between participant race and lineup race)\nwas replicated in both analyses. Full results of these analyses can be\nfound in S3 in the online supplemental materials.\nThe model revealed a signi\u00ef\u00ac\u00bfcant interaction between participant\nrace and lineup race ( B = 1.38, SE = 0.63, Wald = 4.84, p = .03,\nodds ratio, OR = 3.97, 95% con\u00ef\u00ac\u00bf dence interval [CI] [1.16,\n13.65])."", ""location"": ""Design subsection and Results – Mock Crime Study, 'Identifying the CRE', pp. 362–363""}}","df$Participant_race = ifelse(df$Participant_race == 1, ""White"", ""Black"")
+df$Participant_race = as.factor(df$Participant_race)
+df = within(df, Participant_race <- relevel(Participant_race, ref = ""White""))
+
+df$Target_race = as.factor(df$Target_race)
+df = within(df, Target_race <- relevel(Target_race, ref = ""White""))
+
+# binary logistic regression - target race and participant race only
+acc_glm = glm(Accuracy ~ Target_race*Participant_race, family = ""binomial"", data = df)",match,"The code uses identification Accuracy as the binary outcome and includes participant race, lineup/target race, and their interaction as predictors, matching the paper’s described model for this analysis. The variable roles and types align with the paper’s specification, even though lineup race is named Target_race in the code.",,
+helm,2,"Binary logistic regression in the mock crime study identical to Analysis 1, but run on a reduced subsample with equal numbers of White and Black participants (61 per group). This model also examined identification accuracy (correct vs. incorrect) predicted by participant race, lineup race, and their interaction, and the key interaction effect between participant race and lineup race replicated the full-sample finding.",Transformation Specification,"To examine whether people were more accurate at identifying a perpetrator of their race than a perpetrator of another race, we conducted a binary logistic regression on identification accuracy (correct vs. incorrect) with participant race (White, Black), lineup race (White, Black), and the interaction between participant race and lineup race as predictors. All analyses were conducted in R 4.2.3. We ran the analysis on our entire sample, and a reduced sample with equal sample sizes for White and Black participants (i.e., 61 participants in each group).",,unknown,"There is insufficient information about the code to determine whether the reduced, equal-sized subsample and any other transformations were implemented as described in the paper.",,
+helm,2,"Binary logistic regression in the mock crime study identical to Analysis 1, but run on a reduced subsample with equal numbers of White and Black participants (61 per group). This model also examined identification accuracy (correct vs. incorrect) predicted by participant race, lineup race, and their interaction, and the key interaction effect between participant race and lineup race replicated the full-sample finding.",Inference Specification,"The model revealed a significant interaction between participant
+race and lineup race ( B = 1.38, SE = 0.63, Wald = 4.84, p = .03,
+odds ratio, OR = 3.97, 95% confidence interval [CI] [1.16,
+13.65]). ... No other
+effects were significant ( p . .05).",,unknown,"The paper reports significance tests and confidence intervals, but there is no available code snippet to verify how these inferences were implemented. Without code details on p-value thresholds or CI computation, alignment cannot be assessed.",,
+helm,3,"Binary logistic regression in the mock crime study predicting identification accuracy (correct vs. incorrect) from participant race, lineup race, target presence (present vs. absent), and all two-way interactions involving target presence. The focal participant race × lineup race interaction remained significant in this expanded model, indicating the CRE effect persisted after accounting for whether the target was present in the lineup.",Model Specification,"To examine whether people were more accurate at identifying a perpetrator of their race than a perpetrator of another race, we conducted a binary logistic regression on identification accuracy (correct vs. incorrect) with participant race (White, Black), lineup race (White, Black), and the interaction between participant race and lineup race as predictors. ... We also ran the analysis including Target Presence and all two-way interactions with Target Presence as predictors.","## ACCURACY ANALYSES
+# binary logistic regression - target race and participant race only
+acc_glm = glm(Accuracy ~ Target_race*Participant_race, family = ""binomial"", data = df)
+summary(acc_glm)
+exp(cbind(coef(acc_glm), confint(acc_glm)))",mismatch,"The paper describes a binary logistic regression including Target Presence and all two-way interactions with Target Presence, but the provided code only includes participant race, target/lineup race, and their interaction as predictors.",,
+helm,3,"Binary logistic regression in the mock crime study predicting identification accuracy (correct vs. incorrect) from participant race, lineup race, target presence (present vs. absent), and all two-way interactions involving target presence. The focal participant race × lineup race interaction remained significant in this expanded model, indicating the CRE effect persisted after accounting for whether the target was present in the lineup.",Variable Specification,"To examine whether people were more accurate at identifying a perpetrator of their race than a perpetrator of another race, we conducted a binary logistic regression on identification accuracy (correct vs. incorrect) with participant race (White, Black), lineup race (White, Black), and the interaction between participant race and lineup race as predictors. … We also ran the analysis including Target Presence and all two-way interactions with Target Presence as predictors.","# set factors
+df$Participant_race = ifelse(df$Participant_race == 1, ""White"", ""Black"")
+df$Participant_race = as.factor(df$Participant_race)
+df = within(df, Participant_race <- relevel(Participant_race, ref = ""White""))
+
+df$Target_race = as.factor(df$Target_race)
+df = within(df, Target_race <- relevel(Target_race, ref = ""White""))
+
+
+## ACCURACY ANALYSES
+# binary logistic regression - target race and participant race only
+acc_glm = glm(Accuracy ~ Target_race*Participant_race, family = ""binomial"", data = df)
+summary(acc_glm)
+exp(cbind(coef(acc_glm), confint(acc_glm)))
+
+# target race
+glm_tr = wald.test(Sigma = vcov(acc_glm), b = coef(acc_glm), Terms = 2) 
+glm_tr
+
+# participant race x target race
+glm_ptr = wald.test(Sigma = vcov(acc_glm), b = coef(acc_glm), Terms = 4) 
+round(glm_ptr$result$chi2, 3)
+(emmeans(acc_glm, ~ pairwise ~ Target_race | Participant_race, type = ""response""))
+
+
+#follow up on white witnesses and target race
+ww_acc_glm = glm(Accuracy ~ Target_race, family = ""binomial"", data = df[df$Participant_race == ""White"",])
+summary(ww_acc_glm)
+
+ww_acc_wald = wald.test(Sigma = vcov(ww_acc_glm), b = coef(ww_acc_glm), Terms = 2) 
+round(ww_acc_wald$result$chi2, 3)
+exp(cbind(coef(ww_acc_glm), confint(ww_acc_glm)))
+
+
+#follow up on black witnesses and target race
+bw_acc_glm = glm(Accuracy ~ Target_race, family = ""binomial"", data = df[df$Participant_race == ""Black"",])
+summary(bw_acc_glm)
+
+bw_acc_wald = wald.test(Sigma = vcov(bw_acc_glm), b = coef(bw_acc_glm), Terms = 2) 
+round(bw_acc_wald$result$chi2, 3)
+exp(cbind(coef(bw_acc_glm), confint(bw_acc_glm)))",mismatch,"The paper describes a model including participant race, lineup/target race, target presence, and all two-way interactions with target presence, but the provided code only includes participant race, target race, and their interaction without any target presence variable or interactions involving it.",,
+helm,3,"Binary logistic regression in the mock crime study predicting identification accuracy (correct vs. incorrect) from participant race, lineup race, target presence (present vs. absent), and all two-way interactions involving target presence. The focal participant race × lineup race interaction remained significant in this expanded model, indicating the CRE effect persisted after accounting for whether the target was present in the lineup.",Transformation Specification,"To examine whether people were more accurate at identifying a perpetrator of their race than a perpetrator of another race, we conducted a binary logistic regression on identification accuracy (correct vs. incorrect) with participant race (White, Black), lineup race (White, Black), and the interaction between participant race and lineup race as predictors. All analyses were conducted in R 4.2.3. We ran the analysis on our entire sample, and a reduced sample with equal sample sizes for White and Black participants (i.e., 61 participants in each group). We also ran the analysis including Target Presence and all two-way interactions with Target Presence as predictors.","# recode variables
+df$TargetRace = ifelse(df$TargetRace == 1, ""White"", ""Black"")
+df$TargetPresence = ifelse(df$TargetPresence == 1, ""Present"", ""Absent"")
+df$Pick = ifelse(df$Pick == 0, ""Reject"", ""ID"")
+df$Witness_accuracy = ifelse(df$Witness_correct == 1 & df$Accuracy == 1, 1,
+                      ifelse(df$Witness_correct == 0 & df$Accuracy == 0, 1, 0))
+
+# Set reference levels
+df$Pick = as.factor(df$Pick)
+df$TargetRace = as.factor(df$TargetRace)
+df <- within(df, TargetRace <- relevel(TargetRace, ref = ""White""))
+df <- within(df, Pick <- relevel(Pick, ref = ""Reject""))
+
+### Binary logistic regression with target presence and target race ###
+br3 = glm(Accuracy ~ TargetRace*TargetPresence, data = df, family = ""binomial"")",match,"The code only applies straightforward recoding of categorical variables and defines a binary accuracy outcome consistent with the paper’s description of using identification accuracy (correct vs. incorrect), with no additional transformations that contradict the written method.",,
+helm,3,"Binary logistic regression in the mock crime study predicting identification accuracy (correct vs. incorrect) from participant race, lineup race, target presence (present vs. absent), and all two-way interactions involving target presence. The focal participant race × lineup race interaction remained significant in this expanded model, indicating the CRE effect persisted after accounting for whether the target was present in the lineup.",Inference Specification,"We also ran the analysis including Target Presence and all two-way interactions with Target Presence as predictors. Our key finding of interest (the interaction between participant race and lineup race) was replicated in both analyses. Full results of these analyses can be found in S3 in the online supplemental materials.
+
+The model revealed a significant interaction between participant race and lineup race ( B = 1.38, SE = 0.63, Wald = 4.84, p = .03, odds ratio, OR = 3.97, 95% confidence interval [CI] [1.16,
+13.65]).
+...
+No other
+effects were significant ( p > .05).","## ACCURACY ANALYSES
+# binary logistic regression - target race and participant race only
+acc_glm = glm(Accuracy ~ Target_race*Participant_race, family = ""binomial"", data = df)
+summary(acc_glm)
+exp(cbind(coef(acc_glm), confint(acc_glm)))
+
+# target race
+glm_tr = wald.test(Sigma = vcov(acc_glm), b = coef(acc_glm), Terms = 2) 
+glm_tr
+",match,"Both the paper and code use Wald tests, p-values with an implicit α = .05 threshold for significance, and 95% confidence intervals for inference. The code’s use of glm with Wald tests and default 95% CIs aligns with the inferential criteria described in the paper.",,
+helm,4,"Simple-effect logistic regression (or contrast within the main model) among White participants in the mock crime study, testing the effect of lineup race (same-race White lineup vs. cross-race Black lineup) on identification accuracy. White participants were significantly more accurate with White lineups than Black lineups (B = -1.34, SE=0.35, Wald=15.00, p<.001, OR=0.26), evidencing a strong cross-race effect for White witnesses.",Model Specification,"To examine whether people were more accurate at identifying a perpetrator of their race than a perpetrator of another race, we conducted a binary logistic regression on identification accuracy (correct vs. incorrect) with participant race (White, Black), lineup race (White, Black), and the interaction between participant race and lineup race as predictors.","## ACCURACY ANALYSES
+# binary logistic regression - target race and participant race only
+acc_glm = glm(Accuracy ~ Target_race*Participant_race, family = ""binomial"", data = df)
+summary(acc_glm)
+exp(cbind(coef(acc_glm), confint(acc_glm)))
+
+#follow up on white witnesses and target race
+ww_acc_glm = glm(Accuracy ~ Target_race, family = ""binomial"", data = df[df$Participant_race == ""White"",])
+summary(ww_acc_glm)
+
+ww_acc_wald = wald.test(Sigma = vcov(ww_acc_glm), b = coef(ww_acc_glm), Terms = 2) 
+round(ww_acc_wald$result$chi2, 3)
+exp(cbind(coef(ww_acc_glm), confint(ww_acc_glm)))",match,"The code runs a binary logistic regression on accuracy with participant race, target (lineup) race, and their interaction, and then follows up with a logistic regression restricted to White participants predicting accuracy from target race, which matches the described analysis. ",,
+helm,4,"Simple-effect logistic regression (or contrast within the main model) among White participants in the mock crime study, testing the effect of lineup race (same-race White lineup vs. cross-race Black lineup) on identification accuracy. White participants were significantly more accurate with White lineups than Black lineups (B = -1.34, SE=0.35, Wald=15.00, p<.001, OR=0.26), evidencing a strong cross-race effect for White witnesses.",Variable Specification,"To examine whether people were more accurate at identifying a perpetrator of their race than a perpetrator of another race, we conducted a binary logistic regression on identification accuracy (correct vs. incorrect) with participant race (White, Black), lineup race (White, Black), and the interaction between participant race and lineup race as predictors. ... Consistent with previous research on the CRE, White participants were more likely to make an accurate identification decision when the lineup members were the same race as themselves (MWhite lineup = 0.66, 95% CI [0.55, 0.76], SE = 0.05) than when the lineup members were a different race to themselves (MBlack lineup = 0.33, 95% CI [0.23, 0.45], SE = 0.06; B =− 1.34, SE = 0.35, Wald = 15.00, p , .001, OR = 0.26, 95% CI [0.13, 0.51]).","df$Participant_race = ifelse(df$Participant_race == 1, ""White"", ""Black"")
+df$Participant_race = as.factor(df$Participant_race)
+df = within(df, Participant_race <- relevel(Participant_race, ref = ""White""))
+
+df$Target_race = as.factor(df$Target_race)
+df = within(df, Target_race <- relevel(Target_race, ref = ""White""))
+
+# binary logistic regression - target race and participant race only
+acc_glm = glm(Accuracy ~ Target_race*Participant_race, family = ""binomial"", data = df)
+
+#follow up on white witnesses and target race
+ww_acc_glm = glm(Accuracy ~ Target_race, family = ""binomial"", data = df[df$Participant_race == ""White"",])",match,"The code uses identification accuracy as the binary outcome and race variables (participant race and target/lineup race, plus their interaction) as predictors, and then fits a simple-effect model among White participants with lineup/target race as the predictor, matching the paper’s description. The designation of variables and their roles in the logistic regressions align with the reported analysis for White participants.",,
+helm,4,"Simple-effect logistic regression (or contrast within the main model) among White participants in the mock crime study, testing the effect of lineup race (same-race White lineup vs. cross-race Black lineup) on identification accuracy. White participants were significantly more accurate with White lineups than Black lineups (B = -1.34, SE=0.35, Wald=15.00, p<.001, OR=0.26), evidencing a strong cross-race effect for White witnesses.",Transformation Specification,"To examine whether people were more accurate at identifying a perpetrator of their race than a perpetrator of another race, we conducted a binary logistic regression on identification accuracy (correct vs. incorrect) with participant race (White, Black), lineup race (White, Black), and the interaction between participant race and lineup race as predictors. All analyses were conducted in R 4.2.3. We ran the analysis on our entire sample, and a reduced sample with equal sample sizes for White and Black participants (i.e., 61 participants in each group). We also ran the analysis including Target Presence and all two-way interactions with Target Presence as predictors.","# data
+df = read.csv(""RaceinEvaluationsofMemory_UnderlyingStimuli_FullDataset.csv"")
+
+# set factors
+df$Participant_race = ifelse(df$Participant_race == 1, ""White"", ""Black"")
+df$Participant_race = as.factor(df$Participant_race)
+df = within(df, Participant_race <- relevel(Participant_race, ref = ""White""))
+
+df$Target_race = as.factor(df$Target_race)
+df = within(df, Target_race <- relevel(Target_race, ref = ""White""))
+
+df$Lineup_type = ifelse(df$Participant_race == df$Target_race, ""Own-race"", ""Cross-race"")
+
+## ACCURACY ANALYSES
+# binary logistic regression - target race and participant race only
+acc_glm = glm(Accuracy ~ Target_race*Participant_race, family = ""binomial"", data = df)
+...
+#follow up on white witnesses and target race
+ww_acc_glm = glm(Accuracy ~ Target_race, family = ""binomial"", data = df[df$Participant_race == ""White"",])",match,"The code applies the same transformation described in the paper by subsetting to White participants and comparing accuracy across target/lineup race, with only standard factor recoding applied. No additional unreported data transformations relevant to this simple-effect analysis are evident.",,
+helm,4,"Simple-effect logistic regression (or contrast within the main model) among White participants in the mock crime study, testing the effect of lineup race (same-race White lineup vs. cross-race Black lineup) on identification accuracy. White participants were significantly more accurate with White lineups than Black lineups (B = -1.34, SE=0.35, Wald=15.00, p<.001, OR=0.26), evidencing a strong cross-race effect for White witnesses.",Inference Specification,"The model revealed a significant interaction between participant race and lineup race ( B = 1.38, SE = 0.63, Wald = 4.84, p = .03, odds ratio, OR = 3.97, 95% confidence interval [CI] [1.16, 13.65]). Consistent with previous research on the CRE, White participants were more likely to make an accurate identification decision when the lineup members were the same race as themselves (MWhite lineup = 0.66, 95% CI [0.55, 0.76], SE = 0.05) than when the lineup members were a different race to themselves (MBlack lineup = 0.33, 95% CI [0.23, 0.45], SE = 0.06; B =− 1.34, SE = 0.35, Wald = 15.00, p < .001, OR = 0.26, 95% CI [0.13, 0.51]).","#follow up on white witnesses and target race
+ww_acc_glm = glm(Accuracy ~ Target_race, family = ""binomial"", data = df[df$Participant_race == ""White"",])
+summary(ww_acc_glm)
+
+ww_acc_wald = wald.test(Sigma = vcov(ww_acc_glm), b = coef(ww_acc_glm), Terms = 2) 
+round(ww_acc_wald$result$chi2, 3)
+exp(cbind(coef(ww_acc_glm), confint(ww_acc_glm)))",match,"The code uses a Wald chi-square test and 95% confidence intervals for the logistic regression, consistent with the paper’s reporting of a Wald statistic, p-value, odds ratio, and 95% CI to draw inferences about the effect of lineup race among White participants.",,
+helm,5,"Simple-effect logistic regression (or contrast within the main model) among Black participants in the mock crime study, testing the effect of lineup race (same-race Black vs. cross-race White lineup) on identification accuracy. Accuracy for Black participants did not significantly differ between same-race and cross-race lineups (B=0.03, SE=0.52, Wald=0.004, p=.95, OR=1.03), indicating no detectable CRE in this subgroup.",Model Specification,"To examine whether people were more accurate at identifying a perpetrator of their race than a perpetrator of another race, we conducted a binary logistic regression on identification accuracy (correct vs. incorrect) with participant race (White, Black), lineup race (White, Black), and the interaction between participant race and lineup race as predictors.","## ACCURACY ANALYSES
+# binary logistic regression - target race and participant race only
+acc_glm = glm(Accuracy ~ Target_race*Participant_race, family = ""binomial"", data = df)
+summary(acc_glm)
+exp(cbind(coef(acc_glm), confint(acc_glm)))
+
+...
+
+#follow up on black witnesses and target race
+bw_acc_glm = glm(Accuracy ~ Target_race, family = ""binomial"", data = df[df$Participant_race == ""Black"",])
+summary(bw_acc_glm)
+
+bw_acc_wald = wald.test(Sigma = vcov(bw_acc_glm), b = coef(bw_acc_glm), Terms = 2) 
+round(bw_acc_wald$result$chi2, 3)
+exp(cbind(coef(bw_acc_glm), confint(bw_acc_glm)))",match,"Both the paper and the code use binary logistic regression on identification accuracy with target/lineup race and participant race, and the simple-effect analysis among Black participants is implemented as a logistic regression of accuracy on target race within the Black subset. This matches the described model specification for testing the effect of lineup race on accuracy among Black participants.",,
+helm,5,"Simple-effect logistic regression (or contrast within the main model) among Black participants in the mock crime study, testing the effect of lineup race (same-race Black vs. cross-race White lineup) on identification accuracy. Accuracy for Black participants did not significantly differ between same-race and cross-race lineups (B=0.03, SE=0.52, Wald=0.004, p=.95, OR=1.03), indicating no detectable CRE in this subgroup.",Variable Specification,"To examine whether people were more accurate at identifying a perpetrator of their race than a perpetrator of another race, we conducted a binary logistic regression on identification accuracy (correct vs. incorrect) with participant race (White, Black), lineup race (White, Black), and the interaction between participant race and lineup race as predictors. However, Black participants ( MWhite lineup = 0.59, 95% CI [0.40, 0.75], SE = 0.09; MBlack lineup = 0.59, 95% CI [0.42, 0.75]), were not significantly more likely to make a correct identification decision in same-race lineups than in cross-race lineups (B = 0.03, SE = 0.52, Wald = 0.004, p = .95, OR = 1.03, 95% CI [0.37, 2.88]).","# set factors
+df$Participant_race = ifelse(df$Participant_race == 1, ""White"", ""Black"")
+df$Participant_race = as.factor(df$Participant_race)
+df = within(df, Participant_race <- relevel(Participant_race, ref = ""White""))
+...
+
+df$Target_race = as.factor(df$Target_race)
+df = within(df, Target_race <- relevel(Target_race, ref = ""White""))
+...
+
+## ACCURACY ANALYSES
+# binary logistic regression - target race and participant race only
+acc_glm = glm(Accuracy ~ Target_race*Participant_race, family = ""binomial"", data = df)
+...
+
+#follow up on black witnesses and target race
+bw_acc_glm = glm(Accuracy ~ Target_race, family = ""binomial"", data = df[df$Participant_race == ""Black"",])",match,"The code uses identification accuracy as the binary outcome and models target/lineup race as the predictor within the subset of Black participants, matching the paper’s description of testing the effect of lineup race on accuracy among Black participants. Participant race is used to subset to Black witnesses, consistent with the simple-effect analysis described.",,
+helm,5,"Simple-effect logistic regression (or contrast within the main model) among Black participants in the mock crime study, testing the effect of lineup race (same-race Black vs. cross-race White lineup) on identification accuracy. Accuracy for Black participants did not significantly differ between same-race and cross-race lineups (B=0.03, SE=0.52, Wald=0.004, p=.95, OR=1.03), indicating no detectable CRE in this subgroup.",Transformation Specification,"To examine whether people were more accurate at identifying a perpetrator of their race than a perpetrator of another race, we conducted a binary logistic regression on identification accuracy (correct vs. incorrect) with participant race (White, Black), lineup race (White, Black), and the interaction between participant race and lineup race as predictors. All analyses were conducted in R 4.2.3. We ran the analysis on our entire sample, and a reduced sample with equal sample sizes for White and Black participants (i.e., 61 participants in each group).","# set factors
+df$Participant_race = ifelse(df$Participant_race == 1, ""White"", ""Black"")
+df$Participant_race = as.factor(df$Participant_race)
+df = within(df, Participant_race <- relevel(Participant_race, ref = ""White""))
+
+df$Target_race = as.factor(df$Target_race)
+df = within(df, Target_race <- relevel(Target_race, ref = ""White""))
+
+df$Lineup_type = ifelse(df$Participant_race == df$Target_race, ""Own-race"", ""Cross-race"")
+
+#follow up on black witnesses and target race
+bw_acc_glm = glm(Accuracy ~ Target_race, family = ""binomial"", data = df[df$Participant_race == ""Black"",])",match,"The code implements the analysis on a subset of Black participants and uses the perpetrator/target race as the predictor, which operationalizes same-race vs. cross-race lineups without additional undocumented data transformations. The only transformations are standard factor recoding/releveling and subsetting to Black participants, consistent with the paper’s description of conducting a simple-effect logistic regression among Black participants on lineup race and accuracy.",,
+helm,5,"Simple-effect logistic regression (or contrast within the main model) among Black participants in the mock crime study, testing the effect of lineup race (same-race Black vs. cross-race White lineup) on identification accuracy. Accuracy for Black participants did not significantly differ between same-race and cross-race lineups (B=0.03, SE=0.52, Wald=0.004, p=.95, OR=1.03), indicating no detectable CRE in this subgroup.",Inference Specification,"However, Black participants ( MWhite lineup = 0.59, 95% CI [0.40, 0.75], SE = 0.09; MBlack lineup = 0.59, 95% CI [0.42,
+0.75]), were not significantly more likely to make a correct identification decision in same-race lineups than in cross-race lineups
+(B = 0.03, SE = 0.52, Wald = 0.004, p = .95, OR = 1.03, 95%
+CI [0.37, 2.88]).","#follow up on black witnesses and target race
+bw_acc_glm = glm(Accuracy ~ Target_race, family = ""binomial"", data = df[df$Participant_race == ""Black"",])
+summary(bw_acc_glm)
+
+bw_acc_wald = wald.test(Sigma = vcov(bw_acc_glm), b = coef(bw_acc_glm), Terms = 2) 
+round(bw_acc_wald$result$chi2, 3)
+exp(cbind(coef(bw_acc_glm), confint(bw_acc_glm)))
+",match,"The paper reports Wald test statistics, p-values, and 95% confidence intervals, and the code computes a Wald test and exponentiated 95% confidence intervals from the logistic regression model, consistent with standard alpha = 0.05 inference. There is no indication of any alternative inference criteria in the paper that would conflict with the default 95% CIs and p-values used in the code.",,
+helm,6,"One-way ANOVA in Experiment 1 predicting assessors’ continuous ratings of the likelihood that an identification was correct (0–100) from witness race (White vs. Black), lineup race (White vs. Black), and assessor race (White vs. Black). The analysis found no significant witness race × lineup race interaction (F(1,1136)=0.00, p=.95), but revealed a significant main effect of witness race (Black witnesses’ decisions rated more accurate) and a significant assessor race × lineup race interaction where only Black assessors differentiated between White and Black lineups.",Model Specification,"First, in order to examine how assessor perceptions were influenced by race, and whether findings from existing mock jury work replicated in our data, we conducted an analysis of variance (ANOVA) using witness race (White, Black), lineup race (White, Black), and assessor race (White, Black) to predict the assessor rating of the likelihood an identification was correct.","## initial ANOVA on likelihood correct with race variables only
+a1 = ezANOVA(data = df, wid = ResponseId, dv = Likelihood_correct, between = c(Juror_race, Witness_race, Target_race), detailed = TRUE, return_aov = TRUE)
+a1_summary = data.frame(unclass(a1$ANOVA)) %>% mutate(F.value = round(F, 2), eta.sq.partial = round(ges, 3), mse = round(SSn, 2), p.value = round(p, 3)) %>% dplyr::select(Effect, DFn, DFd, F.value, p.value, mse, eta.sq.partial)
+a1_summary",match,"The paper describes a three-way ANOVA with assessor race, witness race, and lineup race predicting likelihood-correct ratings, and the code implements a between-subjects ANOVA with exactly these three race factors on the same DV. Thus, the model specification in the code aligns with the paper description.",,
+helm,6,"One-way ANOVA in Experiment 1 predicting assessors’ continuous ratings of the likelihood that an identification was correct (0–100) from witness race (White vs. Black), lineup race (White vs. Black), and assessor race (White vs. Black). The analysis found no significant witness race × lineup race interaction (F(1,1136)=0.00, p=.95), but revealed a significant main effect of witness race (Black witnesses’ decisions rated more accurate) and a significant assessor race × lineup race interaction where only Black assessors differentiated between White and Black lineups.",Variable Specification,"First, in order to examine how assessor perceptions were influenced by race, and whether findings from existing mock jury work replicated in our data, we conducted an analysis of variance (ANOVA) using witness race (White, Black), lineup race (White, Black), and assessor race (White, Black) to predict the assessor rating of the likelihood an identification was correct.","# Set factors
+df$Juror_race = as.factor(df$Juror_race)
+df$Witness_race = as.factor(df$Witness_race)
+df$Target_race = as.factor(df$Target_race)
+...
+## initial ANOVA on likelihood correct with race variables only
+a1 = ezANOVA(data = df, wid = ResponseId, dv = Likelihood_correct, between = c(Juror_race, Witness_race, Target_race), detailed = TRUE, return_aov = TRUE)
+...
+a1b = ezANOVA(data = b_jurors, wid = ResponseId, dv = Likelihood_correct, between = c(Target_race), detailed = TRUE, return_aov = TRUE)
+...
+a1w = ezANOVA(data = w_jurors, wid = ResponseId, dv = Likelihood_correct, between = c(Target_race), detailed = TRUE, return_aov = TRUE)",match,"The code uses assessor (Juror_race), witness (Witness_race), and lineup (Target_race) race as between-subject predictors of Likelihood_correct, matching the ANOVA description in the paper. Follow-up ANOVAs by assessor race on Target_race are consistent with probing the reported assessor race × lineup race interaction.",,
+helm,6,"One-way ANOVA in Experiment 1 predicting assessors’ continuous ratings of the likelihood that an identification was correct (0–100) from witness race (White vs. Black), lineup race (White vs. Black), and assessor race (White vs. Black). The analysis found no significant witness race × lineup race interaction (F(1,1136)=0.00, p=.95), but revealed a significant main effect of witness race (Black witnesses’ decisions rated more accurate) and a significant assessor race × lineup race interaction where only Black assessors differentiated between White and Black lineups.",Transformation Specification,"First, in order to examine how assessor perceptions were in ﬂu- enced by race, and whether ﬁndings from existing mock jury work replicated in our data, we conducted an analysis of variance (ANOV A) using witness race (White, Black), lineup race (White, Black), and assessor race (White, Black) to predict the assessor rat- ing of the likelihood an identi ﬁcation was correct. ... We also conducted a supplementary analysis identical to the ANOV A described above but with equal sample sizes of Black and White participants (including the ﬁrst 369 White participants when ranked alphabetically by Qualtrics response ID).","df <- read.csv(""RaceinEvaluationsofMemory_Experiment1Data.csv"")
+w_jurors = df %>% filter(Juror_race == ""White"")
+b_jurors = df %>% filter(Juror_race == ""Black"")
+
+# Set factors
+
+df$Juror_race = as.factor(df$Juror_race)
+df$Witness_race = as.factor(df$Witness_race)
+df$Target_race = as.factor(df$Target_race)
+df$Videos_seen = as.factor(df$Videos_seen)
+df$Witness_decision = as.factor(df$Witness_decision)
+df$Target_presence = as.factor(df$Target_presence)
+
+
+### MAIN ANALYSES ###
+
+## initial ANOVA on likelihood correct with race variables only
+
+a1 = ezANOVA(data = df, wid = ResponseId, dv = Likelihood_correct, between = c(Juror_race, Witness_race, Target_race), detailed = TRUE, return_aov = TRUE)
+
+a1b = ezANOVA(data = b_jurors, wid = ResponseId, dv = Likelihood_correct, between = c(Target_race), detailed = TRUE, return_aov = TRUE)
+
+a1w = ezANOVA(data = w_jurors, wid = ResponseId, dv = Likelihood_correct, between = c(Target_race), detailed = TRUE, return_aov = TRUE)",unknown,"The main ANOVA in both paper and code appears to use raw likelihood ratings without transformation, but the paper also describes a supplementary equal-sample-size analysis (369 White participants selected by Qualtrics ID) that is not visible in the provided code snippet, so correspondence on transformations cannot be fully assessed.",,
+helm,6,"One-way ANOVA in Experiment 1 predicting assessors’ continuous ratings of the likelihood that an identification was correct (0–100) from witness race (White vs. Black), lineup race (White vs. Black), and assessor race (White vs. Black). The analysis found no significant witness race × lineup race interaction (F(1,1136)=0.00, p=.95), but revealed a significant main effect of witness race (Black witnesses’ decisions rated more accurate) and a significant assessor race × lineup race interaction where only Black assessors differentiated between White and Black lineups.",Inference Specification,"The interaction between witness race and lineup race was not significant, F(1, 1,136) = 0.00, MSE = 2.03, p = .95, ηp² = .00), suggesting that participants were not sensitive to the CRE. This apparent lack of sensitivity to the CRE was supported by a follow-up Bayes Factor analysis, which revealed strong evidence to support the null hypothesis (i.e., no interaction between witness race and lineup race; BF = 0.09).","## initial ANOVA on likelihood correct with race variables only
+a1 = ezANOVA(data = df, wid = ResponseId, dv = Likelihood_correct, between = c(Juror_race, Witness_race, Target_race), detailed = TRUE, return_aov = TRUE)
+a1_summary = data.frame(unclass(a1$ANOVA)) %>% mutate(F.value = round(F, 2), eta.sq.partial = round(ges, 3), mse = round(SSn, 2), p.value = round(p, 3)) %>% dplyr::select(Effect, DFn, DFd, F.value, p.value, mse, eta.sq.partial)
+a1_summary",unknown,"The paper describes both frequentist (p-values, ηp²) and Bayes Factor inferences, but the provided code snippet only shows the ANOVA and p-value computation without any explicit alpha threshold or Bayes Factor analysis. It is therefore unclear whether the full inference specification in the paper (including Bayes Factors) is implemented in the code.",,
+helm,7,"Supplementary factorial ANOVA in Experiment 1 extending Analysis 6 by adding target presence (present vs. absent) and identification detail condition (Identification-only vs. Identification+Detail) as predictors of assessors’ likelihood ratings. A significant three-way interaction between lineup race, witness race, and target presence emerged, but this pattern did not correspond to appropriate sensitivity to the CRE (Black witnesses were rated more accurate than White witnesses in specific target-present/absent combinations).",Model Specification,"First, in order to examine how assessor perceptions were influenced by race, and whether findings from existing mock jury work replicated in our data, we conducted an analysis of variance (ANOV A) using witness race (White, Black), lineup race (White, Black), and assessor race (White, Black) to predict the assessor rating of the likelihood an identification was correct. This analysis was conducted in R 4.2.3 using the ez package. We also conducted a number of supplementary analyses. First, we conducted ANOV As identical to the one described above but one including target presence (Present, Absent) and identification detail (Identification, Identification + Detail) as additional predictors, and one including identification decision type (Identification or Rejection) as an additional predictor.",,unknown,There is not enough information about the actual code implementation to determine whether it matches the ANOVA model specification described in the paper.,,
+helm,7,"Supplementary factorial ANOVA in Experiment 1 extending Analysis 6 by adding target presence (present vs. absent) and identification detail condition (Identification-only vs. Identification+Detail) as predictors of assessors’ likelihood ratings. A significant three-way interaction between lineup race, witness race, and target presence emerged, but this pattern did not correspond to appropriate sensitivity to the CRE (Black witnesses were rated more accurate than White witnesses in specific target-present/absent combinations).",Variable Specification,"We also conducted a number of supplementary analyses. First, we conducted ANOVAs identical to the one described above but one including target presence (Present, Absent) and identification detail (Identification, Identification + Detail) as additional predictors, and one including identification decision type (Identification or Rejection) as an additional predictor.",,unknown,There is insufficient information about the actual code implementation to determine whether the variables and their roles match the paper’s description for this supplementary ANOVA.,,
+helm,7,"Supplementary factorial ANOVA in Experiment 1 extending Analysis 6 by adding target presence (present vs. absent) and identification detail condition (Identification-only vs. Identification+Detail) as predictors of assessors’ likelihood ratings. A significant three-way interaction between lineup race, witness race, and target presence emerged, but this pattern did not correspond to appropriate sensitivity to the CRE (Black witnesses were rated more accurate than White witnesses in specific target-present/absent combinations).",Transformation Specification,"First, they were asked ""how likely is it that the person you saw was correct in their decision?"" and gave a response on an 11-point scale ranging from 0 ( not at all likely ) to 100 ( very likely ) in increments of 10.
+
+""First, in order to examine how assessor perceptions were influenced by race, and whether findings from existing mock jury work replicated in our data, we conducted an analysis of variance (ANOVA) using witness race (White, Black), lineup race (White, Black), and assessor race (White, Black) to predict the assessor rating of the likelihood an identification was correct. This analysis was conducted in R 4.2.3 using the ez package. We also conducted a number of supplementary analyses. First, we conducted ANOVAs identical to the one described above but one including target presence (Present, Absent) and identification detail (Identification, Identification + Detail) as additional predictors, and one including identification decision type (Identification or Rejection) as an additional predictor. These analyses produced similar results to our primary analysis and are reported fully in S5 in the online supplemental materials, with relevant differences noted below. We also conducted a supplementary analysis identical to the ANOVA described above but with equal sample sizes of Black and White participants (including the first 369 White participants when ranked alphabetically by Qualtrics response ID).""",,unknown,There is insufficient information about the actual code implementation to determine whether any data transformations were applied that match the paper’s description for this analysis.,,
+helm,7,"Supplementary factorial ANOVA in Experiment 1 extending Analysis 6 by adding target presence (present vs. absent) and identification detail condition (Identification-only vs. Identification+Detail) as predictors of assessors’ likelihood ratings. A significant three-way interaction between lineup race, witness race, and target presence emerged, but this pattern did not correspond to appropriate sensitivity to the CRE (Black witnesses were rated more accurate than White witnesses in specific target-present/absent combinations).",Inference Specification,"Note, there was a significant interaction between lineup race, witness race, and target presence in our supplementary analysis controlling for target presence and identification detail, however, this effect did not demonstrate sensitivity to the CRE (Black witnesses were rated as more likely to be accurate than White witnesses in decisions relating to White target-absent lineups and Black target-present lineups; see S5 in the online supplemental materials).",,unknown,"There is no information about the specific inferential criteria (e.g., alpha level, decision rules) used in the code, so it is impossible to determine whether they match the paper’s description of a ‘significant’ interaction. The paper also does not explicitly state the precise inference specification beyond noting a significant interaction.",,
+helm,8,"Supplementary factorial ANOVA in Experiment 1 predicting assessors’ likelihood ratings from witness race, lineup race, assessor race, and identification decision type (identification vs. rejection). This analysis replicated the main pattern from Analysis 6 and was used to check whether the assessor race × lineup race interaction depended on whether the witness identified someone or rejected the lineup; the interaction with assessor race was not significant in this specification.",Model Specification,"We also conducted a number of supplementary analyses. First, we conducted ANOVAs identical to the one described above but one including target presence (Present, Absent) and identification detail (Identification, Identification + Detail) as additional predictors, and one including identification decision type (Identification or Rejection) as an additional predictor. These analyses produced similar results to our primary analysis and are reported fully in S5 in the online supplemental materials, with relevant differences noted below.",,unknown,"The paper describes a supplementary ANOVA including identification decision type as an additional predictor, but no corresponding code or model implementation details are provided to verify this specification.",,
+helm,8,"Supplementary factorial ANOVA in Experiment 1 predicting assessors’ likelihood ratings from witness race, lineup race, assessor race, and identification decision type (identification vs. rejection). This analysis replicated the main pattern from Analysis 6 and was used to check whether the assessor race × lineup race interaction depended on whether the witness identified someone or rejected the lineup; the interaction with assessor race was not significant in this specification.",Variable Specification,"First, in order to examine how assessor perceptions were inˏlu-
+enced by race, and whether ﬁndings from existing mock jury
+work replicated in our data, we conducted an analysis of variance
+(ANOV A) using witness race (White, Black), lineup race (White,
+Black), and assessor race (White, Black) to predict the assessor rat-
+ing of the likelihood an identi ﬁcation was correct. We also conducted
+a number of supplementary analyses. First, we conducted
+ANOV As identical to the one described above but one including
+target presence (Present, Absent) and identi ﬁcation detail
+(Identiﬁcation, Identi ﬁcation + Detail) as additional predictors,
+and one including identi ﬁcation decision type (Identi ﬁcation or
+Rejection) as an additional predictor.",,unknown,There is not enough information about the corresponding code to determine whether the variables in the implementation match the paper’s described ANOVA including identification decision type as an additional predictor.,,
+helm,8,"Supplementary factorial ANOVA in Experiment 1 predicting assessors’ likelihood ratings from witness race, lineup race, assessor race, and identification decision type (identification vs. rejection). This analysis replicated the main pattern from Analysis 6 and was used to check whether the assessor race × lineup race interaction depended on whether the witness identified someone or rejected the lineup; the interaction with assessor race was not significant in this specification.",Transformation Specification,"First, in order to examine how assessor perceptions were inï¬¿luenced by race, and whether ï¬¿indings from existing mock jury work replicated in our data, we conducted an analysis of variance (ANOV A) using witness race (White, Black), lineup race (White, Black), and assessor race (White, Black) to predict the assessor rating of the likelihood an identiï¬¿ication was correct. ... We also conducted a number of supplementary analyses. First, we conducted ANOV As identical to the one described above but one including target presence (Present, Absent) and identiï¬¿ication detail (Identiï¬¿ication, Identiï¬¿ication + Detail) as additional predictors, and one including identiï¬¿ication decision type (Identiï¬¿ication or Rejection) as an additional predictor. These analyses produced similar results to our primary analysis and are reported fully in S5 in the online supplemental materials, with relevant differences noted below.",,unknown,"There is no relevant code snippet provided for this analysis-dimension pairing, so it is not possible to determine whether any data transformations in the implementation match the paper’s description.",,
+helm,8,"Supplementary factorial ANOVA in Experiment 1 predicting assessors’ likelihood ratings from witness race, lineup race, assessor race, and identification decision type (identification vs. rejection). This analysis replicated the main pattern from Analysis 6 and was used to check whether the assessor race × lineup race interaction depended on whether the witness identified someone or rejected the lineup; the interaction with assessor race was not significant in this specification.",Inference Specification,"We also conducted a number of supplementary analyses. First, we conducted ANOVAs identical to the one described above but one including target presence (Present, Absent) and identification detail (Identification, Identification + Detail) as additional predictors, and one including identification decision type (Identification or Rejection) as an additional predictor. These analyses produced similar results to our primary analysis and are reported fully in S5 in the online supplemental materials, with relevant differences noted below. … However, the ANOVA did reveal one significant interaction involving assessor race (although note that this interaction was not significant in our ANOVA controlling for identification decision type, or in our ANOVA with equal numbers of Black and White participants).",,unknown,"The paper references supplementary ANOVAs and significance of interactions but does not specify explicit inference criteria, and no corresponding code or statistical thresholds are provided to compare against. Therefore it is not possible to determine whether the inference specification in the code matches that in the paper.",,
+helm,10,"Binary logistic regression in Experiment 1 predicting assessor accuracy (whether the assessor correctly judged the identification as accurate or inaccurate) from witness race (White vs. Black), assessor race (White vs. Black), lineup race (White vs. Black), and all two-way interactions. The model showed a strong witness race × lineup race interaction (B=2.09, SE=0.25, p<.001, OR=8.12), indicating assessors were much more accurate when evaluating same-race identifications than cross-race ones.",Model Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using witness race, assessor race, lineup race, and all two-way interactions between those factors to predict assessor accuracy.","### Binary logistic regression on juror accuracy with race variables only ###
+df <- within(df, Witness_race <- relevel(Witness_race, ref = ""White""))
+df <- within(df, Target_race <- relevel(Target_race, ref = ""White""))
+df <- within(df, Juror_race <- relevel(Juror_race, ref = ""White""))
+
+acc_glm <- glm(Juror_accuracy ~ Target_race + Juror_race + Witness_race + Juror_race:Witness_race + Juror_race:Target_race + Target_race:Witness_race, data = df, family = ""binomial"")
+summary(acc_glm)
+
+exp(cbind(coef(acc_glm), confint(acc_glm)))",match,"The code implements a binary logistic regression predicting assessor/juror accuracy from witness, assessor/juror, and lineup/target race with all two-way interactions, matching the paper’s model description.",,
+helm,10,"Binary logistic regression in Experiment 1 predicting assessor accuracy (whether the assessor correctly judged the identification as accurate or inaccurate) from witness race (White vs. Black), assessor race (White vs. Black), lineup race (White vs. Black), and all two-way interactions. The model showed a strong witness race × lineup race interaction (B=2.09, SE=0.25, p<.001, OR=8.12), indicating assessors were much more accurate when evaluating same-race identifications than cross-race ones.",Variable Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using witness race, assessor race, lineup race, and all two-way interactions between those factors to predict assessor accuracy. A correct assessment was either (a) identifying a witness who was correct in their identification decision as being correct or (b) identifying a witness who was incorrect in their identification decision as being incorrect.","df <- within(df, Witness_race <- relevel(Witness_race, ref = ""White""))
+df <- within(df, Target_race <- relevel(Target_race, ref = ""White""))
+df <- within(df, Juror_race <- relevel(Juror_race, ref = ""White""))
+
+acc_glm <- glm(Juror_accuracy ~ Target_race + Juror_race + Witness_race + Juror_race:Witness_race + Juror_race:Target_race + Target_race:Witness_race, data = df, family = ""binomial"")",match,"The code uses assessor accuracy as the binary outcome and includes witness race, assessor (juror) race, and lineup (target) race plus all two-way interactions as predictors, matching the paper’s description of the variables and their roles. The different labels (Juror vs. assessor, Target vs. lineup) are consistent in meaning with the paper’s constructs.",,
+helm,10,"Binary logistic regression in Experiment 1 predicting assessor accuracy (whether the assessor correctly judged the identification as accurate or inaccurate) from witness race (White vs. Black), assessor race (White vs. Black), lineup race (White vs. Black), and all two-way interactions. The model showed a strong witness race × lineup race interaction (B=2.09, SE=0.25, p<.001, OR=8.12), indicating assessors were much more accurate when evaluating same-race identifications than cross-race ones.",Transformation Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using witness race, assessor race, lineup race, and all two-way interactions between those factors to predict assessor accuracy. A correct assessment was either (a) identifying a witness who was correct in their identification decision as being correct or (b) identifying a witness who was incorrect in their identification decision as being incorrect.","df <- read.csv(""RaceinEvaluationsofMemory_Experiment1Data.csv"")
+w_jurors = df %>% filter(Juror_race == ""White"")
+b_jurors = df %>% filter(Juror_race == ""Black"")
+
+# Set factors
+
+df$Juror_race = as.factor(df$Juror_race)
+df$Witness_race = as.factor(df$Witness_race)
+df$Target_race = as.factor(df$Target_race)
+df$Videos_seen = as.factor(df$Videos_seen)
+df$Witness_decision = as.factor(df$Witness_decision)
+df$Target_presence = as.factor(df$Target_presence)
+
+
+### Binary logistic regression on juror accuracy with race variables only ###
+df <- within(df, Witness_race <- relevel(Witness_race, ref = ""White""))
+df <- within(df, Target_race <- relevel(Target_race, ref = ""White""))
+df <- within(df, Juror_race <- relevel(Juror_race, ref = ""White""))
+
+acc_glm <- glm(Juror_accuracy ~ Target_race + Juror_race + Witness_race + Juror_race:Witness_race + Juror_race:Target_race + Target_race:Witness_race, data = df, family = ""binomial"")
+
+# white witness follow up
+w_witness = df %>% filter(Witness_race == ""White"")
+ww_acc_glm <- glm(Juror_accuracy ~ Target_race, data = w_witness, family = ""binomial"")
+
+# black witness follow up
+b_witness = df %>% filter(Witness_race == ""Black"")
+bw_acc_glm <- glm(Juror_accuracy ~ Target_race, data = b_witness, family = ""binomial"")
+
+# white lineup follow up
+w_lineup = df %>% filter(Target_race == ""White"")
+wl_acc_glm <- glm(Juror_accuracy ~ Juror_race, data = w_lineup, family = ""binomial"")
+
+# black lineup follow up
+b_lineup = df %>% filter(Target_race == ""Black"")
+bl_acc_glm <- glm(Juror_accuracy ~ Juror_race, data = b_lineup, family = ""binomial"")",match,"The paper does not specify any special data transformations beyond defining the binary outcome, and the code only applies standard factor coding and reference-level setting consistent with running a logistic regression on the stated race variables. There are no additional transformations (e.g., trimming, aggregation) in the code that would conflict with the paper’s description.",,
+helm,10,"Binary logistic regression in Experiment 1 predicting assessor accuracy (whether the assessor correctly judged the identification as accurate or inaccurate) from witness race (White vs. Black), assessor race (White vs. Black), lineup race (White vs. Black), and all two-way interactions. The model showed a strong witness race × lineup race interaction (B=2.09, SE=0.25, p<.001, OR=8.12), indicating assessors were much more accurate when evaluating same-race identifications than cross-race ones.",Inference Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using witness race, assessor race, lineup race, and all two-way interactions between those factors to predict assessor accuracy. ... The model revealed a significant interaction between lineup race and witness race (B = 2.09, SE = 0.25, Wald = 69.13, p < .001, OR = 8.12, 95% CI [4.96, 13.35]) ... We also conducted a supplementary analysis identical to the regression described above but with equal sample sizes of Black and White participants (including the first 369 White participants when ranked alphabetically by Qualtrics response ID). All significant effects were replicated in this analysis.","### Binary logistic regression on juror accuracy with race variables only ###
+df <- within(df, Witness_race <- relevel(Witness_race, ref = ""White""))
+df <- within(df, Target_race <- relevel(Target_race, ref = ""White""))
+df <- within(df, Juror_race <- relevel(Juror_race, ref = ""White""))
+
+acc_glm <- glm(Juror_accuracy ~ Target_race + Juror_race + Witness_race + Juror_race:Witness_race + Juror_race:Target_race + Target_race:Witness_race, data = df, family = ""binomial"")
+summary(acc_glm)
+
+exp(cbind(coef(acc_glm), confint(acc_glm)))
+
+# white witness follow up
+w_witness = df %>% filter(Witness_race == ""White"")
+ww_acc_glm <- glm(Juror_accuracy ~ Target_race, data = w_witness, family = ""binomial"")
+summary(ww_acc_glm)
+exp(cbind(coef(ww_acc_glm), confint(ww_acc_glm)))
+ww_wald = wald.test(Sigma = vcov(ww_acc_glm), b = coef(ww_acc_glm), Terms = 2) 
+round(ww_wald$result$chi2, 3)
+
+# black witness follow up
+b_witness = df %>% filter(Witness_race == ""Black"")
+bw_acc_glm <- glm(Juror_accuracy ~ Target_race, data = b_witness, family = ""binomial"")
+summary(bw_acc_glm)
+exp(cbind(coef(bw_acc_glm), confint(bw_acc_glm)))
+bw_wald = wald.test(Sigma = vcov(bw_acc_glm), b = coef(bw_acc_glm), Terms = 2) 
+round(bw_wald$result$chi2, 3)",match,"The code uses Wald tests, p-values, and default 95% confidence intervals for the logistic regression, which matches the inferential approach described in the paper. There is no indication of any different alpha level or inferential criterion being used in code versus text.",,
+helm,11,"Follow-up simple-effects from the Experiment 1 logistic regression (Analysis 10) examining lineup race effects separately by witness race. For White witnesses, assessors were substantially more accurate when the lineup was White versus Black (B=-1.30, SE=0.18, Wald=52.79, p<.001, OR=0.27), whereas for Black witnesses, assessors were more accurate for Black than White lineups (B=0.78, SE=0.18, Wald=19.67, p<.001, OR=2.18), confirming greater difficulty with cross-race identification assessments.",Model Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using witness race, assessor race, lineup race, and all two-way interactions between those factors to predict assessor accuracy.
+
+When participants assessed the identification decisions of White witnesses (MWhite lineup = 0.70, SE = 0.03, 95% CI [0.64, 0.76]; MBlack lineup = 0.42, SE = 0.03, 95% CI [0.36, 0.48]), the odds of a correct assessment were 3.66 times higher when the lineup members were White than when the lineup members were Black (B =− 1.30, SE = 0.18, Wald = 52.79, p < .001, OR = 0.27, 95% CI [0.19, 0.39]). When participants assessed the identification decisions of Black witnesses (MWhite lineup = 0.53, SE = 0.03, 95% CI [0.47, 0.59]; MBlack lineup = 0.74, SE = 0.03, 95% CI [0.68, 0.79]), the odds of a correct assessment doubled when the lineup members were Black compared to when the lineup members were White ( B = 0.78, SE = 0.18, Wald= 19.67, p < .001, OR = 2.18, 95% CI [1.55, 3.09]).","# Target race x witness race means
+emmeans(acc_glm, pairwise ~ Target_race*Witness_race, type = ""response"")
+
+# white witness follow up
+w_witness = df %>% filter(Witness_race == ""White"")
+ww_acc_glm <- glm(Juror_accuracy ~ Target_race, data = w_witness, family = ""binomial"")
+summary(ww_acc_glm)
+exp(cbind(coef(ww_acc_glm), confint(ww_acc_glm)))
+ww_wald = wald.test(Sigma = vcov(ww_acc_glm), b = coef(ww_acc_glm), Terms = 2) 
+round(ww_wald$result$chi2, 3)
+
+# black witness follow up
+b_witness = df %>% filter(Witness_race == ""Black"")
+bw_acc_glm <- glm(Juror_accuracy ~ Target_race, data = b_witness, family = ""binomial"")
+summary(bw_acc_glm)
+exp(cbind(coef(bw_acc_glm), confint(bw_acc_glm)))
+bw_wald = wald.test(Sigma = vcov(bw_acc_glm), b = coef(bw_acc_glm), Terms = 2) 
+round(bw_wald$result$chi2, 3)",match,"The paper describes follow-up binary logistic regressions examining lineup race effects separately within White and Black witnesses, and the code fits separate binomial GLMs of assessor accuracy on lineup/target race within each witness-race subset. This matches the specified model type and simple-effects structure for the follow-up analyses.",,
+helm,11,"Follow-up simple-effects from the Experiment 1 logistic regression (Analysis 10) examining lineup race effects separately by witness race. For White witnesses, assessors were substantially more accurate when the lineup was White versus Black (B=-1.30, SE=0.18, Wald=52.79, p<.001, OR=0.27), whereas for Black witnesses, assessors were more accurate for Black than White lineups (B=0.78, SE=0.18, Wald=19.67, p<.001, OR=2.18), confirming greater difficulty with cross-race identification assessments.",Variable Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using witness race, assessor race, lineup race, and all two-way interactions between those factors to predict assessor accuracy. A correct assessment was either (a) identifying a witness who was correct in their identification decision as being correct or (b) identifying a witness who was incorrect in their identification decision as being incorrect. … When participants assessed the identification decisions of White witnesses (MWhite lineup = 0.70, SE = 0.03, 95% CI [0.64, 0.76]; MBlack lineup = 0.42, SE = 0.03, 95% CI [0.36, 0.48]), the odds of a correct assessment were 3.66 times higher when the lineup members were White than when the lineup members were Black (B = − 1.30, SE = 0.18, Wald = 52.79, p < .001, OR = 0.27, 95% CI [0.19, 0.39]). When participants assessed the identification decisions of Black witnesses (MWhite lineup = 0.53, SE = 0.03, 95% CI [0.47, 0.59]; MBlack lineup = 0.74, SE = 0.03, 95% CI [0.68, 0.79]), the odds of a correct assessment doubled when the lineup members were Black compared to when the lineup members were White (B = 0.78, SE = 0.18, Wald = 19.67, p < .001, OR = 2.18, 95% CI [1.55, 3.09]).","df <- within(df, Witness_race <- relevel(Witness_race, ref = ""White""))
+df <- within(df, Target_race <- relevel(Target_race, ref = ""White""))
+df <- within(df, Juror_race <- relevel(Juror_race, ref = ""White""))
+
+acc_glm <- glm(Juror_accuracy ~ Target_race + Juror_race + Witness_race + Juror_race:Witness_race + Juror_race:Target_race + Target_race:Witness_race, data = df, family = ""binomial"")
+
+emmeans(acc_glm, pairwise ~ Target_race*Witness_race, type = ""response"")
+
+w_witness = df %>% filter(Witness_race == ""White"")
+ww_acc_glm <- glm(Juror_accuracy ~ Target_race, data = w_witness, family = ""binomial"")
+
+b_witness = df %>% filter(Witness_race == ""Black"")
+bw_acc_glm <- glm(Juror_accuracy ~ Target_race, data = b_witness, family = ""binomial"")",match,"The follow-up logistic regressions in the code use assessor accuracy as the outcome and lineup race as the predictor within subsets defined by witness race, which matches the paper’s description of examining lineup race effects separately by witness race. Variable roles (assessor accuracy as DV; lineup/target race as IV; witness race as the stratifying variable) are consistent between the paper and code.",,
+helm,11,"Follow-up simple-effects from the Experiment 1 logistic regression (Analysis 10) examining lineup race effects separately by witness race. For White witnesses, assessors were substantially more accurate when the lineup was White versus Black (B=-1.30, SE=0.18, Wald=52.79, p<.001, OR=0.27), whereas for Black witnesses, assessors were more accurate for Black than White lineups (B=0.78, SE=0.18, Wald=19.67, p<.001, OR=2.18), confirming greater difficulty with cross-race identification assessments.",Transformation Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using witness race, assessor race, lineup race, and all two-way interactions between those factors to predict assessor accuracy. A correct assessment was either (a) identifying a witness who was correct in their identification decision as being correct or (b) identifying a witness who was incorrect in their identification decision as being incorrect.","# Set factors
+df$Juror_race = as.factor(df$Juror_race)
+df$Witness_race = as.factor(df$Witness_race)
+df$Target_race = as.factor(df$Target_race)
+...
+### Binary logistic regression on juror accuracy with race variables only ###
+df <- within(df, Witness_race <- relevel(Witness_race, ref = ""White""))
+df <- within(df, Target_race <- relevel(Target_race, ref = ""White""))
+df <- within(df, Juror_race <- relevel(Juror_race, ref = ""White""))
+
+acc_glm <- glm(Juror_accuracy ~ Target_race + Juror_race + Witness_race + Juror_race:Witness_race + Juror_race:Target_race + Target_race:Witness_race, data = df, family = ""binomial"")
+...
+# white witness follow up
+w_witness = df %>% filter(Witness_race == ""White"")
+ww_acc_glm <- glm(Juror_accuracy ~ Target_race, data = w_witness, family = ""binomial"")
+...
+# black witness follow up
+b_witness = df %>% filter(Witness_race == ""Black"")
+bw_acc_glm <- glm(Juror_accuracy ~ Target_race, data = b_witness, family = ""binomial"")",match,"The code applies the expected transformation of subsetting the data by witness race to run separate logistic regressions, which aligns with the paper’s description of follow-up analyses by witness race, and no contradictory transformations are present.",,
+helm,11,"Follow-up simple-effects from the Experiment 1 logistic regression (Analysis 10) examining lineup race effects separately by witness race. For White witnesses, assessors were substantially more accurate when the lineup was White versus Black (B=-1.30, SE=0.18, Wald=52.79, p<.001, OR=0.27), whereas for Black witnesses, assessors were more accurate for Black than White lineups (B=0.78, SE=0.18, Wald=19.67, p<.001, OR=2.18), confirming greater difficulty with cross-race identification assessments.",Inference Specification,"When participants assessed the identification decisions of White witnesses (MWhite lineup = 0.70, SE = 0.03, 95% CI [0.64, 0.76]; MBlack lineup = 0.42, SE = 0.03, 95% CI [0.36, 0.48]), the odds of a correct assessment were 3.66 times higher when the lineup members were White than when the lineup members were Black (B = − 1.30, SE = 0.18, Wald = 52.79, p < .001, OR = 0.27, 95% CI [0.19, 0.39]). When participants assessed the identification decisions of Black witnesses (MWhite lineup = 0.53, SE = 0.03, 95% CI [0.47, 0.59]; MBlack lineup = 0.74, SE = 0.03, 95% CI [0.68, 0.79]), the odds of a correct assessment doubled when the lineup members were Black compared to when the lineup members were White (B = 0.78, SE = 0.18, Wald= 19.67, p < .001, OR = 2.18, 95% CI [1.55, 3.09]).","# white witness follow up
+w_witness = df %>% filter(Witness_race == ""White"")
+ww_acc_glm <- glm(Juror_accuracy ~ Target_race, data = w_witness, family = ""binomial"")
+summary(ww_acc_glm)
+exp(cbind(coef(ww_acc_glm), confint(ww_acc_glm)))
+ww_wald = wald.test(Sigma = vcov(ww_acc_glm), b = coef(ww_acc_glm), Terms = 2) 
+round(ww_wald$result$chi2, 3)
+
+# black witness follow up
+b_witness = df %>% filter(Witness_race == ""Black"")
+bw_acc_glm <- glm(Juror_accuracy ~ Target_race, data = b_witness, family = ""binomial"")
+summary(bw_acc_glm)
+exp(cbind(coef(bw_acc_glm), confint(bw_acc_glm)))
+bw_wald = wald.test(Sigma = vcov(bw_acc_glm), b = coef(bw_acc_glm), Terms = 2) 
+round(bw_wald$result$chi2, 3)",match,"The code implements the same inferential procedures described in the paper, including Wald tests, odds ratios with 95% confidence intervals, and logistic regression for the simple-effects by witness race. Although the alpha level is not explicitly coded, the use of default 95% confidence intervals and Wald chi-square tests aligns with the paper’s reported p-values and CIs.",,
+helm,12,"Complementary linear (or generalized linear) model in Experiment 1 predicting signed confidence–accuracy scores (−100 to 100, where higher absolute values reflect confident correct or incorrect assessments) from witness race, assessor race, and lineup race, plus in one model target presence and identification detail. This analysis replicated the key interaction patterns from the logistic regression (Analysis 10), indicating that the same race-related effects held when incorporating strength of assessor confidence and controlling for target presence and identification detail.",Model Specification,"A complementary analysis on signed confidence assessor accuracy—ranging from −100 (complete confidence in an incorrect assessment) to 100 (complete confidence in a correct assessment)
+was conducted to examine whether results replicated when examining confidence in accuracy (or inaccuracy) rather than a binary scale, and to allow us to control for target presence and identification detail (Analysis 1) and for identification decision type (Analysis 2).",,unknown,The paper describes a complementary analysis on signed confidence–accuracy scores but no corresponding code or model specification is provided to verify the statistical test used.,,
+helm,12,"Complementary linear (or generalized linear) model in Experiment 1 predicting signed confidence–accuracy scores (−100 to 100, where higher absolute values reflect confident correct or incorrect assessments) from witness race, assessor race, and lineup race, plus in one model target presence and identification detail. This analysis replicated the key interaction patterns from the logistic regression (Analysis 10), indicating that the same race-related effects held when incorporating strength of assessor confidence and controlling for target presence and identification detail.",Variable Specification,"A complementary analysis on signed conï¬¼onfï¬¼dence assessor accuracy—ranging from − 100 (complete conï¬¼dence in an incorrect assessment) to 100 (complete conï¬¼dence in a correct assessment)—was conducted to examine whether results replicated when examining conï¬¼dence in accuracy (or inaccuracy) rather than a binary scale, and to allow us to control for target presence and identiï¬¿ication detail (Analysis 1) and for identiï¬¿ication decision type (Analysis 2).",,unknown,"There is no code provided to assess which variables were used or how they were designated in the complementary model predicting signed confidence–accuracy, so alignment with the paper’s variable specification cannot be evaluated.",,
+helm,12,"Complementary linear (or generalized linear) model in Experiment 1 predicting signed confidence–accuracy scores (−100 to 100, where higher absolute values reflect confident correct or incorrect assessments) from witness race, assessor race, and lineup race, plus in one model target presence and identification detail. This analysis replicated the key interaction patterns from the logistic regression (Analysis 10), indicating that the same race-related effects held when incorporating strength of assessor confidence and controlling for target presence and identification detail.",Transformation Specification,"A complementary analysis on signed confidence assessor accuracy—ranging from − 100 (complete confidence in an incorrect assessment) to 100 (complete confidence in a correct assessment) was conducted to examine whether results replicated when examining confidence in accuracy (or inaccuracy) rather than a binary scale, and to allow us to control for target presence and identification detail (Analysis 1) and for identification decision type (Analysis 2).",,unknown,"There is no available code snippet describing how signed confidence–accuracy scores were computed or transformed, so it is impossible to verify whether the implementation matches the paper’s description of a −100 to 100 scale.",,
+helm,12,"Complementary linear (or generalized linear) model in Experiment 1 predicting signed confidence–accuracy scores (−100 to 100, where higher absolute values reflect confident correct or incorrect assessments) from witness race, assessor race, and lineup race, plus in one model target presence and identification detail. This analysis replicated the key interaction patterns from the logistic regression (Analysis 10), indicating that the same race-related effects held when incorporating strength of assessor confidence and controlling for target presence and identification detail.",Inference Specification,"A complementary analysis on signed confidence assessor accuracy—ranging from −100 (complete confidence in an incorrect assessment) to 100 (complete confidence in a correct assessment) was conducted to examine whether results replicated when examining confidence in accuracy (or inaccuracy) rather than a binary scale, and to allow us to control for target presence and identification detail (Analysis 1). These analyses produced similar results to our primary analysis and are reported fully in S6 in the online supplemental materials, with relevant differences noted below.",,unknown,"The paper excerpt does not specify any explicit inference criteria (e.g., alpha level, confidence interval thresholds), and no corresponding code details are provided, so their alignment cannot be assessed.",,
+helm,13,"Second complementary model in Experiment 1 predicting signed confidence–accuracy scores from witness race, assessor race, lineup race, and identification decision type (identification vs. rejection) and their interactions. This analysis largely mirrored the logistic regression results, though the assessor race × lineup race interaction (better performance of Black assessors for Black lineups) only reached marginal significance (p=.05) in this specification.",Model Specification,"A complementary analysis on signed conşidenc e assessor accuracy—ranging from − 100 (complete conşidenc e in an incorrect assessment) to 100 (complete conşidenc e in a correct assessment) was conducted to examine whether results replicated when examining conşidenc e in accuracy (or inaccuracy) rather than a binary scale, and to allow us to control for target presence and identişication detail (Analysis 1) and for identişication decision type (Analysis 2).",,unknown,"The paper describes a complementary analysis on signed confidence–accuracy scores but no corresponding code or model type is provided, so the statistical test used in the implementation cannot be verified against the description.",,
+helm,13,"Second complementary model in Experiment 1 predicting signed confidence–accuracy scores from witness race, assessor race, lineup race, and identification decision type (identification vs. rejection) and their interactions. This analysis largely mirrored the logistic regression results, though the assessor race × lineup race interaction (better performance of Black assessors for Black lineups) only reached marginal significance (p=.05) in this specification.",Variable Specification,"A complementary analysis on signed conﬁdence assessor accuracy—ranging from − 100 (complete conﬁdence in an incorrect assessment) to 100 (complete conﬁdence in a correct assessment) was conducted to examine whether results replicated when examining conﬁdence in accuracy (or inaccuracy) rather than a binary scale, and to allow us to control for target presence and identiﬁcation detail (Analysis 1) and for identiﬁcation decision type (Analysis 2).",,unknown,There is insufficient information about the code to determine whether the variables and their roles in the analysis match the paper’s description.,,
+helm,13,"Second complementary model in Experiment 1 predicting signed confidence–accuracy scores from witness race, assessor race, lineup race, and identification decision type (identification vs. rejection) and their interactions. This analysis largely mirrored the logistic regression results, though the assessor race × lineup race interaction (better performance of Black assessors for Black lineups) only reached marginal significance (p=.05) in this specification.",Transformation Specification,"A complementary analysis on signed conüdence assessor accuracy—ranging from − 100 (complete conüdence in an incorrect assessment) to 100 (complete conüdence in a correct assessment) was conducted to examine whether results replicated when examining conüdence in accuracy (or inaccuracy) rather than a binary scale, and to allow us to control for target presence and identiüdcation detail (Analysis 1) and for identiüdcation decision type (Analysis 2).",,unknown,"The paper describes transforming confidence into a signed accuracy measure ranging from -100 to 100, but no corresponding code is provided to verify how (or whether) this transformation was implemented. Without code details, it is not possible to determine if the transformation specification in the implementation matches the paper description.",,
+helm,13,"Second complementary model in Experiment 1 predicting signed confidence–accuracy scores from witness race, assessor race, lineup race, and identification decision type (identification vs. rejection) and their interactions. This analysis largely mirrored the logistic regression results, though the assessor race × lineup race interaction (better performance of Black assessors for Black lineups) only reached marginal significance (p=.05) in this specification.",Inference Specification,"There was a signi fi cant interaction between lineup race and assessor race ( B =− 0.65, SE = 0.27, Wald = 5.74, p = .02, OR = 1.91, 95% CI [1.23, 3.26]; see Figure 4; note this interaction was only signi fi cant in one of our supplementary signed con fi dence analyses and in the other analysis just missed signi fi cance; p = .05).",,unknown,"There is not enough information about the code implementation to determine whether the inference specification (e.g., treatment of p = .05, alpha thresholds) matches the paper description.",,
+helm,14,"Simple-effect analysis within the Experiment 1 logistic regression testing the interaction between assessor race and lineup race on assessor accuracy. Among assessments of Black lineups, Black assessors were significantly more accurate than White assessors (B=-0.42, SE=0.18, Wald=5.37, p=.02, OR=1.52), whereas there was no significant assessor race difference for White lineups (B=-0.18, SE=0.19, p=.34), indicating that Black assessors were particularly better at judging identifications involving Black suspect lineups.",Model Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using witness race, assessor race, lineup race, and all two-way interactions between those factors to predict assessor accuracy.","### Binary logistic regression on juror accuracy with race variables only ###
+df <- within(df, Witness_race <- relevel(Witness_race, ref = ""White""))
+df <- within(df, Target_race <- relevel(Target_race, ref = ""White""))
+df <- within(df, Juror_race <- relevel(Juror_race, ref = ""White""))
+
+acc_glm <- glm(Juror_accuracy ~ Target_race + Juror_race + Witness_race + Juror_race:Witness_race + Juror_race:Target_race + Target_race:Witness_race, data = df, family = ""binomial"")
+summary(acc_glm)
+
+exp(cbind(coef(acc_glm), confint(acc_glm)))
+
+
+## TARGET RACE X WITNESS RACE ##
+# target race x juror race means
+emmeans(acc_glm, pairwise ~ Target_race*Juror_race, type = ""response"")
+
+# white lineup follow up
+w_lineup = df %>% filter(Target_race == ""White"")
+wl_acc_glm <- glm(Juror_accuracy ~ Juror_race, data = w_lineup, family = ""binomial"")
+summary(wl_acc_glm)
+exp(cbind(coef(wl_acc_glm), confint(wl_acc_glm)))
+wl_wald = wald.test(Sigma = vcov(wl_acc_glm), b = coef(wl_acc_glm), Terms = 2) 
+round(wl_wald$result$chi2, 3)
+
+# black lineup follow up
+b_lineup = df %>% filter(Target_race == ""Black"")
+bl_acc_glm <- glm(Juror_accuracy ~ Juror_race, data = b_lineup, family = ""binomial"")
+summary(bl_acc_glm)
+exp(cbind(coef(bl_acc_glm), confint(bl_acc_glm)))
+bl_wald = wald.test(Sigma = vcov(bl_acc_glm), b = coef(bl_acc_glm), Terms = 2) 
+round(bl_wald$result$chi2, 3)",match,"The code fits a binary logistic regression with assessor (juror) accuracy as the outcome and witness, assessor, and lineup (target) race plus all two-way interactions, matching the model specification described in the paper.",,
+helm,14,"Simple-effect analysis within the Experiment 1 logistic regression testing the interaction between assessor race and lineup race on assessor accuracy. Among assessments of Black lineups, Black assessors were significantly more accurate than White assessors (B=-0.42, SE=0.18, Wald=5.37, p=.02, OR=1.52), whereas there was no significant assessor race difference for White lineups (B=-0.18, SE=0.19, p=.34), indicating that Black assessors were particularly better at judging identifications involving Black suspect lineups.",Variable Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using witness race, assessor race, lineup race, and all two-way interactions between those factors to predict assessor accuracy. A correct assessment was either (a) identifying a witness who was correct in their identification decision as being correct or (b) identifying a witness who was incorrect in their identification decision as being incorrect. ... There was a significant interaction between lineup race and assessor race ( B = − 0.65, SE = 0.27, Wald = 5.74, p = .02, OR = 1.91, 95% CI [1.23, 3.26]; see Figure 4; note this interaction was only significant in one of our supplementary signed confidence analyses and in the other analysis just missed significance; p = .05). When the lineup members were Black ( MWhite assessor = 0.53, SE = 0.03, 95% CI [0.48, 0.58]; MBlack assessor = 0.64, SE = 0.04, 95% CI [0.57, 0.71]), the odds of a correct assessment of the identification were approximately 50% higher when the assessor was Black than when the assessor was White ( B = − 0.42, SE = 0.18, Wald = 5.37, p = .02, OR = 1.52, 95% CI [1.07, 2.17]) but when the lineup members were White ( MWhite assessor = 0.64, SE = 0.02, CI [0.59, 0.69]; MBlack assessor = 0.60, SE = 0.04, 95% CI [0.53, 0.67]), assessments of Black and White assessors did not significantly differ in accuracy ( B = − 0.18, SE = 0.19, Wald = 0.93, p = .34, OR = 0.84, 95% CI [0.58, 1.21]).","# Set factors
+df$Juror_race = as.factor(df$Juror_race)
+df$Witness_race = as.factor(df$Witness_race)
+df$Target_race = as.factor(df$Target_race)
+...
+### Binary logistic regression on juror accuracy with race variables only ###
+df <- within(df, Witness_race <- relevel(Witness_race, ref = ""White""))
+df <- within(df, Target_race <- relevel(Target_race, ref = ""White""))
+df <- within(df, Juror_race <- relevel(Juror_race, ref = ""White""))
+
+acc_glm <- glm(Juror_accuracy ~ Target_race + Juror_race + Witness_race + Juror_race:Witness_race + Juror_race:Target_race + Target_race:Witness_race, data = df, family = ""binomial"")
+...
+## TARGET RACE X WITNESS RACE ##
+# target race x juror race means
+emmeans(acc_glm, pairwise ~ Target_race*Juror_race, type = ""response"")
+
+# white lineup follow up
+w_lineup = df %>% filter(Target_race == ""White"")
+wl_acc_glm <- glm(Juror_accuracy ~ Juror_race, data = w_lineup, family = ""binomial"")
+...
+# black lineup follow up
+b_lineup = df %>% filter(Target_race == ""Black"")
+bl_acc_glm <- glm(Juror_accuracy ~ Juror_race, data = b_lineup, family = ""binomial"")",match,"The code uses the same variables and roles as described in the paper: assessor/juror accuracy as the binary outcome, and assessor/juror race, witness race, and lineup/target race (and their two-way interactions) as predictors, with follow-up models examining assessor race within Black vs. White lineups. Terminology differences (assessor vs. juror, lineup vs. target) do not indicate a substantive mismatch in variable specification.",,
+helm,14,"Simple-effect analysis within the Experiment 1 logistic regression testing the interaction between assessor race and lineup race on assessor accuracy. Among assessments of Black lineups, Black assessors were significantly more accurate than White assessors (B=-0.42, SE=0.18, Wald=5.37, p=.02, OR=1.52), whereas there was no significant assessor race difference for White lineups (B=-0.18, SE=0.19, p=.34), indicating that Black assessors were particularly better at judging identifications involving Black suspect lineups.",Transformation Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using witness race, assessor race, lineup race, and all two-way interactions between those factors to predict assessor accuracy. A correct assessment was either (a) identifying a witness who was correct in their identification decision as being correct or (b) identifying a witness who was incorrect in their identification decision as being incorrect. A complementary analysis on signed confidence assessor accuracy—ranging from − 100 (complete confidence in an incorrect assessment) to 100 (complete confidence in a correct assessment) was conducted to examine whether results replicated when examining confidence in accuracy (or inaccuracy) rather than a binary scale, and to allow us to control for target presence and identification detail (Analysis 1) and for identification decision type (Analysis 2).","### Binary logistic regression on juror accuracy with race variables only ###
+df <- within(df, Witness_race <- relevel(Witness_race, ref = ""White""))
+df <- within(df, Target_race <- relevel(Target_race, ref = ""White""))
+df <- within(df, Juror_race <- relevel(Juror_race, ref = ""White""))
+
+acc_glm <- glm(Juror_accuracy ~ Target_race + Juror_race + Witness_race + Juror_race:Witness_race + Juror_race:Target_race + Target_race:Witness_race, data = df, family = ""binomial"")
+...
+## TARGET RACE X WITNESS RACE ##
+# target race x juror race means
+emmeans(acc_glm, pairwise ~ Target_race*Juror_race, type = ""response"")
+
+# white lineup follow up
+w_lineup = df %>% filter(Target_race == ""White"")
+wl_acc_glm <- glm(Juror_accuracy ~ Juror_race, data = w_lineup, family = ""binomial"")
+summary(wl_acc_glm)
+exp(cbind(coef(wl_acc_glm), confint(wl_acc_glm)))
+wl_wald = wald.test(Sigma = vcov(wl_acc_glm), b = coef(wl_acc_glm), Terms = 2) 
+round(wl_wald$result$chi2, 3)
+
+# black lineup follow up
+b_lineup = df %>% filter(Target_race == ""Black"")
+bl_acc_glm <- glm(Juror_accuracy ~ Juror_race, data = b_lineup, family = ""binomial"")
+summary(bl_acc_glm)
+exp(cbind(coef(bl_acc_glm), confint(bl_acc_glm)))
+bl_wald = wald.test(Sigma = vcov(bl_acc_glm), b = coef(bl_acc_glm), Terms = 2) 
+round(bl_wald$result$chi2, 3)",match,"The code’s only relevant data transformation is subsetting the data by lineup race for simple-effect analyses, which matches the paper’s description of examining effects separately for Black and White lineups.",,
+helm,14,"Simple-effect analysis within the Experiment 1 logistic regression testing the interaction between assessor race and lineup race on assessor accuracy. Among assessments of Black lineups, Black assessors were significantly more accurate than White assessors (B=-0.42, SE=0.18, Wald=5.37, p=.02, OR=1.52), whereas there was no significant assessor race difference for White lineups (B=-0.18, SE=0.19, p=.34), indicating that Black assessors were particularly better at judging identifications involving Black suspect lineups.",Inference Specification,"When the lineup members were Black (MWhite assessor = 0.53, SE = 0.03, 95% CI [0.48, 0.58]; MBlack assessor = 0.64, SE = 0.04, 95% CI [0.57, 0.71]), the odds of a correct assessment of the identification were approximately 50% higher when the assessor was Black than when the assessor was White (B = −0.42, SE = 0.18, Wald = 5.37, p = .02, OR = 1.52, 95% CI [1.07, 2.17]) but when the lineup members were White (MWhite assessor = 0.64, SE = 0.02, CI [0.59, 0.69]; MBlack assessor = 0.60, SE = 0.04, 95% CI [0.53, 0.67]), assessments of Black and White assessors did not significantly differ in accuracy (B = −0.18, SE = 0.19, Wald = 0.93, p = .34, OR = 0.84, 95% CI [0.58, 1.21]).","# TARGET RACE X WITNESS RACE ##
+# target race x juror race means
+emmeans(acc_glm, pairwise ~ Target_race*Juror_race, type = ""response"")
+
+# white lineup follow up
+w_lineup = df %>% filter(Target_race == ""White"")
+wl_acc_glm <- glm(Juror_accuracy ~ Juror_race, data = w_lineup, family = ""binomial"")
+summary(wl_acc_glm)
+exp(cbind(coef(wl_acc_glm), confint(wl_acc_glm)))
+wl_wald = wald.test(Sigma = vcov(wl_acc_glm), b = coef(wl_acc_glm), Terms = 2) 
+round(wl_wald$result$chi2, 3)
+
+# black lineup follow up
+b_lineup = df %>% filter(Target_race == ""Black"")
+bl_acc_glm <- glm(Juror_accuracy ~ Juror_race, data = b_lineup, family = ""binomial"")
+summary(bl_acc_glm)
+exp(cbind(coef(bl_acc_glm), confint(bl_acc_glm)))
+bl_wald = wald.test(Sigma = vcov(bl_acc_glm), b = coef(bl_acc_glm), Terms = 2) 
+round(bl_wald$result$chi2, 3)",match,"The paper’s inference relies on Wald tests, p-values, odds ratios, and 95% confidence intervals, and the code implements the same inferential framework for the simple-effect logistic regressions. No contradictory inference criteria (e.g., different alpha levels or CI widths) are evident between the paper and the code.",,
+helm,15,"Main-effect analysis within the Experiment 1 logistic regression testing the effect of lineup race on assessor accuracy, collapsing across assessor and witness race. The odds of a correct assessment were approximately 4.5 times higher for identifications from White lineups than Black lineups (B=-1.5, SE=0.20, Wald=56.90, p<.001, OR=0.22), driven primarily by assessors’ general bias to assume identifications are accurate combined with higher underlying accuracy in White lineups.",Model Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using witness race, assessor race, lineup race, and all two-way interactions between those factors to predict assessor accuracy.","### Binary logistic regression on juror accuracy with race variables only ###
+df <- within(df, Witness_race <- relevel(Witness_race, ref = ""White""))
+df <- within(df, Target_race <- relevel(Target_race, ref = ""White""))
+df <- within(df, Juror_race <- relevel(Juror_race, ref = ""White""))
+
+acc_glm <- glm(Juror_accuracy ~ Target_race + Juror_race + Witness_race + Juror_race:Witness_race + Juror_race:Target_race + Target_race:Witness_race, data = df, family = ""binomial"")
+summary(acc_glm)
+
+exp(cbind(coef(acc_glm), confint(acc_glm)))",match,"The paper describes a binary logistic regression predicting assessor accuracy from witness race, assessor race, lineup race, and all two-way interactions, which matches the implemented glm with binomial family and the same three predictors plus all their pairwise interactions. Thus, the model specification in the code aligns with the description in the paper.",,
+helm,15,"Main-effect analysis within the Experiment 1 logistic regression testing the effect of lineup race on assessor accuracy, collapsing across assessor and witness race. The odds of a correct assessment were approximately 4.5 times higher for identifications from White lineups than Black lineups (B=-1.5, SE=0.20, Wald=56.90, p<.001, OR=0.22), driven primarily by assessors’ general bias to assume identifications are accurate combined with higher underlying accuracy in White lineups.",Variable Specification,"Assessments of Black Witnesses and Relating to White
+Lineups Most Accurate. There was a signiﬁcant main effect of
+lineup race (moderated by target presence in one of our signed con-
+ﬁdence analyses, see S6 in the online supplemental materials ) such
+that the odds of an identiﬁcation assessment being accurate were
+4.54 times higher when the lineup members were White ( M =
+0.50, SE = 0.10, 95% CI [0.31, 0.68]) than when the lineup mem-
+bers were Black ( M = 0.36, SE = 0.10, 95% CI [0.17, 0.54])
+(B =− 1.5, SE = 0.20, Wald = 56.90, p , .001, OR = 0.22, 95%
+CI [0.15, 0.33]).","### Binary logistic regression on juror accuracy with race variables only ###
+df <- within(df, Witness_race <- relevel(Witness_race, ref = ""White""))
+df <- within(df, Target_race <- relevel(Target_race, ref = ""White""))
+df <- within(df, Juror_race <- relevel(Juror_race, ref = ""White""))
+
+acc_glm <- glm(Juror_accuracy ~ Target_race + Juror_race + Witness_race + Juror_race:Witness_race + Juror_race:Target_race + Target_race:Witness_race, data = df, family = ""binomial"")
+summary(acc_glm)
+
+exp(cbind(coef(acc_glm), confint(acc_glm)))",match,"The code models juror (assessor) accuracy as a function of target/lineup race and race of juror and witness, which aligns with the paper’s description of a logistic regression testing the effect of lineup race on assessor accuracy while collapsing across assessor and witness race. Lineup race is operationalized via Target_race, with Juror_accuracy as the outcome and race variables as predictors, consistent with the described analysis dimension.",,
+helm,15,"Main-effect analysis within the Experiment 1 logistic regression testing the effect of lineup race on assessor accuracy, collapsing across assessor and witness race. The odds of a correct assessment were approximately 4.5 times higher for identifications from White lineups than Black lineups (B=-1.5, SE=0.20, Wald=56.90, p<.001, OR=0.22), driven primarily by assessors’ general bias to assume identifications are accurate combined with higher underlying accuracy in White lineups.",Transformation Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using witness race, assessor race, lineup race, and all two-way interactions between those factors to predict assessor accuracy. A correct assessment was either (a) identifying a witness who was correct in their identification decision as being correct or (b) identifying a witness who was incorrect in their identification decision as being incorrect.
+
+A complementary analysis on signed confidence assessor accuracy—ranging from −100 (complete confidence in an incorrect assessment) to 100 (complete confidence in a correct assessment)—was conducted to examine whether results replicated when examining confidence in accuracy (or inaccuracy) rather than a binary scale, and to allow us to control for target presence and identification detail (Analysis 1) and for identification decision type (Analysis 2).","# Set factors
+df$Juror_race = as.factor(df$Juror_race)
+df$Witness_race = as.factor(df$Witness_race)
+df$Target_race = as.factor(df$Target_race)
+df$Videos_seen = as.factor(df$Videos_seen)
+df$Witness_decision = as.factor(df$Witness_decision)
+df$Target_presence = as.factor(df$Target_presence)
+
+### Binary logistic regression on juror accuracy with race variables only ###
+df <- within(df, Witness_race <- relevel(Witness_race, ref = ""White""))
+df <- within(df, Target_race <- relevel(Target_race, ref = ""White""))
+df <- within(df, Juror_race <- relevel(Juror_race, ref = ""White""))
+
+acc_glm <- glm(Juror_accuracy ~ Target_race + Juror_race + Witness_race + Juror_race:Witness_race + Juror_race:Target_race + Target_race:Witness_race, data = df, family = ""binomial"")",unknown,"The paper does not specify any particular data transformations (e.g., factor reference coding, recoding steps) beyond defining a binary accuracy outcome, while the code shows only factor conversion and releveling to use White as the reference group. Because the paper is silent on these specific implementation details, it is unclear whether the transformation choices in the code match the authors’ intended specification.",,
+helm,15,"Main-effect analysis within the Experiment 1 logistic regression testing the effect of lineup race on assessor accuracy, collapsing across assessor and witness race. The odds of a correct assessment were approximately 4.5 times higher for identifications from White lineups than Black lineups (B=-1.5, SE=0.20, Wald=56.90, p<.001, OR=0.22), driven primarily by assessors’ general bias to assume identifications are accurate combined with higher underlying accuracy in White lineups.",Inference Specification,"There was a significant main effect of lineup race (moderated by target presence in one of our signed confidence analyses, see S6 in the online supplemental materials) such that the odds of an identification assessment being accurate were 4.54 times higher when the lineup members were White (M = 0.50, SE = 0.10, 95% CI [0.31, 0.68]) than when the lineup members were Black (M = 0.36, SE = 0.10, 95% CI [0.17, 0.54]) (B = − 1.5, SE = 0.20, Wald = 56.90, p , .001, OR = 0.22, 95% CI [0.15, 0.33]).","acc_glm <- glm(Juror_accuracy ~ Target_race + Juror_race + Witness_race + Juror_race:Witness_race + Juror_race:Target_race + Target_race:Witness_race, data = df, family = ""binomial"")
+summary(acc_glm)
+
+exp(cbind(coef(acc_glm), confint(acc_glm)))
+
+# white witness follow up
+w_witness = df %>% filter(Witness_race == ""White"")
+ww_acc_glm <- glm(Juror_accuracy ~ Target_race, data = w_witness, family = ""binomial"")
+summary(ww_acc_glm)
+exp(cbind(coef(ww_acc_glm), confint(ww_acc_glm)))
+ww_wald = wald.test(Sigma = vcov(ww_acc_glm), b = coef(ww_acc_glm), Terms = 2) 
+round(ww_wald$result$chi2, 3)
+
+# black witness follow up
+b_witness = df %>% filter(Witness_race == ""Black"")
+bw_acc_glm <- glm(Juror_accuracy ~ Target_race, data = b_witness, family = ""binomial"")
+summary(bw_acc_glm)
+exp(cbind(coef(bw_acc_glm), confint(bw_acc_glm)))
+bw_wald = wald.test(Sigma = vcov(bw_acc_glm), b = coef(bw_acc_glm), Terms = 2) 
+round(bw_wald$result$chi2, 3)
+
+# white lineup follow up
+w_lineup = df %>% filter(Target_race == ""White"")
+wl_acc_glm <- glm(Juror_accuracy ~ Juror_race, data = w_lineup, family = ""binomial"")
+summary(wl_acc_glm)
+exp(cbind(coef(wl_acc_glm), confint(wl_acc_glm)))
+wl_wald = wald.test(Sigma = vcov(wl_acc_glm), b = coef(wl_acc_glm), Terms = 2) 
+round(wl_wald$result$chi2, 3)
+
+# black lineup follow up
+b_lineup = df %>% filter(Target_race == ""Black"")
+bl_acc_glm <- glm(Juror_accuracy ~ Juror_race, data = b_lineup, family = ""binomial"")
+summary(bl_acc_glm)
+exp(cbind(coef(bl_acc_glm), confint(bl_acc_glm)))
+bl_wald = wald.test(Sigma = vcov(bl_acc_glm), b = coef(bl_acc_glm), Terms = 2) 
+round(bl_wald$result$chi2, 3)",match,"The paper reports Wald statistics, p-values, and 95% confidence intervals, and the code uses glm summaries (which provide Wald z-tests and p-values), confint() for 95% CIs, and wald.test() for hypothesis testing, consistent with the described inference approach. No alternative alpha level or inference criterion is specified in the code that would conflict with the paper’s reported inferences.",,
+helm,16,"Main-effect analysis within the Experiment 1 logistic regression testing the impact of witness race on assessor accuracy. Assessments of identifications made by Black witnesses were significantly more likely to be correct than assessments of White witnesses’ identifications (B=-0.75, SE=0.20, Wald=14.15, p<.001, OR=0.47), reflecting that assessors’ general tendency to believe identifications was better aligned with actual accuracy for Black witnesses.",Model Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using witness race, assessor race, lineup race, and all two-way interactions between those factors to predict assessor accuracy.","### Binary logistic regression on juror accuracy with race variables only ###
+df <- within(df, Witness_race <- relevel(Witness_race, ref = ""White""))
+df <- within(df, Target_race <- relevel(Target_race, ref = ""White""))
+df <- within(df, Juror_race <- relevel(Juror_race, ref = ""White""))
+
+acc_glm <- glm(Juror_accuracy ~ Target_race + Juror_race + Witness_race + Juror_race:Witness_race + Juror_race:Target_race + Target_race:Witness_race, data = df, family = ""binomial"")
+summary(acc_glm)
+
+exp(cbind(coef(acc_glm), confint(acc_glm)))",match,"The code implements a binary logistic regression predicting assessor (juror) accuracy from witness race, assessor race, lineup/target race, and all two-way interactions, which matches the model specification described in the paper.",,
+helm,16,"Main-effect analysis within the Experiment 1 logistic regression testing the impact of witness race on assessor accuracy. Assessments of identifications made by Black witnesses were significantly more likely to be correct than assessments of White witnesses’ identifications (B=-0.75, SE=0.20, Wald=14.15, p<.001, OR=0.47), reflecting that assessors’ general tendency to believe identifications was better aligned with actual accuracy for Black witnesses.",Variable Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using witness race, assessor race, lineup race, and all two-way interactions between those factors to predict assessor accuracy. A correct assessment was either (a) identifying a witness who was correct in their identification decision as being correct or (b) identifying a witness who was incorrect in their identification decision as being incorrect. ... The model also revealed a significant main effect of witness race such that the odds of an identification assessment being accurate were 2.11 times higher when the identification decision was made by a Black witness (M = 0.58, SE = 0.10, 95% CI [0.40, 0.77]) than when it was made by a White witness (M = 0.27, SE = 0.09, 95% CI [0.08, 0.45]; B =− 0.75, SE = 0.20, Wald = 14.15, p , .001, OR = 0.47, 95% CI [0.32, 0.70]).","### Binary logistic regression on juror accuracy with race variables only ###
+df <- within(df, Witness_race <- relevel(Witness_race, ref = ""White""))
+df <- within(df, Target_race <- relevel(Target_race, ref = ""White""))
+df <- within(df, Juror_race <- relevel(Juror_race, ref = ""White""))
+
+acc_glm <- glm(Juror_accuracy ~ Target_race + Juror_race + Witness_race + Juror_race:Witness_race + Juror_race:Target_race + Target_race:Witness_race, data = df, family = ""binomial"")
+summary(acc_glm)
+
+exp(cbind(coef(acc_glm), confint(acc_glm)))",match,"The code uses assessor (juror) accuracy as the binary outcome and includes witness race, assessor (juror) race, and lineup (target) race plus all two-way interactions as predictors, matching the paper’s described variable roles. Variable naming differences (e.g., Target_race for lineup race, Juror_race for assessor race) are consistent and do not indicate a specification mismatch.",,
+helm,16,"Main-effect analysis within the Experiment 1 logistic regression testing the impact of witness race on assessor accuracy. Assessments of identifications made by Black witnesses were significantly more likely to be correct than assessments of White witnesses’ identifications (B=-0.75, SE=0.20, Wald=14.15, p<.001, OR=0.47), reflecting that assessors’ general tendency to believe identifications was better aligned with actual accuracy for Black witnesses.",Transformation Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using witness race, assessor race, lineup race, and all two-way interactions between those factors to predict assessor accuracy. A correct assessment was either (a) identifying a witness who was correct in their identification decision as being correct or (b) identifying a witness who was incorrect in their identification decision as being incorrect. A complementary analysis on signed confidence assessor accuracy—ranging from − 100 (complete confidence in an incorrect assessment) to 100 (complete confidence in a correct assessment) was conducted to examine whether results replicated when examining confidence in accuracy (or inaccuracy) rather than a binary scale, and to allow us to control for target presence and identification detail (Analysis 1) and for identification decision type (Analysis 2).","# Set factors
+df$Juror_race = as.factor(df$Juror_race)
+df$Witness_race = as.factor(df$Witness_race)
+df$Target_race = as.factor(df$Target_race)
+...
+### Binary logistic regression on juror accuracy with race variables only ###
+df <- within(df, Witness_race <- relevel(Witness_race, ref = ""White""))
+df <- within(df, Target_race <- relevel(Target_race, ref = ""White""))
+df <- within(df, Juror_race <- relevel(Juror_race, ref = ""White""))
+
+acc_glm <- glm(Juror_accuracy ~ Target_race + Juror_race + Witness_race + Juror_race:Witness_race + Juror_race:Target_race + Target_race:Witness_race, data = df, family = ""binomial"")",unknown,"The paper specifies a key transformation defining binary assessor accuracy from underlying identification outcomes, but the provided code snippet only shows factor coding and releveling of race variables and does not reveal how Juror_accuracy was constructed. Thus, it is not possible to determine whether the main transformation described in the paper was implemented as stated.",,
+helm,16,"Main-effect analysis within the Experiment 1 logistic regression testing the impact of witness race on assessor accuracy. Assessments of identifications made by Black witnesses were significantly more likely to be correct than assessments of White witnesses’ identifications (B=-0.75, SE=0.20, Wald=14.15, p<.001, OR=0.47), reflecting that assessors’ general tendency to believe identifications was better aligned with actual accuracy for Black witnesses.",Inference Specification,"The model also revealed a significant main effect of witness race such that the odds of an identification assessment being accurate were 2.11 times higher when the identification decision was made by a Black witness (M = 0.58, SE = 0.10, 95% CI [0.40, 0.77]) than when it was made by a White witness (M = 0.27, SE = 0.09, 95% CI [0.08, 0.45]; B =− 0.75, SE = 0.20, Wald = 14.15, p , .001, OR = 0.47, 95% CI [0.32, 0.70]).","### Binary logistic regression on juror accuracy with race variables only ###
+df <- within(df, Witness_race <- relevel(Witness_race, ref = ""White""))
+df <- within(df, Target_race <- relevel(Target_race, ref = ""White""))
+df <- within(df, Juror_race <- relevel(Juror_race, ref = ""White""))
+
+acc_glm <- glm(Juror_accuracy ~ Target_race + Juror_race + Witness_race + Juror_race:Witness_race + Juror_race:Target_race + Target_race:Witness_race, data = df, family = ""binomial"")
+summary(acc_glm)
+
+exp(cbind(coef(acc_glm), confint(acc_glm)))",match,"The code uses default 95% confidence intervals and Wald-type inference consistent with the paper’s reported Wald test, p-value, and 95% confidence intervals, so the inference specification aligns. There is no indication of a different alpha level or CI level being used in the code.",,
+helm,17,"One-way ANOVA in Experiment 2 testing the effect of lineup race (same-race White lineup vs. cross-race Black lineup) on assessors’ likelihood ratings that a White witness’s identification was correct. Lineup race significantly affected ratings (F(1,655)=6.26, MSE=2942.96, p=.01), with identifications from White lineups judged slightly more likely to be accurate than those from Black lineups, though this adjustment still did not fully match the magnitude of the underlying CRE.",Model Specification,"To examine whether the lack of sensitivity to the CRE replicated in our data, we conducted an ANOVA using lineup race (White, Black) to predict assessor ratings of the likelihood an identification was correct.","### ANOVA on likelihood correct ###
+a1 =    ezANOVA(data = df,
+        wid = ResponseId,
+        dv = Likelihood_correct_1,
+        between = TargetRace,
+        detailed = TRUE, 
+        return_aov = TRUE)
+
+a1_summary = data.frame(unclass(a1$ANOVA)) %>% mutate(F.value = round(F, 2), eta.sq.partial = round(ges, 3), mse = round(SSn, 2), p.value = round(p, 3)) %>% dplyr::select(Effect, DFn, DFd, F.value, p.value, mse, eta.sq.partial)
+data.frame(a1_summary)
+
+# main effect of liuneup race
+data.frame(emmeans(a1$aov, ~ TargetRace))",match,"The code implements a one-way between-subjects ANOVA with lineup race as the predictor and likelihood ratings as the outcome, matching the paper’s described analysis. The follow-up use of emmeans on TargetRace is consistent with examining the main effect of lineup race on ratings.",,
+helm,17,"One-way ANOVA in Experiment 2 testing the effect of lineup race (same-race White lineup vs. cross-race Black lineup) on assessors’ likelihood ratings that a White witness’s identification was correct. Lineup race significantly affected ratings (F(1,655)=6.26, MSE=2942.96, p=.01), with identifications from White lineups judged slightly more likely to be accurate than those from Black lineups, though this adjustment still did not fully match the magnitude of the underlying CRE.",Variable Specification,"To examine whether the lack of sensitivity to the CRE replicated in our data, we conducted an ANOVA using lineup race (White, Black) to predict assessor ratings of the likelihood an identification was correct. In this experiment, the main effect of lineup race was significant, F(1, 655) = 6.26, MSE = 2,942.96, p = .01, ηp2 = .01, such that identification decisions from the White lineup (M = 67.47, 95% CI [65.19, 69.74], SE = 1.16) were rated as significantly more likely to be accurate than identification decisions from the Black lineup (M = 63.23, 95% CI [60.81, 65.66], SE = 1.23).","### ANOVA on likelihood correct ###
+a1 =    ezANOVA(data = df,
+        wid = ResponseId,
+        dv = Likelihood_correct_1,
+        between = TargetRace,
+        detailed = TRUE, 
+        return_aov = TRUE)
+
+a1_summary = data.frame(unclass(a1$ANOVA)) %>% mutate(F.value = round(F, 2), eta.sq.partial = round(ges, 3), mse = round(SSn, 2), p.value = round(p, 3)) %>% dplyr::select(Effect, DFn, DFd, F.value, p.value, mse, eta.sq.partial)
+data.frame(a1_summary)
+
+# main effect of liuneup race
+data.frame(emmeans(a1$aov, ~ TargetRace))",match,"The code uses assessor ratings of likelihood correct as the dependent variable and lineup race (TargetRace: White vs. Black) as the between-subjects predictor, consistent with the paper’s description. No additional variables are included that would change the specified role of these variables in the one-way ANOVA.",,
+helm,17,"One-way ANOVA in Experiment 2 testing the effect of lineup race (same-race White lineup vs. cross-race Black lineup) on assessors’ likelihood ratings that a White witness’s identification was correct. Lineup race significantly affected ratings (F(1,655)=6.26, MSE=2942.96, p=.01), with identifications from White lineups judged slightly more likely to be accurate than those from Black lineups, though this adjustment still did not fully match the magnitude of the underlying CRE.",Transformation Specification,"We excluded participants who did not meet the ethnicity requirements of the study (e.g., those who said they were of mixed ethnicity despite initial screening; n = 8), who failed one or more of the two attention check questions (n = 124) and who reported technical difficulties that meant they could not watch necessary videos (n = 11). The final sample consisted of 657 participants (286 male, 362 female, 4 other, 5 undisclosed, Mage = 40.67 years, SD = 12.39, range = 18–81). ... The materials used were the same as those used in Experiment 1, except 20 videos in each condition were randomly selected from the underlying stimuli set and used as stimuli (through alphabetically ranking Qualtrics IDs).","# data
+df = read.csv(""RaceinEvaluationsofMemory_Experiment2FullData.csv"")
+ids = read.csv(""RaceinEvaluationsofMemory_E2Stimuli_RandomSelection.csv"")
+
+# recode variables
+df$TargetRace = ifelse(df$TargetRace == 1, ""White"", ""Black"")
+df$TargetPresence = ifelse(df$TargetPresence == 1, ""Present"", ""Absent"")
+df$Pick = ifelse(df$Pick == 0, ""Reject"", ""ID"")
+df$Witness_accuracy = ifelse(df$Witness_correct == 1 & df$Accuracy == 1, 1,
+                      ifelse(df$Witness_correct == 0 & df$Accuracy == 0, 1, 0))
+
+# Set reference levels
+df$Pick = as.factor(df$Pick)
+df$TargetRace = as.factor(df$TargetRace)
+df <- within(df, TargetRace <- relevel(TargetRace, ref = ""White""))
+df <- within(df, Pick <- relevel(Pick, ref = ""Reject""))
+
+
+
+### ANOVA on likelihood correct ###
+a1 =    ezANOVA(data = df,
+        wid = ResponseId,
+        dv = Likelihood_correct_1,
+        between = TargetRace,
+        detailed = TRUE, 
+        return_aov = TRUE)
+
+a1_summary = data.frame(unclass(a1$ANOVA)) %>% mutate(F.value = round(F, 2), eta.sq.partial = round(ges, 3), mse = round(SSn, 2), p.value = round(p, 3)) %>% dplyr::select(Effect, DFn, DFd, F.value, p.value, mse, eta.sq.partial)
+data.frame(a1_summary)",unknown,"The paper specifies participant exclusions and stimulus-selection procedures, but the provided code neither shows these filtering steps nor contradicts them, as they may have been applied before creating the CSV. The visible transformations in code (re-coding variables and factor releveling) are not discussed in the paper, yet they do not clearly conflict with the described procedures.",,
+helm,17,"One-way ANOVA in Experiment 2 testing the effect of lineup race (same-race White lineup vs. cross-race Black lineup) on assessors’ likelihood ratings that a White witness’s identification was correct. Lineup race significantly affected ratings (F(1,655)=6.26, MSE=2942.96, p=.01), with identifications from White lineups judged slightly more likely to be accurate than those from Black lineups, though this adjustment still did not fully match the magnitude of the underlying CRE.",Inference Specification,"In this experiment, the main effect of lineup race was significant, F(1, 655) = 6.26, MSE = 2,942.96, p = .01, ηp
+2 = .01, such that identification decisions from the White lineup (M = 67.47, 95% CI [65.19, 69.74], SE = 1.16) were rated as significantly more likely to be accurate than identification decisions from the Black lineup (M = 63.23, 95% CI [60.81, 65.66],SE = 1.23).","### ANOVA on likelihood correct ###
+a1 =    ezANOVA(data = df,
+        wid = ResponseId,
+        dv = Likelihood_correct_1,
+        between = TargetRace,
+        detailed = TRUE, 
+        return_aov = TRUE)
+
+a1_summary = data.frame(unclass(a1$ANOVA)) %>% mutate(F.value = round(F, 2), eta.sq.partial = round(ges, 3), mse = round(SSn, 2), p.value = round(p, 3)) %>% dplyr::select(Effect, DFn, DFd, F.value, p.value, mse, eta.sq.partial)
+data.frame(a1_summary)
+
+# main effect of liuneup race
+data.frame(emmeans(a1$aov, ~ TargetRace))",match,"The code uses standard F-tests and p-values from ezANOVA and default 95% confidence intervals from emmeans, which aligns with the inferential approach implied in the paper (F-test with p=.01 and 95% CIs). No alternative alpha or nonstandard inference criterion is specified in the code that would conflict with the paper.",,
+helm,18,"Supplementary ANOVA in Experiment 2 including lineup race and identification decision type (identification vs. rejection) as predictors of likelihood ratings, plus their interaction. The lineup race effect was moderated by decision type such that the tendency to rate White lineups as more accurate emerged for identifications but not for lineup rejections, demonstrating that assessors’ modest CRE sensitivity was driven by cases where a person was identified.",Model Specification,"To examine whether the lack of sensitivity to the CRE replicated in our data, we conducted an ANOV A using lineup race (White, Black) to predict assessor ratings of the likelihood an identiﬁcation was correct. This analysis was conducted in R 4.2.3 using the ez package.
+
+As above, we also conducted two supplementary analyses controlling for the identiﬁcation decision type and target presence. These analyses produced similar results to our primary analysis and are reported fully in S10 in the online supplemental materials, with relevant differences noted below.
+
+In our supplemental analyses, this effect was moderated by a signiﬁcant interaction between lineup race and identiﬁcation decision type and a signiﬁcant interaction between lineup race and target presence.",,unknown,"The paper describes supplementary ANOVAs including lineup race, identification decision type, and target presence, but no code relevant to this specific analysis is provided, so the implemented model specification cannot be verified.",,
+helm,18,"Supplementary ANOVA in Experiment 2 including lineup race and identification decision type (identification vs. rejection) as predictors of likelihood ratings, plus their interaction. The lineup race effect was moderated by decision type such that the tendency to rate White lineups as more accurate emerged for identifications but not for lineup rejections, demonstrating that assessors’ modest CRE sensitivity was driven by cases where a person was identified.",Variable Specification,"To examine whether the lack of sensitivity to the CRE replicated in our data, we conducted an ANOV A using lineup race (White, Black) to predict assessor ratings of the likelihood an identi ﬁcation was correct. This analysis was conducted in R 4.2.3 using the ez package. As above, we also conducted two supplementary analyses controlling for the identi ﬁcation decision type and target presence. These analyses produced similar results to our primary analysis and are reported fully in S10 in the online supplemental materials , with relevant differences noted below.
+...
+In this experiment, the main effect of lineup race was signi ﬁcant, F(1, 655) = 6.26, MSE = 2,942.96, p = .01, η
+p
+2 = .01, such that iden-
+tiﬁcation decisions from the White lineup ( M = 67.47, 95% CI
+[65.19, 69.74], SE = 1.16) were rated as signi ﬁcantly more likely to
+be accurate than identi ﬁcation decisions from the Black lineup
+(M = 63.23, 95% CI [60.81, 65.66],SE = 1.23). However, this effect
+was small and assessor predictions relating to accuracy still failed to
+account for the CRE suf ﬁciently in this context (see Figure 5).
+...
+In our supplemental analyses, this effect was moderated by a sig-
+niﬁcant interaction between lineup race and identi ﬁcation decision
+type and a signiﬁcant interaction between lineup race and target pres-
+ence. Speciﬁcally, the effect was signi ﬁcant when an identi ﬁcation
+was made, but not when a lineup was rejected, and in the target-
+present lineup but not in the target-absent lineup (see S10 in the
+online supplemental materials ).","# recode variables
+df$TargetRace = ifelse(df$TargetRace == 1, ""White"", ""Black"")
+df$TargetPresence = ifelse(df$TargetPresence == 1, ""Present"", ""Absent"")
+df$Pick = ifelse(df$Pick == 0, ""Reject"", ""ID"")
+df$Witness_accuracy = ifelse(df$Witness_correct == 1 & df$Accuracy == 1, 1,
+                      ifelse(df$Witness_correct == 0 & df$Accuracy == 0, 1, 0))
+
+# Set reference levels
+df$Pick = as.factor(df$Pick)
+df$TargetRace = as.factor(df$TargetRace)
+df <- within(df, TargetRace <- relevel(TargetRace, ref = ""White""))
+df <- within(df, Pick <- relevel(Pick, ref = ""Reject""))
+
+# Binary logistic regression with ID decision and target race
+br2 = glm(Accuracy ~ TargetRace*Pick, data = df, family = ""binomial"")
+summary(br2)
+
+# odds ratios
+exp(cbind(coef(br2), confint(br2)))
+
+# lineup identifications
+br2_id <- glm(Accuracy ~ TargetRace, data = df[df$Pick == ""ID"", ], family = ""binomial"")
+summary(br2_id)
+
+exp(cbind(coef(br2_id), confint(br2_id)))
+
+br2_idw = wald.test(Sigma = vcov(br2_id), b = coef(br2_id), Terms = 2) 
+round(br2_idw$result$chi2, 5)
+
+# lineup rejections
+br2_re <- glm(Accuracy ~ TargetRace, data = df[df$Pick == ""Reject"", ], family = ""binomial"")
+summary(br2_re)
+
+exp(cbind(coef(br2_re), confint(br2_re)))
+
+br2_rew = wald.test(Sigma = vcov(br2_re), b = coef(br2_re), Terms = 2) 
+round(br2_rew$result$chi2, 5)
+
+...
+
+pred_mod <- glm(Witness_accuracy ~ TargetRace*Pick, data = df, family = 'binomial')
+report(pred_mod)
+r2_tjur(pred_mod)
+",mismatch,"The paper describes an ANOVA predicting continuous likelihood ratings from lineup race and identification decision type (and their interaction), whereas the code models binary accuracy outcomes (Accuracy or Witness_accuracy) with logistic regression using TargetRace and Pick as predictors. Thus, the outcome variable and analysis type in the code do not match the described supplementary ANOVA on likelihood ratings.",,
+helm,18,"Supplementary ANOVA in Experiment 2 including lineup race and identification decision type (identification vs. rejection) as predictors of likelihood ratings, plus their interaction. The lineup race effect was moderated by decision type such that the tendency to rate White lineups as more accurate emerged for identifications but not for lineup rejections, demonstrating that assessors’ modest CRE sensitivity was driven by cases where a person was identified.",Transformation Specification,"To examine whether the lack of sensitivity to the CRE replicated in our data, we conducted an ANOV A using lineup race (White, Black) to predict assessor ratings of the likelihood an identiﬁcation was correct. ... As above, we also conducted two supplementary analyses controlling for the identiﬁcation decision type and target presence.
+
+First, they were asked “how likely is it that the person you saw was correct in their decision?” and gave a response on an 11-point scale ranging from 0 (not at all likely) to 100 (very likely) in increments of 10.","df$TargetRace = ifelse(df$TargetRace == 1, ""White"", ""Black"")
+df$TargetPresence = ifelse(df$TargetPresence == 1, ""Present"", ""Absent"")
+df$Pick = ifelse(df$Pick == 0, ""Reject"", ""ID"")
+df$Witness_accuracy = ifelse(df$Witness_correct == 1 & df$Accuracy == 1, 1,
+                      ifelse(df$Witness_correct == 0 & df$Accuracy == 0, 1, 0))
+
+# Set reference levels
+df$Pick = as.factor(df$Pick)
+df$TargetRace = as.factor(df$TargetRace)
+df <- within(df, TargetRace <- relevel(TargetRace, ref = ""White""))
+df <- within(df, Pick <- relevel(Pick, ref = ""Reject""))
+
+### ANOVA on likelihood correct ###
+a1 =    ezANOVA(data = df,
+        wid = ResponseId,
+        dv = Likelihood_correct_1,
+        between = TargetRace,
+        detailed = TRUE, 
+        return_aov = TRUE)",match,"Both paper and code use the raw likelihood rating variable on its original 0–100 scale and only apply simple label/factor recodings to predictors, with no additional transformations (e.g., rescaling, aggregating, trimming) before the ANOVA. The implemented transformations (binary-to-label recodes and factor releveling) are consistent with the paper’s description and do not alter the substantive scale of the dependent variable.",,
+helm,18,"Supplementary ANOVA in Experiment 2 including lineup race and identification decision type (identification vs. rejection) as predictors of likelihood ratings, plus their interaction. The lineup race effect was moderated by decision type such that the tendency to rate White lineups as more accurate emerged for identifications but not for lineup rejections, demonstrating that assessors’ modest CRE sensitivity was driven by cases where a person was identified.",Inference Specification,"In our supplemental analyses, this effect was moderated by a significant interaction between lineup race and identification decision type and a significant interaction between lineup race and target presence. Specifically, the effect was significant when an identification was made, but not when a lineup was rejected, and in the target-present lineup but not in the target-absent lineup (see S10 in the online supplemental materials ).","### Binary logistic regression with ID decision and target race
+br2 = glm(Accuracy ~ TargetRace*Pick, data = df, family = ""binomial"")
+summary(br2)
+
+# odds ratios
+exp(cbind(coef(br2), confint(br2)))
+
+# lineup identifications
+br2_id <- glm(Accuracy ~ TargetRace, data = df[df$Pick == ""ID"", ], family = ""binomial"")
+summary(br2_id)
+
+exp(cbind(coef(br2_id), confint(br2_id)))
+
+br2_idw = wald.test(Sigma = vcov(br2_id), b = coef(br2_id), Terms = 2) 
+round(br2_idw$result$chi2, 5)
+
+# lineup rejections
+br2_re <- glm(Accuracy ~ TargetRace, data = df[df$Pick == ""Reject"", ], family = ""binomial"")
+summary(br2_re)
+
+exp(cbind(coef(br2_re), confint(br2_re)))
+
+br2_rew = wald.test(Sigma = vcov(br2_re), b = coef(br2_re), Terms = 2) 
+round(br2_rew$result$chi2, 5)
+",unknown,"The paper only notes that effects were 'significant' without specifying any explicit inference criteria (e.g., alpha level or decision rules), and the code likewise performs standard significance tests and confidence intervals without stating or modifying default criteria, so it is not possible to directly compare stated inference specifications.",,
+helm,19,"Supplementary ANOVA in Experiment 2 including lineup race, target presence (present vs. absent), and their interaction as predictors of likelihood ratings. Lineup race effects were moderated by target presence: identifications from White lineups were rated more accurate than those from Black lineups in target-present conditions but not in target-absent conditions, indicating that modest sensitivity to lineup race was concentrated where a suspect was actually present.",Model Specification,"To examine whether the lack of sensitivity to the CRE replicated in our data, we conducted an ANOVA using lineup race (White, Black) to predict assessor ratings of the likelihood an identification was correct. As above, we also conducted two supplementary analyses controlling for the identification decision type and target presence.","### Binary logistic regression with target presence and target race ###
+br3 = glm(Accuracy ~ TargetRace*TargetPresence, data = df, family = ""binomial"")
+summary(br3)
+
+# odds ratios
+exp(cbind(coef(br3), confint(br3)))
+
+# lineup race x target presence interaction
+br3_int = wald.test(Sigma = vcov(br3), b = coef(br3), Terms = 4) 
+round(br3_int$result$chi2, 3)",mismatch,"The paper describes a (supplementary) ANOVA on likelihood ratings with lineup race and target presence, whereas the code fits a binary logistic regression predicting Accuracy with TargetRace*TargetPresence. These constitute different model types applied to different outcome variables.",,
+helm,19,"Supplementary ANOVA in Experiment 2 including lineup race, target presence (present vs. absent), and their interaction as predictors of likelihood ratings. Lineup race effects were moderated by target presence: identifications from White lineups were rated more accurate than those from Black lineups in target-present conditions but not in target-absent conditions, indicating that modest sensitivity to lineup race was concentrated where a suspect was actually present.",Variable Specification,"To examine whether the lack of sensitivity to the CRE replicated
+in our data, we conducted an ANOV A using lineup race (White,
+Black) to predict assessor ratings of the likelihood an identi ﬁcation
+was correct.
+
+As above, we also conducted two supplementary analyses
+controlling for the identi ﬁcation decision type and target presence.
+These analyses produced similar results to our primary analysis
+and are reported fully in S10 in the online supplemental materials ,
+with relevant differences noted below.
+
+In our supplemental analyses, this effect was moderated by a sig-
+niﬁcant interaction between lineup race and identi ﬁcation decision
+type and a signiﬁcant interaction between lineup race and target pres-
+ence.","# recode variables
+df$TargetRace = ifelse(df$TargetRace == 1, ""White"", ""Black"")
+df$TargetPresence = ifelse(df$TargetPresence == 1, ""Present"", ""Absent"")
+...
+# Set reference levels
+df$Pick = as.factor(df$Pick)
+df$TargetRace = as.factor(df$TargetRace)
+...
+
+### Binary logistic regression with target presence and target race ###
+br3 = glm(Accuracy ~ TargetRace*TargetPresence, data = df, family = ""binomial"")
+summary(br3)
+
+# odds ratios
+exp(cbind(coef(br3), confint(br3)))
+
+# lineup race x target presence interaction
+br3_int = wald.test(Sigma = vcov(br3), b = coef(br3), Terms = 4) 
+round(br3_int$result$chi2, 3)
+
+# target present lineups
+br3_tp <- glm(Accuracy ~ TargetRace, data = df[df$TargetPresence == ""Present"", ], family = ""binomial"")
+summary(br3_tp)
+
+exp(cbind(coef(br3_tp), confint(br3_tp)))
+
+br3_tpw = wald.test(Sigma = vcov(br3_tp), b = coef(br3_tp), Terms = 2) 
+round(br3_tpw$result$chi2, 5)
+
+# target absent lineups
+br3_ta <- glm(Accuracy ~ TargetRace, data = df[df$TargetPresence == ""Absent"", ], family = ""binomial"")
+summary(br3_ta)
+
+exp(cbind(coef(br3_ta), confint(br3_ta)))
+
+br3_taw = wald.test(Sigma = vcov(br3_ta), b = coef(br3_ta), Terms = 2) 
+round(br3_taw$result$chi2, 5)",mismatch,"The paper describes an analysis where lineup race and target presence predict assessor likelihood ratings, whereas the code models a binary Accuracy outcome with TargetRace and TargetPresence as predictors. Thus, the dependent variable and its role in the analysis do not match the paper’s specified variable usage.",,
+helm,19,"Supplementary ANOVA in Experiment 2 including lineup race, target presence (present vs. absent), and their interaction as predictors of likelihood ratings. Lineup race effects were moderated by target presence: identifications from White lineups were rated more accurate than those from Black lineups in target-present conditions but not in target-absent conditions, indicating that modest sensitivity to lineup race was concentrated where a suspect was actually present.",Transformation Specification,"To examine whether the lack of sensitivity to the CRE replicated in our data, we conducted an ANOVA using lineup race (White, Black) to predict assessor ratings of the likelihood an identification was correct. This analysis was conducted in R 4.2.3 using the ez package.","# recode variables
+df$TargetRace = ifelse(df$TargetRace == 1, ""White"", ""Black"")
+df$TargetPresence = ifelse(df$TargetPresence == 1, ""Present"", ""Absent"")
+df$Pick = ifelse(df$Pick == 0, ""Reject"", ""ID"")
+df$Witness_accuracy = ifelse(df$Witness_correct == 1 & df$Accuracy == 1, 1,
+                      ifelse(df$Witness_correct == 0 & df$Accuracy == 0, 1, 0))
+
+# Set reference levels
+df$Pick = as.factor(df$Pick)
+df$TargetRace = as.factor(df$TargetRace)
+df <- within(df, TargetRace <- relevel(TargetRace, ref = ""White""))
+df <- within(df, Pick <- relevel(Pick, ref = ""Reject""))
+
+### Binary logistic regression with target presence and target race ###
+br3 = glm(Accuracy ~ TargetRace*TargetPresence, data = df, family = ""binomial"")",unknown,"The paper does not describe any specific data transformations for this ANOVA, and the provided code only shows generic recoding plus creation of an unused composite variable, so it is unclear whether the transformations used for the reported ANOVA match the description. Additionally, the code snippet relates to a logistic regression on Accuracy rather than an ANOVA on likelihood ratings, so relevant transformation steps (if any) for the ANOVA are not visible.",,
+helm,19,"Supplementary ANOVA in Experiment 2 including lineup race, target presence (present vs. absent), and their interaction as predictors of likelihood ratings. Lineup race effects were moderated by target presence: identifications from White lineups were rated more accurate than those from Black lineups in target-present conditions but not in target-absent conditions, indicating that modest sensitivity to lineup race was concentrated where a suspect was actually present.",Inference Specification,"In this experiment, the main effect of lineup race was significant, F(1, 655) = 6.26, MSE = 2,942.96, p = .01, ηp2 = .01, such that identification decisions from the White lineup (M = 67.47, 95% CI [65.19, 69.74], SE = 1.16) were rated as significantly more likely to be accurate than identification decisions from the Black lineup (M = 63.23, 95% CI [60.81, 65.66], SE = 1.23). In our supplemental analyses, this effect was moderated by a significant interaction between lineup race and identification decision type and a significant interaction between lineup race and target presence. Specifically, the effect was significant when an identification was made, but not when a lineup was rejected, and in the target-present lineup but not in the target-absent lineup (see S10 in the online supplemental materials).","### Binary logistic regression with target presence and target race ###
+br3 = glm(Accuracy ~ TargetRace*TargetPresence, data = df, family = ""binomial"")
+summary(br3)
+
+# odds ratios
+exp(cbind(coef(br3), confint(br3)))
+
+# lineup race x target presence interaction
+br3_int = wald.test(Sigma = vcov(br3), b = coef(br3), Terms = 4) 
+round(br3_int$result$chi2, 3)
+
+# target present lineups
+br3_tp <- glm(Accuracy ~ TargetRace, data = df[df$TargetPresence == ""Present"", ], family = ""binomial"")
+summary(br3_tp)
+
+exp(cbind(coef(br3_tp), confint(br3_tp)))
+
+br3_tpw = wald.test(Sigma = vcov(br3_tp), b = coef(br3_tp), Terms = 2) 
+round(br3_tpw$result$chi2, 5)
+
+# target absent lineups
+br3_ta <- glm(Accuracy ~ TargetRace, data = df[df$TargetPresence == ""Absent"", ], family = ""binomial"")
+summary(br3_ta)
+
+exp(cbind(coef(br3_ta), confint(br3_ta)))
+
+br3_taw = wald.test(Sigma = vcov(br3_ta), b = coef(br3_ta), Terms = 2) 
+round(br3_taw$result$chi2, 5)",match,"Both the paper and the code use standard frequentist inference with p-values and 95% confidence intervals, implying the same conventional alpha criterion (≈.05) for determining significance. There is no indication in either source of a different or specialized inference rule being applied.",,
+helm,20,"Binary logistic regression in Experiment 2 predicting assessor accuracy (correct vs. incorrect judgment of White witnesses’ identifications) solely from lineup race (same-race White vs. cross-race Black). The model showed a large effect (B=-1.69, SE=0.17, Wald=94.67, p<.001, OR=0.19), indicating that assessors were much less accurate when evaluating cross-race identifications by White witnesses than same-race identifications.",Model Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using lineup race to predict assessor accuracy.","### Binary logistic regression with target race only ###
+br1 = glm(Accuracy ~ TargetRace, data = df, family = ""binomial"")
+summary(br1)
+
+# odds ratios
+exp(cbind(coef(br1), confint(br1)))
+
+# main effect of lineup race
+br1_tr = wald.test(Sigma = vcov(br1), b = coef(br1), Terms = 2) 
+round(br1_tr$result$chi2, 3)
+
+
+# Binary logistic regression with ID decision and target race
+br2 = glm(Accuracy ~ TargetRace*Pick, data = df, family = ""binomial"")
+summary(br2)
+
+# odds ratios
+exp(cbind(coef(br2), confint(br2)))
+
+# lineup identifications
+br2_id <- glm(Accuracy ~ TargetRace, data = df[df$Pick == ""ID"", ], family = ""binomial"")
+summary(br2_id)
+
+exp(cbind(coef(br2_id), confint(br2_id)))
+
+br2_idw = wald.test(Sigma = vcov(br2_id), b = coef(br2_id), Terms = 2) 
+round(br2_idw$result$chi2, 5)",match,"The code fits a binary logistic regression model predicting accuracy from lineup (target) race only, which aligns with the paper’s description.",,
+helm,20,"Binary logistic regression in Experiment 2 predicting assessor accuracy (correct vs. incorrect judgment of White witnesses’ identifications) solely from lineup race (same-race White vs. cross-race Black). The model showed a large effect (B=-1.69, SE=0.17, Wald=94.67, p<.001, OR=0.19), indicating that assessors were much less accurate when evaluating cross-race identifications by White witnesses than same-race identifications.",Variable Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using lineup race to predict assessor accuracy. ... The model revealed a significant main effect of lineup race (B =− 1.69, SE = 0.17, Wald = 94.67, p , .001, OR = 0.19, 95% CI [0.13, 0.26]). As in Experiment 1, assessors were significantly less accurate in their assessments of cross-race identification decisions (M = 0.38, 95% CI [0.32, 0.43], SE = 0.14) than in their assessments of same-race identification decisions (M = 0.77, 95% CI [0.72, 0.81], SE = 0.24).","# recode variables
+df$TargetRace = ifelse(df$TargetRace == 1, ""White"", ""Black"")
+...
+df$Witness_accuracy = ifelse(df$Witness_correct == 1 & df$Accuracy == 1, 1,
+                      ifelse(df$Witness_correct == 0 & df$Accuracy == 0, 1, 0))
+
+# Set reference levels
+df$Pick = as.factor(df$Pick)
+df$TargetRace = as.factor(df$TargetRace)
+df <- within(df, TargetRace <- relevel(TargetRace, ref = ""White""))
+...
+
+### Binary logistic regression with target race only ###
+br1 = glm(Accuracy ~ TargetRace, data = df, family = ""binomial"")
+summary(br1)
+
+# odds ratios
+exp(cbind(coef(br1), confint(br1)))
+
+# main effect of lineup race
+br1_tr = wald.test(Sigma = vcov(br1), b = coef(br1), Terms = 2) 
+round(br1_tr$result$chi2, 3)
+
+
+# Binary logistic regression with ID decision and target race
+br2 = glm(Accuracy ~ TargetRace*Pick, data = df, family = ""binomial"")
+summary(br2)
+
+# odds ratios
+exp(cbind(coef(br2), confint(br2)))
+
+# lineup identifications
+br2_id <- glm(Accuracy ~ TargetRace, data = df[df$Pick == ""ID"", ], family = ""binomial"")
+summary(br2_id)
+
+exp(cbind(coef(br2_id), confint(br2_id)))
+
+br2_idw = wald.test(Sigma = vcov(br2_id), b = coef(br2_id), Terms = 2) 
+round(br2_idw$result$chi2, 5)",mismatch,"The paper describes a logistic regression predicting assessor accuracy from lineup race, but the code uses the variable `Accuracy` as the outcome instead of the constructed `Witness_accuracy` variable that actually encodes assessor accuracy relative to ground truth, and it does not explicitly restrict to White witnesses as stated in the analysis description.",,
+helm,20,"Binary logistic regression in Experiment 2 predicting assessor accuracy (correct vs. incorrect judgment of White witnesses’ identifications) solely from lineup race (same-race White vs. cross-race Black). The model showed a large effect (B=-1.69, SE=0.17, Wald=94.67, p<.001, OR=0.19), indicating that assessors were much less accurate when evaluating cross-race identifications by White witnesses than same-race identifications.",Transformation Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using lineup race to predict assessor accuracy. This analysis was conducted in R 4.2.3.
+
+A correct assessment was either (a) identifying a witness who was correct in their identification decision as being correct or (b) identifying a witness who was incorrect in their identification decision as being incorrect.
+
+The materials used were the same as those used in Experiment 1, except 20 videos in each condition were randomly selected from the underlying stimuli set and used as stimuli (through alphabetically ranking Qualtrics IDs).","# recode variables
+df$TargetRace = ifelse(df$TargetRace == 1, ""White"", ""Black"")
+df$TargetPresence = ifelse(df$TargetPresence == 1, ""Present"", ""Absent"")
+df$Pick = ifelse(df$Pick == 0, ""Reject"", ""ID"")
+df$Witness_accuracy = ifelse(df$Witness_correct == 1 & df$Accuracy == 1, 1,
+                      ifelse(df$Witness_correct == 0 & df$Accuracy == 0, 1, 0))
+
+# Set reference levels
+df$Pick = as.factor(df$Pick)
+df$TargetRace = as.factor(df$TargetRace)
+df <- within(df, TargetRace <- relevel(TargetRace, ref = ""White""))
+df <- within(df, Pick <- relevel(Pick, ref = ""Reject""))
+
+...
+
+conf = ids %>% select(ResponseId, ConfidenceinPick) %>% rename(""ID_seen"" = ""ResponseId"", ""Witness_confidence"" = ""ConfidenceinPick"")
+df = merge(df, conf, by = ""ID_seen"", all = TRUE)
+
+pred_mod <- glm(Witness_accuracy ~ TargetRace*Pick, data = df, family = 'binomial')
+pred_jur = glm(Witness_accuracy ~ Witness_correct, data = df, family = 'binomial')",match,"The code’s construction of the binary outcome variable (Witness_accuracy) implements exactly the transformation described in the paper (correct vs. incorrect assessment based on whether the witness was actually correct or incorrect), and the recoding of lineup race into White vs. Black matches the described lineup race contrast. Any additional modeling terms (e.g., *Pick*) concern model specification, not data transformation, so they do not conflict with the transformation description.",,
+helm,20,"Binary logistic regression in Experiment 2 predicting assessor accuracy (correct vs. incorrect judgment of White witnesses’ identifications) solely from lineup race (same-race White vs. cross-race Black). The model showed a large effect (B=-1.69, SE=0.17, Wald=94.67, p<.001, OR=0.19), indicating that assessors were much less accurate when evaluating cross-race identifications by White witnesses than same-race identifications.",Inference Specification,"The model revealed a significant main effect of lineup race (B =− 1.69, SE = 0.17, Wald = 94.67, p < .001, OR = 0.19, 95% CI [0.13, 0.26]).","# lineup identifications
+br2_id <- glm(Accuracy ~ TargetRace, data = df[df$Pick == ""ID"", ], family = ""binomial"")
+summary(br2_id)
+
+exp(cbind(coef(br2_id), confint(br2_id)))
+
+br2_idw = wald.test(Sigma = vcov(br2_id), b = coef(br2_id), Terms = 2) 
+round(br2_idw$result$chi2, 5)",match,"The code uses a Wald test, p-value, and exponentiated confidence intervals from the logistic regression coefficients, consistent with the paper’s reported Wald statistic, p < .001, and 95% CI for the odds ratio. No conflicting inference criteria are evident between the paper and the code.",,
+helm,21,"Supplementary logistic regression in Experiment 2 including lineup race, target presence, and their interaction as predictors of assessor accuracy. Both the main effect of lineup race and a strong lineup race × target presence interaction (B=-2.94, SE=0.40, Wald=53.33, p<.001, OR=0.05) were observed, with the detrimental effect of cross-race status on assessor accuracy substantially larger in target-present than target-absent conditions.",Model Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using lineup race to predict assessor accuracy. This analysis was conducted in R 4.2.3. We conducted two supplementary analyses, one including identification decision type and the interaction between identification decision type and lineup race as additional predictors, and one including target presence and the interaction between target presence and lineup race as additional predictors (for results see S11 in the online supplemental materials ).","### Binary logistic regression with target presence and target race ###
+br3 = glm(Accuracy ~ TargetRace*TargetPresence, data = df, family = ""binomial"")
+summary(br3)
+
+# odds ratios
+exp(cbind(coef(br3), confint(br3)))
+
+# lineup race x target presence interaction
+br3_int = wald.test(Sigma = vcov(br3), b = coef(br3), Terms = 4) 
+round(br3_int$result$chi2, 3)",match,"The code fits a binary logistic regression model with lineup race, target presence, and their interaction as predictors of assessor accuracy, matching the model specification described in the paper. It also uses a Wald test to examine the interaction term, consistent with reporting an interaction effect.",,
+helm,21,"Supplementary logistic regression in Experiment 2 including lineup race, target presence, and their interaction as predictors of assessor accuracy. Both the main effect of lineup race and a strong lineup race × target presence interaction (B=-2.94, SE=0.40, Wald=53.33, p<.001, OR=0.05) were observed, with the detrimental effect of cross-race status on assessor accuracy substantially larger in target-present than target-absent conditions.",Variable Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using lineup race to predict assessor accuracy. This analysis was conducted in R 4.2.3. We conducted two supplementary analyses, one including identification decision type and the interaction between identification decision type and lineup race as additional predictors, and one including target presence and the interaction between target presence and lineup race as additional predictors (for results see S11 in the online supplemental materials). … In our supplementary analyses, this main effect was moderated by target presence (B = −2.94, SE = 0.40, Wald = 53.33, p < .001, OR = 0.05 95% CI [0.02, 0.12]). The main effect was significant in both target-present (B = −3.4, SE = 0.32, Wald = 116.04, p < .001, OR = 0.03, 95% CI [0.02, 0.06]) and target-absent lineups (B = −0.49, SE = 0.25, Wald = 4.02, p = .045, OR = 0.61, 95% CI [0.38, 0.99]), but larger in target-present lineups.","# recode variables
+df$TargetRace = ifelse(df$TargetRace == 1, ""White"", ""Black"")
+df$TargetPresence = ifelse(df$TargetPresence == 1, ""Present"", ""Absent"")
+...
+# Set reference levels
+df$Pick = as.factor(df$Pick)
+df$TargetRace = as.factor(df$TargetRace)
+df <- within(df, TargetRace <- relevel(TargetRace, ref = ""White""))
+...
+### Binary logistic regression with target presence and target race ###
+br3 = glm(Accuracy ~ TargetRace*TargetPresence, data = df, family = ""binomial"")
+summary(br3)
+
+# odds ratios
+exp(cbind(coef(br3), confint(br3)))
+
+# lineup race x target presence interaction
+br3_int = wald.test(Sigma = vcov(br3), b = coef(br3), Terms = 4) 
+round(br3_int$result$chi2, 3)
+
+# target present lineups
+br3_tp <- glm(Accuracy ~ TargetRace, data = df[df$TargetPresence == ""Present"", ], family = ""binomial"")
+summary(br3_tp)
+
+exp(cbind(coef(br3_tp), confint(br3_tp)))
+
+br3_tpw = wald.test(Sigma = vcov(br3_tp), b = coef(br3_tp), Terms = 2) 
+round(br3_tpw$result$chi2, 5)
+
+# target absent lineups
+br3_ta <- glm(Accuracy ~ TargetRace, data = df[df$TargetPresence == ""Absent"", ], family = ""binomial"")
+summary(br3_ta)
+
+exp(cbind(coef(br3_ta), confint(br3_ta)))
+
+br3_taw = wald.test(Sigma = vcov(br3_ta), b = coef(br3_ta), Terms = 2) 
+round(br3_taw$result$chi2, 5)",match,"The code uses assessor Accuracy as the outcome and includes lineup race (TargetRace), target presence (TargetPresence), and their interaction as predictors, matching the variables described in the paper for this supplementary logistic regression. It also fits separate models for target-present and target-absent lineups with TargetRace predicting Accuracy, consistent with the paper’s follow-up analyses by target presence condition.",,
+helm,21,"Supplementary logistic regression in Experiment 2 including lineup race, target presence, and their interaction as predictors of assessor accuracy. Both the main effect of lineup race and a strong lineup race × target presence interaction (B=-2.94, SE=0.40, Wald=53.33, p<.001, OR=0.05) were observed, with the detrimental effect of cross-race status on assessor accuracy substantially larger in target-present than target-absent conditions.",Transformation Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using lineup race to predict assessor accuracy. This analysis was conducted in R 4.2.3. We conducted two supplementary analyses, one including identification decision type and the interaction between identification decision type and lineup race as additional predictors, and one including target presence and the interaction between target presence and lineup race as additional predictors (for results see S11 in the online supplemental materials). Our key finding replicated in these analyses, but was moderated by the other factors, as described below.","# recode variables
+df$TargetRace = ifelse(df$TargetRace == 1, ""White"", ""Black"")
+df$TargetPresence = ifelse(df$TargetPresence == 1, ""Present"", ""Absent"")
+df$Pick = ifelse(df$Pick == 0, ""Reject"", ""ID"")
+df$Witness_accuracy = ifelse(df$Witness_correct == 1 & df$Accuracy == 1, 1,
+                      ifelse(df$Witness_correct == 0 & df$Accuracy == 0, 1, 0))
+
+# Set reference levels
+df$Pick = as.factor(df$Pick)
+df$TargetRace = as.factor(df$TargetRace)
+df <- within(df, TargetRace <- relevel(TargetRace, ref = ""White""))
+df <- within(df, Pick <- relevel(Pick, ref = ""Reject""))
+
+### Binary logistic regression with target presence and target race ###
+br3 = glm(Accuracy ~ TargetRace*TargetPresence, data = df, family = ""binomial"")
+...
+# target present lineups
+br3_tp <- glm(Accuracy ~ TargetRace, data = df[df$TargetPresence == ""Present"", ], family = ""binomial"")
+...
+# target absent lineups
+br3_ta <- glm(Accuracy ~ TargetRace, data = df[df$TargetPresence == ""Absent"", ], family = ""binomial"")",unknown,"The paper does not describe specific data transformations beyond indicating a binary logistic regression on assessor accuracy with lineup race and target presence, while the code shows several recodings and creation of a new variable (Witness_accuracy) whose relationship to the reported analysis is unclear. Because the construction and use of the dependent variable in the code (Accuracy) are not documented in the excerpt, it is not possible to determine if the transformation procedures match the paper’s description.",,
+helm,21,"Supplementary logistic regression in Experiment 2 including lineup race, target presence, and their interaction as predictors of assessor accuracy. Both the main effect of lineup race and a strong lineup race × target presence interaction (B=-2.94, SE=0.40, Wald=53.33, p<.001, OR=0.05) were observed, with the detrimental effect of cross-race status on assessor accuracy substantially larger in target-present than target-absent conditions.",Inference Specification,"In our supplementary analyses, this main effect was moderated by target presence (B = −2.94, SE = 0.40, Wald = 53.33, p < .001, OR = 0.05 95% CI [0.02, 0.12]) and identification decision type (B = 0.97, SE = 0.42, Wald = 5.31, p = .02, OR = 0.38, 95% CI [0.17, 0.87]). The main effect was significant in both target-present (B = −3.4, SE = 0.32, Wald = 116.04, p < .001, OR = 0.03, 95% CI [0.02, 0.06]) and target-absent lineups (B = −0.49, SE = 0.25, Wald = 4.02, p = .045, OR = 0.61, 95% CI [0.38, 0.99]), but larger in target-present lineups.","### Binary logistic regression with target presence and target race ###
+br3 = glm(Accuracy ~ TargetRace*TargetPresence, data = df, family = ""binomial"")
+summary(br3)
+
+# odds ratios
+exp(cbind(coef(br3), confint(br3)))
+
+# lineup race x target presence interaction
+br3_int = wald.test(Sigma = vcov(br3), b = coef(br3), Terms = 4) 
+round(br3_int$result$chi2, 3)
+
+# target present lineups
+br3_tp <- glm(Accuracy ~ TargetRace, data = df[df$TargetPresence == ""Present"", ], family = ""binomial"")
+summary(br3_tp)
+
+exp(cbind(coef(br3_tp), confint(br3_tp)))
+
+br3_tpw = wald.test(Sigma = vcov(br3_tp), b = coef(br3_tp), Terms = 2) 
+round(br3_tpw$result$chi2, 5)
+
+# target absent lineups
+br3_ta <- glm(Accuracy ~ TargetRace, data = df[df$TargetPresence == ""Absent"", ], family = ""binomial"")
+summary(br3_ta)
+
+exp(cbind(coef(br3_ta), confint(br3_ta)))
+
+br3_taw = wald.test(Sigma = vcov(br3_ta), b = coef(br3_ta), Terms = 2) 
+round(br3_taw$result$chi2, 5)",match,"The code uses standard Wald tests, p-values, and default 95% confidence intervals, which aligns with the paper’s reporting of Wald statistics, p-values, and 95% CIs for the logistic regression effects and interactions. No conflicting or alternative inference criteria are evident in the code.",,
+helm,22,"Supplementary logistic regression in Experiment 2 including lineup race, identification decision type (identification vs. rejection), and their interaction as predictors of assessor accuracy. The lineup race × decision type interaction was significant (B=0.97, SE=0.42, Wald=5.31, p=.02, OR=0.38), with cross-race impairments in assessor accuracy present for both identifications and rejections but markedly larger for identifications.",Model Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using lineup race to predict assessor accuracy. We conducted two supplementary analyses, one including identification decision type and the interaction between identification decision type and lineup race as additional predictors, and one including target presence and the interaction between target presence and lineup race as additional predictors (for results see S11 in the online supplemental materials ).","# Binary logistic regression with ID decision and target race
+br2 = glm(Accuracy ~ TargetRace*Pick, data = df, family = ""binomial"")
+summary(br2)
+
+# odds ratios
+exp(cbind(coef(br2), confint(br2)))",match,"The code implements a binary logistic regression with lineup race, identification decision type, and their interaction as predictors of assessor accuracy, which matches the model specification described in the paper.",,
+helm,22,"Supplementary logistic regression in Experiment 2 including lineup race, identification decision type (identification vs. rejection), and their interaction as predictors of assessor accuracy. The lineup race × decision type interaction was significant (B=0.97, SE=0.42, Wald=5.31, p=.02, OR=0.38), with cross-race impairments in assessor accuracy present for both identifications and rejections but markedly larger for identifications.",Variable Specification,"To understand the relationships between the effects identified above and the ability of assessors to distinguish between accurate and inaccurate identification decisions, we conducted a binary logistic regression using lineup race to predict assessor accuracy. ... We conducted two supplementary analyses, one including identification decision type and the interaction between identification decision type and lineup race as additional predictors, and one including target presence and the interaction between target presence and lineup race as additional predictors (for results see S11 in the online supplemental materials).","# recode variables
+df$TargetRace = ifelse(df$TargetRace == 1, ""White"", ""Black"")
+df$TargetPresence = ifelse(df$TargetPresence == 1, ""Present"", ""Absent"")
+df$Pick = ifelse(df$Pick == 0, ""Reject"", ""ID"")
+
+# Set reference levels
+df$Pick = as.factor(df$Pick)
+df$TargetRace = as.factor(df$TargetRace)
+df <- within(df, TargetRace <- relevel(TargetRace, ref = ""White""))
+df <- within(df, Pick <- relevel(Pick, ref = ""Reject""))
+
+# Binary logistic regression with ID decision and target race
+br2 = glm(Accuracy ~ TargetRace*Pick, data = df, family = ""binomial"")
+summary(br2)
+
+# odds ratios
+exp(cbind(coef(br2), confint(br2)))
+
+# lineup identifications
+br2_id <- glm(Accuracy ~ TargetRace, data = df[df$Pick == ""ID"", ], family = ""binomial"")
+summary(br2_id)
+
+exp(cbind(coef(br2_id), confint(br2_id)))
+
+br2_idw = wald.test(Sigma = vcov(br2_id), b = coef(br2_id), Terms = 2) 
+round(br2_idw$result$chi2, 5)
+
+# lineup rejections
+br2_re <- glm(Accuracy ~ TargetRace, data = df[df$Pick == ""Reject"", ], family = ""binomial"")
+summary(br2_re)
+
+exp(cbind(coef(br2_re), confint(br2_re)))
+
+br2_rew = wald.test(Sigma = vcov(br2_re), b = coef(br2_re), Terms = 2) 
+round(br2_rew$result$chi2, 5)",match,"The code uses assessor Accuracy as the outcome and includes lineup race (TargetRace), identification decision type (Pick: ID vs Reject), and their interaction as predictors, matching the paper’s description of the supplementary logistic regression. Additional stratified models by decision type (identifications vs. rejections) are also consistent with examining cross-race effects within each decision type.",,
+helm,22,"Supplementary logistic regression in Experiment 2 including lineup race, identification decision type (identification vs. rejection), and their interaction as predictors of assessor accuracy. The lineup race × decision type interaction was significant (B=0.97, SE=0.42, Wald=5.31, p=.02, OR=0.38), with cross-race impairments in assessor accuracy present for both identifications and rejections but markedly larger for identifications.",Transformation Specification,"The materials used were the same as those used in Experiment 1, except 20 videos in each condition were randomly selected from the underlying stimuli set and used as stimuli (through alphabetically ranking Qualtrics IDs).
+
+We excluded participants who did not meet the ethnicity requirements of the study (e.g., those who said they were of mixed ethnicity despite initial screening; n = 8), who failed one or more of the two attention check questions ( n = 124) and who reported technical difﬁculties that meant they could not watch necessary videos ( n = 11).","# recode variables
+df$TargetRace = ifelse(df$TargetRace == 1, ""White"", ""Black"")
+df$TargetPresence = ifelse(df$TargetPresence == 1, ""Present"", ""Absent"")
+df$Pick = ifelse(df$Pick == 0, ""Reject"", ""ID"")
+df$Witness_accuracy = ifelse(df$Witness_correct == 1 & df$Accuracy == 1, 1,
+                      ifelse(df$Witness_correct == 0 & df$Accuracy == 0, 1, 0))
+
+# Set reference levels
+df$Pick = as.factor(df$Pick)
+df$TargetRace = as.factor(df$TargetRace)
+df <- within(df, TargetRace <- relevel(TargetRace, ref = ""White""))
+df <- within(df, Pick <- relevel(Pick, ref = ""Reject""))",unknown,"The paper excerpt only describes stimulus selection and participant exclusions, whereas the provided code snippet shows recoding of variables and construction of an accuracy variable, and there is not enough information to determine whether these transformations are consistent with unreported details in the paper. The absence of exclusions in this code block cannot be taken as evidence they were not applied elsewhere.",,
+helm,22,"Supplementary logistic regression in Experiment 2 including lineup race, identification decision type (identification vs. rejection), and their interaction as predictors of assessor accuracy. The lineup race × decision type interaction was significant (B=0.97, SE=0.42, Wald=5.31, p=.02, OR=0.38), with cross-race impairments in assessor accuracy present for both identifications and rejections but markedly larger for identifications.",Inference Specification,"In our supplementary analyses, this main effect was moderated by target presence (B =− 2.94, SE = 0.40, Wald = 53.33, p , .001, OR = 0.05 95% CI [0.02, 0.12]) and identification decision type ( B = 0.97, SE = 0.42, Wald = 5.31, p = .02, OR = 0.38, 95% CI [0.17, 0.87]).","# Binary logistic regression with ID decision and target race
+br2 = glm(Accuracy ~ TargetRace*Pick, data = df, family = ""binomial"")
+summary(br2)
+
+# odds ratios
+exp(cbind(coef(br2), confint(br2)))
+
+# lineup identifications
+br2_id <- glm(Accuracy ~ TargetRace, data = df[df$Pick == ""ID"", ], family = ""binomial"")
+summary(br2_id)
+
+exp(cbind(coef(br2_id), confint(br2_id)))
+
+br2_idw = wald.test(Sigma = vcov(br2_id), b = coef(br2_id), Terms = 2) 
+round(br2_idw$result$chi2, 5)
+
+# lineup rejections
+br2_re <- glm(Accuracy ~ TargetRace, data = df[df$Pick == ""Reject"", ], family = ""binomial"")
+summary(br2_re)
+
+exp(cbind(coef(br2_re), confint(br2_re)))
+
+br2_rew = wald.test(Sigma = vcov(br2_re), b = coef(br2_re), Terms = 2) 
+round(br2_rew$result$chi2, 5)",match,"The code uses default 95% confidence intervals and Wald tests with p-values, matching the paper’s reporting of Wald statistics, p-values, and 95% CIs for the logistic regression coefficients. No alternative alpha or CI level is specified in the code, consistent with the inferential framework implied in the paper.",,
+helm,23,"Likelihood ratio chi-square model comparison between two binary logistic regression models predicting witness identification accuracy (correct vs. incorrect) across Experiments. The 'prediction model' including lineup race, witness decision type (identification vs. rejection), and witness confidence fit significantly better than an 'assessor model' including only assessors’ binary judgments (χ²(6)=25.56, p<.001), and explained more variance (Tjur’s R²=0.28 vs. 0.21), indicating that a simple statistical model outperformed human assessors.",Model Specification,"To examine whether a simple model could outperform assessors in evaluating the accuracy of identiï¬¿cation decisions, we created two binary logistic regression models with witness accuracy (Correct vs. Incorrect) as the outcome variable. ... A model comparison revealed that the prediction model was signiï¬¿cantly better than the assessor model, χ²(6) = 25.56, p < .001.","### Can a simple model do better? ###
+conf = ids %>% select(ResponseId, ConfidenceinPick) %>% rename(""ID_seen"" = ""ResponseId"", ""Witness_confidence"" = ""ConfidenceinPick"")
+df = merge(df, conf, by = ""ID_seen"", all = TRUE)
+
+pred_mod <- glm(Witness_accuracy ~ TargetRace*Pick, data = df, family = 'binomial')
+report(pred_mod)
+r2_tjur(pred_mod)
+
+pred_jur = glm(Witness_accuracy ~ Witness_correct, data = df, family = 'binomial')
+report(pred_jur)
+r2_tjur(pred_jur)
+
+anova(pred_jur, pred_mod, test = ""Chisq"")",match,"The code implements two binomial logistic regression models predicting witness accuracy and compares them with a likelihood ratio chi-square test, as described in the paper.",,
+helm,23,"Likelihood ratio chi-square model comparison between two binary logistic regression models predicting witness identification accuracy (correct vs. incorrect) across Experiments. The 'prediction model' including lineup race, witness decision type (identification vs. rejection), and witness confidence fit significantly better than an 'assessor model' including only assessors’ binary judgments (χ²(6)=25.56, p<.001), and explained more variance (Tjur’s R²=0.28 vs. 0.21), indicating that a simple statistical model outperformed human assessors.",Variable Specification,"To examine whether a simple model could outperform assessors in evaluating the accuracy of identiï¬¿cation decisions, we created two binary logistic regression models with witness accuracy (Correct vs. Incorrect) as the outcome variable. The “prediction model” included lineup race (Black vs. White), witness decision type (Identiï¬¿cation vs. Rejection), and witness conï¬¿ dence as predictors. The “assessor model” included only participants’ assessments of accuracy (Correct Identiï¬¿cation Decision vs. Incorrect Identiï¬¿cation Decision).","# recode variables
+df$TargetRace = ifelse(df$TargetRace == 1, ""White"", ""Black"")
+df$TargetPresence = ifelse(df$TargetPresence == 1, ""Present"", ""Absent"")
+df$Pick = ifelse(df$Pick == 0, ""Reject"", ""ID"")
+df$Witness_accuracy = ifelse(df$Witness_correct == 1 & df$Accuracy == 1, 1,
+                      ifelse(df$Witness_correct == 0 & df$Accuracy == 0, 1, 0))
+
+# Set reference levels
+df$Pick = as.factor(df$Pick)
+df$TargetRace = as.factor(df$TargetRace)
+df <- within(df, TargetRace <- relevel(TargetRace, ref = ""White""))
+df <- within(df, Pick <- relevel(Pick, ref = ""Reject""))
+
+### Can a simple model do better? ###
+conf = ids %>% select(ResponseId, ConfidenceinPick) %>% rename(""ID_seen"" = ""ResponseId"", ""Witness_confidence"" = ""ConfidenceinPick"")
+df = merge(df, conf, by = ""ID_seen"", all = TRUE)
+
+pred_mod <- glm(Witness_accuracy ~ TargetRace*Pick, data = df, family = 'binomial')
+
+pred_jur = glm(Witness_accuracy ~ Witness_correct, data = df, family = 'binomial')",mismatch,"The code’s prediction model omits witness confidence and instead includes an interaction term between lineup race and decision type, which differs from the predictors described in the paper. The assessor model appears aligned in using only assessors’ accuracy judgments as a predictor, but the overall variable specification for the analysis does not match the paper’s description.",,
+helm,23,"Likelihood ratio chi-square model comparison between two binary logistic regression models predicting witness identification accuracy (correct vs. incorrect) across Experiments. The 'prediction model' including lineup race, witness decision type (identification vs. rejection), and witness confidence fit significantly better than an 'assessor model' including only assessors’ binary judgments (χ²(6)=25.56, p<.001), and explained more variance (Tjur’s R²=0.28 vs. 0.21), indicating that a simple statistical model outperformed human assessors.",Transformation Specification,"To examine whether a simple model could outperform assessors in evaluating the accuracy of identification decisions, we created two binary logistic regression models with witness accuracy (Correct vs. Incorrect) as the outcome variable. The ""prediction model"" included lineup race (Black vs. White), witness decision type (Identification vs. Rejection), and witness confidence as predictors. The ""assessor model"" included only participants’ assessments of accuracy (Correct Identification Decision vs. Incorrect Identification Decision).","# recode variables
+df$TargetRace = ifelse(df$TargetRace == 1, ""White"", ""Black"")
+df$TargetPresence = ifelse(df$TargetPresence == 1, ""Present"", ""Absent"")
+df$Pick = ifelse(df$Pick == 0, ""Reject"", ""ID"")
+df$Witness_accuracy = ifelse(df$Witness_correct == 1 & df$Accuracy == 1, 1,
+                      ifelse(df$Witness_correct == 0 & df$Accuracy == 0, 1, 0))
+
+# Set reference levels
+df$Pick = as.factor(df$Pick)
+df$TargetRace = as.factor(df$TargetRace)
+df <- within(df, TargetRace <- relevel(TargetRace, ref = ""White""))
+df <- within(df, Pick <- relevel(Pick, ref = ""Reject""))
+
+### Can a simple model do better? ###
+conf = ids %>% select(ResponseId, ConfidenceinPick) %>% rename(""ID_seen"" = ""ResponseId"", ""Witness_confidence"" = ""ConfidenceinPick"")
+df = merge(df, conf, by = ""ID_seen"", all = TRUE)
+
+pred_mod <- glm(Witness_accuracy ~ TargetRace*Pick, data = df, family = 'binomial')
+report(pred_mod)
+r2_tjur(pred_mod)
+
+pred_jur = glm(Witness_accuracy ~ Witness_correct, data = df, family = 'binomial')
+report(pred_jur)
+r2_tjur(pred_jur)
+
+anova(pred_jur, pred_mod, test = ""Chisq"")",unknown,"The paper only states that witness accuracy was modeled as Correct vs. Incorrect but does not describe how this binary outcome or other variables were specifically coded or transformed, while the code applies several recodings and constructs a composite Witness_accuracy variable from Witness_correct and Accuracy. Because these transformations are not detailed in the paper, it is not possible to determine if the code’s transformations match the paper’s described procedures.",,
+helm,23,"Likelihood ratio chi-square model comparison between two binary logistic regression models predicting witness identification accuracy (correct vs. incorrect) across Experiments. The 'prediction model' including lineup race, witness decision type (identification vs. rejection), and witness confidence fit significantly better than an 'assessor model' including only assessors’ binary judgments (χ²(6)=25.56, p<.001), and explained more variance (Tjur’s R²=0.28 vs. 0.21), indicating that a simple statistical model outperformed human assessors.",Inference Specification,"A model comparison revealed that the prediction model was significantly better than the assessor model, χ2(6) = 25.56, p , .001.","pred_mod <- glm(Witness_accuracy ~ TargetRace*Pick, data = df, family = 'binomial')
+report(pred_mod)
+r2_tjur(pred_mod)
+
+pred_jur = glm(Witness_accuracy ~ Witness_correct, data = df, family = 'binomial')
+report(pred_jur)
+r2_tjur(pred_jur)
+
+anova(pred_jur, pred_mod, test = ""Chisq"")",match,"The paper reports a likelihood ratio chi-square comparison with a p-value threshold (p < .001), and the code uses an ANOVA with test = 'Chisq' to obtain this inferential test between the two logistic models. Although the alpha level is not explicitly coded, the inferential method and resulting p-value assessment procedure correspond to the description in the paper.",,

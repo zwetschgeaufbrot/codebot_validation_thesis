@@ -32,8 +32,102 @@ library(kableExtra)
 library(readr)
 library(stringr)
 library(waldo)
-
+library(readxl)
+library(purrr)
 ```
+
+# Read Human Data
+
+```{r}
+## read in sheet names
+#sheets <- excel_sheets("../../data/raw/main/human/sample_coding_human.xlsx") 
+#
+## remove cols sample papers and vars
+#sheets <- sheets[3:19]
+#
+## save each sheet as separate df
+#sheets |> 
+#  set_names() |> 
+#  map(~ read_excel("../../data/raw/main/human/sample_coding_human.xlsx", sheet = .x)) |> 
+#  list2env(envir = .GlobalEnv)
+  
+```
+## Clean Col Names in Carvalho
+
+```{r}
+## vector of abbreviated col names in carvalho
+#carv_col <- colnames(carvalho)
+#
+## vector of correct col names 
+#yeung_col <- colnames(yeung)
+#
+## replace col names
+#carvalho |> 
+#  colnames() <- yeung_col
+#
+## check replacement
+#colnames(carvalho) == colnames(yeung)
+```
+
+```{r}
+#cha <- 
+#  cha |> 
+#  mutate(data_available = as.character(data_available))
+#
+#carvalho <- 
+#  carvalho |> 
+#  mutate(data_needed = as.character(data_needed),
+#         data_available = as.character(data_available))
+#
+#akan <- 
+#  akan |> 
+#  mutate(data_needed = as.character(data_needed),
+#         data_available = as.character(data_available))
+#
+#muenster <- 
+#  muenster |> 
+#  mutate(data_needed = as.character(data_needed),
+#         data_available = as.character(data_available))
+```
+
+# Bind all Dataframes
+
+```{r}
+#df_human <- bind_rows(list(hussey, bloy, yang, yeung, 
+#                  evans, radtke, besken, berger, 
+#                  cha, carvalho, akan, muenster, 
+#                  nguyen, avilles, hsieh, helm, mancassola),
+#                  .id = "paper_id")
+#
+#df_human |> count(manuscript_content == "NA")
+#
+#df_human <- df_human |> 
+#  mutate(manuscript_content = if_else(manuscript_content == "NA", 
+#                                      NA_character_,
+#                                      manuscript_content))
+```
+
+# Inspect Dataset
+
+```{r}
+## identify number of unique analyses
+#
+#analyses <- df_human |> 
+#  group_by(paper_id, analysis_id) |> 
+#  count(analysis_id) |> 
+#  nrow()
+#
+## maximum number of possible observations resulting from the dimension x analysis x author structure
+#
+#obs <- nrow(df_human)
+#
+## number of observations where I did not find any information
+#
+#na <- df_human |> 
+#  filter(is.na(manuscript_location)) |> 
+#  nrow()
+```
+
 
 # Read in Data from CodeBot's Combined Reports & Rough Cleanup
 
@@ -42,14 +136,14 @@ library(waldo)
 
 # save file paths to vector
 files <- dir("../../data/raw/main/adjudicator/combined_reports", 
-             full.names = TRUE) %>% 
+             full.names = TRUE) |> 
   dput()
 
 # save first authors to vector
 author <- dir("../../data/raw/main/adjudicator/combined_reports", 
-              full.names = FALSE) %>% 
-  dput() %>%
-  str_remove_all(.,"_combined_report.csv")
+              full.names = FALSE) |> 
+  dput() |> 
+  str_remove_all("_combined_report.csv")
 
 # paper_id
 paper_id <-  c(1:17)
@@ -58,7 +152,7 @@ paper_id <-  c(1:17)
 df <- read_csv(files, 
                id = "filename",
                na = "null",
-               locale = locale(encoding = "UTF-8")) %>% 
+               locale = locale(encoding = "UTF-8")) |> 
   # add author column
   mutate(paper_id = dplyr::recode_values(filename, 
                                          from = files, 
@@ -66,7 +160,7 @@ df <- read_csv(files,
          # without the dplyr:: there appears to be a namespace collision
          author = dplyr::recode_values(filename, 
                                        from = files, 
-                                       to = author)) %>%
+                                       to = author)) |>
   # move author column to the front
   relocate(c(author,paper_id), .after = filename)
 
@@ -78,7 +172,7 @@ This check was predefined in the pre-registration.
 
 ```{r}
 # remove empty rows
-test <- df %>% janitor::remove_empty(which = "rows")
+test <- df |> janitor::remove_empty(which = "rows")
 
 # compare df with and without the empty rows
 compare(test,df)
@@ -86,6 +180,233 @@ compare(test,df)
 # remove from environment
 rm(test) 
 ```
+
+# Rowwise Sanity Check
+
+```{r}
+# is paper ID in c(1:17)
+df |> 
+  count(paper_id)
+# yes
+```
+
+```{r}
+# is analysis ID a number bigger than 1
+df |> 
+  count(analysis_id)
+# yes
+```
+
+```{r}
+# are there only four dimensions?
+
+df |> 
+  count(dimension)
+```
+
+```{r}
+# are there more than four dimensions?
+df |> group_by(dimension) |> 
+  count(dimension) |> 
+  kable() |> 
+  kable_classic(full_width = FALSE)
+
+# correct dimensions and flag corresponding rows
+df <- df |> 
+  mutate(corrected = if_else(str_detect(dimension, "\\d"), TRUE, FALSE),
+         dimension = str_remove(dimension,"\\d"))
+
+df |> group_by(dimension) |> 
+  count(dimension) |> 
+  kable() |> 
+  kable_classic(full_width = FALSE)
+```
+
+```{r}
+# are there any human_manuscript_entries that are not NA_character or Quotes?
+df |> 
+  count(human_manuscript_content)
+# there are 4 "NA\r\n" resulting from a read in error
+
+# are there NA cells?
+df |> 
+  count(is.na(human_manuscript_content))
+# there are no NA cells
+
+# are there empty cells?
+df |> 
+  count(human_manuscript_content == "")
+# 975 empty cells
+
+# change empty cells to NA, fix read-in error, mark as corrected
+df <- df |> 
+  mutate(corrected = if_else(human_manuscript_content %in% c("","NA\r\n"), 
+                             TRUE, FALSE),
+         human_manuscript_content = if_else(human_manuscript_content %in% c("","NA\r\n"),
+                                            NA, human_manuscript_content))
+```
+
+```{r}
+# is the manuscript location only numbers between 0 and 3?
+df |> 
+  count(human_manuscript_location)
+# 978 empty rows and and four NA\r\n
+
+# change empty cells to NA, fix read-in error, mark as corrected
+df <- df |> 
+  mutate(corrected = if_else(human_manuscript_location %in% c("","NA\r\n"), 
+                             TRUE, FALSE),
+         human_manuscript_location = if_else(human_manuscript_location %in% c("","NA\r\n"),
+                                            NA, human_manuscript_location))
+```
+
+```{r}
+df |> 
+  count(human_code_content)
+
+df |> 
+  count(human_code_content %in% c("NA\r\n", ""))
+# 1479 empty rows and and NA\r\n
+
+# change empty cells to NA, fix read-in error, mark as corrected
+df <- df |> 
+  mutate(corrected = if_else(human_code_content %in% c("","NA\r\n"), 
+                             TRUE, FALSE),
+         human_code_content = if_else(human_code_content %in% c("","NA\r\n"),
+                                            NA, human_code_content))
+```
+```{r}
+df |> 
+  count(human_code_location)
+
+df |> 
+  count(human_code_location %in% c("NA\r\n", ""))
+# 806 empty rows and and NA\r\n
+
+# change empty cells to NA, fix read-in error, mark as corrected
+df <- df |> 
+  mutate(corrected = if_else(human_code_location %in% c("","NA\r\n"), 
+                             TRUE, FALSE),
+         human_code_location = if_else(human_code_location %in% c("","NA\r\n"),
+                                            NA, human_code_location))
+```
+
+```{r}
+df |> 
+  count(human_match_judgement)
+```
+human_match_judgement should only be NA when human_manuscript_content is NA.
+
+```{r}
+df |> 
+  filter(is.na(human_manuscript_content)) |> 
+  count(human_match_judgement)
+```
+when hmj is NA even though hmc is not, hmj should be 99 to clearly distinguish between indesisiveness and missingness.
+
+```{r}
+df <- df |> 
+  mutate(exclude = if_else(is.na(human_manuscript_content) &
+                    !is.na(human_match_judgement), TRUE, FALSE),
+         human_match_judgement = case_when(is.na(human_manuscript_content) & 
+                                             is.na(human_match_judgement) ~ NA,
+                                           !is.na(human_manuscript_content) & 
+                                             is.na(human_match_judgement) ~ 99,
+                                           is.na(human_manuscript_content) &
+                                             !is.na(human_match_judgement) ~ NA,
+                                           .default = human_match_judgement))
+# there should now be the same amount of NA and 85 "99"
+df |> 
+  count(human_match_judgement)
+# yes
+```
+
+```{r}
+df |> 
+  count(codebot_brief_description %in% c("", NA))
+
+df <- df |> 
+  mutate(codebot_brief_description = if_else(codebot_brief_description == "", 
+                                             NA, codebot_brief_description))
+
+df |> 
+  count(is.na(codebot_brief_description))
+```
+```{r}
+# same for manuscript content
+
+df |> 
+  count(codebot_manuscript_content %in% c("", NA))
+
+df <- df |> 
+  mutate(codebot_manuscript_content = if_else(codebot_manuscript_content == "", 
+                                             NA, codebot_manuscript_content))
+
+df |> 
+  count(is.na(codebot_manuscript_content))
+
+```
+
+```{r}
+df |> 
+  count(codebot_manuscript_location)
+```
+```{r}
+# same for code content
+
+df |> 
+  count(codebot_code_content %in% c("", NA))
+
+df <- df |> 
+  mutate(codebot_code_content = if_else(codebot_code_content == "", 
+                                             NA, codebot_code_content))
+
+df |> 
+  count(is.na(codebot_code_content))
+
+```
+```{r}
+df |> 
+  filter(!is.na(codebot_manuscript_content)) |> 
+  count(codebot_match_judgement)
+
+df <- df |> 
+  filter() |> 
+  mutate(codebot_match_judgement = case_when(is.na(codebot_manuscript_content) &
+                                              is.na(codebot_match_judgement) ~ NA,
+                                             !is.na(codebot_manuscript_content) &
+                                              is.na(codebot_match_judgement) ~ 99,
+                                             .default = codebot_match_judgement),
+         corrected = if_else(codebot_match_judgement == 99, TRUE, FALSE))
+# there should now be the same amount of NA and 85 "99"
+df |> 
+  count(codebot_match_judgement)
+# yes
+```
+# correct codebot_human_agreement
+```{r}
+df |> 
+  group_by(codebot_match_judgement, human_match_judgement, codebot_human_agreement) |> 
+  count()
+```
+whenever both raters provided ratings of either [1,0,99] codebot_human_agreement should not be NA.
+it should only be NA when only one or neither of the two raters provided valid ratings.
+
+```{r}
+df <- df |> 
+  mutate(codebot_human_agreement = case_when(is.na(codebot_match_judgement) &
+                                               is.na(human_match_judgement) ~ NA,
+                                             is.na(codebot_match_judgement) |
+                                               is.na(human_match_judgement) ~ NA,
+                                             codebot_match_judgement == human_match_judgement ~ 1,
+                                             !codebot_match_judgement == human_match_judgement ~ 0,
+                                             .default = codebot_human_agreement))
+
+df |> 
+  group_by(codebot_match_judgement, human_match_judgement, codebot_human_agreement) |> 
+  count()
+```
+
 
 # Check for Human Error in Manually Coded Entries
 
@@ -103,111 +424,13 @@ While the first source of error was anticipated in the pre-registration, this wa
 
 -   Dimensions were numbered for clarity during manual coding, not all numbers were removed.
 
-## Clean Hsieh
-
-```{r}
-# select all relevant columns coded by human
-col_check <- df %>% 
-  colnames() %>% 
-  as_tibble() %>% 
-  filter(str_starts(value,"human")) %>% 
-  pull() %>% 
-  # exclude all but the judgement variable because this has separate issues
-  head(-1) 
-
-df <- df %>% 
-  mutate(
-    # add transparency column
-    corrected = if_else(human_manuscript_content == "NA\r\n", TRUE, FALSE),
-    # mutate the hsieh columns
-    across( # does the operation across all columns given in...
-      all_of(col_check), # all_of makes sure that all columns in the vector are matched 
-      ~ case_when(.x %in% c("NA\r\n", "NA:NA") ~ "", 
-                  .default = .x)))
-
-# sanity check 
-df %>% filter(human_manuscript_content == "NA\r\n") %>% 
-  nrow()
-```
-
-The NAs that got read in in an unwanted manner were successfully removed and replaced with empty strings.
-
-## Clean up Dimension
-
-```{r}
-df %>% group_by(dimension) %>% 
-  count(dimension) %>% 
-  kable() %>% 
-  kable_classic(full_width = FALSE)
-
-df <- df %>% 
-  mutate(corrected = if_else(str_detect(dimension, "\\d"), TRUE, FALSE),
-         dimension = str_remove(dimension,"\\d"))
-
-df %>% group_by(dimension) %>% 
-  count(dimension) %>% 
-  kable() %>% 
-  kable_classic(full_width = FALSE)
-```
-
-## Clean Up Manuscript Location
-
-In a next step I will clean up human_manuscript_location so that I can properly screen for unintentionally blank cells in human_manuscript_content.
-
-```{r}
-# View unique values
-df %>% 
-  group_by(human_manuscript_location) %>% 
-  count() %>% 
-  kable() %>% 
-  kable_classic(full_width = FALSE)
-```
-
-This variable should only hold values \\in (0,1,2,"")\$. The 3 needs manual inspection since it is most likely due to a copy paste error, the "." need to become ";" and all spaces need to be removed.
-
-```{r}
-# removing spaces and replacing dots with semicolons
-df <- df %>%  
-  mutate(corrected = case_when(str_detect(human_manuscript_location, 
-                                          "[[:blank:]]") 
-                               ~TRUE,
-                               str_detect(human_manuscript_location, 
-                                          "\\.") 
-                               ~TRUE,
-                               # visual inspection shows that the 3 should have been a two
-                               human_manuscript_location == "3" 
-                               ~TRUE,
-                               .default = FALSE),
-         human_manuscript_location = case_when(str_detect(human_manuscript_location, 
-                                                          "[[:blank:]]")
-                                               ~gsub(" ","", 
-                                                     human_manuscript_location),
-                                               str_detect(human_manuscript_location, 
-                                                          "\\.")
-                                               ~gsub("\\.",";", 
-                                                     human_manuscript_location), 
-                                               # . is "wildcard" so regex needs to escape this by \\
-                                               human_manuscript_location == "3" 
-                                               ~"2",
-                                               .default = human_manuscript_location
-         ))
-
-# View unique values
-df %>% 
-  group_by(human_manuscript_location) %>% 
-  count() %>% 
-  kable() %>% 
-  kable_classic(full_width = FALSE)
-```
-
 Screening for human_manuscript_content cells unintentionally left blank.
 
 ```{r}
-df %>% 
-  filter(human_manuscript_content == "" & str_detect(human_manuscript_location,"\\d")) %>% 
-  kable() %>% 
-  kable_classic(full_width = FALSE) %>% 
-  scroll_box(width = "100%", height = "400px")
+df |> 
+  filter(is.na(human_manuscript_content) & str_detect(human_manuscript_location,"\\d"))
+
+
 ```
 
 In case of Berger et el., there are 3 misplaced location quotes, all for the variable "single item america" as is evident from the sample_coding_human.xlsx which should be empty strings instead. Carvalho et al. is missing the following transformation quote: "Accuracy by question type and a total score was calculated". Going back to the paper, the Evans quote is wrong since there was no mention of a transformation to be found. Going back to Helm revealed, that there were multiple problematic lines. For Analysis 2, the inference criterion is in fact not evident from the text. The inference criterion for Analyses 3 and 4 should be "95% CI". For Mancassola, the quotes for variable specification are missing in analyses 5 to 8 due to a manual copy pasting error since they required the same quote as the model specification which is always given.
@@ -218,16 +441,16 @@ I will not fill the blanks for manuscript content since their absence impacted t
 
 ```{r}
 # add exclusion variable
-df <- df %>%  
-  mutate(exclude = if_else(human_manuscript_content == "" &
+df <- df |>  
+  mutate(exclude = if_else(is.na(human_manuscript_content)&
                              str_detect(human_manuscript_location,"\\d"),
                            TRUE,
                            FALSE))
 
 # sanity check
-df %>% 
-  filter(exclude == TRUE) %>% 
-  count() %>% 
+df |> 
+  filter(exclude == TRUE) |> 
+  count() |> 
   pull()
 ```
 
@@ -241,99 +464,10 @@ Currently, there is an issue with the meaning of NAs across the 3 judgement vari
 
 **Codebot_human_agreement** is currently NA in cases where both raters rated "meaningful" NA but also NA when one rater's info is missing. Cases where one rater's rating is missing should stay NA because it indicates the absence of assessable agreement, but cases where both raters coded info and judged "meaningful" NA, the adjudicator's rating should be 99.
 
-## Human_match_judgement
-
-```{r}
-# sanity check
-pre <- df %>% filter(!human_manuscript_content == "" & is.na(human_match_judgement)) %>%
-  count()
-
-# differentiate between meaningful and meaningless NAs
-df <- df %>% 
-  mutate(across(
-    all_of(col_check),
-    ~if_else(.x == "", NA_character_, .x)),
-    human_match_judgement = case_when(!is.na(human_manuscript_content) &
-                                        is.na(human_match_judgement) ~99,
-                                      is.na(human_manuscript_content) &
-                                        is.na(human_match_judgement) ~NA,
-                                      .default = human_match_judgement),
-    # I consider the meaningless ""-> NA change not a correction but a question of reading in the data
-    corrected = if_else(human_match_judgement == 99, TRUE, FALSE))
-
-# sanity check
-post <- df %>% filter(human_match_judgement == 99) %>%
-  count() 
-
-compare(pre,post)
-```
-
-## CodeBot_match_judgement
-
-```{r}
-# sanity check
-pre <- df %>% 
-  filter(is.na(codebot_match_judgement) & !codebot_manuscript_content == "") %>% 
-  count()
-
-# col_check vector for CodeBot stuff
-col_check_c <- df %>% 
-  colnames() %>% 
-  as_tibble() %>% 
-  filter(str_starts(value,"codebot")) %>% 
-  pull() %>% 
-  head(-1) %>% 
-  dput()
-
-# differentiate between meaningful and meaningless NAs
-df <- df %>% 
-  mutate(across(
-    all_of(col_check_c),
-    ~if_else(.x == "", NA, .x)),
-    codebot_match_judgement = case_when(!is.na(codebot_manuscript_content) &
-                                          is.na(codebot_match_judgement) 
-                                        ~99,
-                                        is.na(codebot_manuscript_content) &
-                                          is.na(codebot_match_judgement) 
-                                        ~NA,
-                                        .default = codebot_match_judgement),
-    corrected = if_else(codebot_match_judgement == 99, 
-                        TRUE, 
-                        FALSE)
-  )
-
-# sanity check
-post <- df %>% filter(codebot_match_judgement == 99) %>%
-  count() 
-
-compare(pre,post)
-```
-
-## Codebot_human_agreement
-
-In cases where both raters rated NA in the meaningful sense of 99, the agreement should be a match (1) instead of NA. NA for this variable means that less than two ratings total were recorded (only CodeBot/no human vs. only human/no CodeBot vs. neither provided ratings).
-
-```{r}
-df <- df %>%
-  mutate(codebot_human_agreement = if_else(human_match_judgement == 99 &
-                                             codebot_match_judgement == 99 &
-                                             !is.na(codebot_brief_description) &
-                                             !is.na(human_manuscript_content), 
-                                           1, 
-                                           codebot_human_agreement),
-         corrected = if_else(human_match_judgement == 99 &
-                               codebot_match_judgement == 99 &
-                               !is.na(codebot_brief_description) &
-                               !is.na(human_manuscript_content),
-                             TRUE,
-                             FALSE))
-
-```
-
 # Save processed Dataframe
 
 ```{r}
-write_rds(df, "../../data/processed/res_main.rds")
+write_rds(df, "../../data/processed/main/res_main_correction1.rds")
 ```
 
 # Session info
