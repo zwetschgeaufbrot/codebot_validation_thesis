@@ -1,0 +1,605 @@
+paper_id,analysis_id,brief_description,dimension,paper_value,code_value,match_status,explanation,paper_evidence,code_evidence
+akan,1,"A two-way between-subjects ANOVA tested effects of Face Race (Black vs. White face set) and Perceiver Race (Black vs. White participants) on each participant’s mean similarity rating across all rated pairs. The analysis yielded no main effect of face race, a significant main effect of perceiver race (White perceivers gave higher similarity ratings overall), and a non-significant interaction, with F(1, 351) = 1.49, p = .223 for face race, F(1, 351) = 66.50, p < .0001 for perceiver race, and F(1, 351) = 1.58, p = .209 for the interaction. These results were used to argue that any face-race effect on raw similarity ratings was very small.",Model Specification,"To formally analyze these data, we conducted a two-way (Face Race × Perceiver Race) between-subjects analysis of variance.","anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)
+
+summary(anova_result)",match,"The code specifies a two-way ANOVA with Face Race and Perceiver Race as factors predicting mean similarity rating, matching the described analysis. This aligns with the paper’s description of a two-way (Face Race × Perceiver Race) between-subjects ANOVA on participants’ mean ratings.",,
+akan,1,"A two-way between-subjects ANOVA tested effects of Face Race (Black vs. White face set) and Perceiver Race (Black vs. White participants) on each participant’s mean similarity rating across all rated pairs. The analysis yielded no main effect of face race, a significant main effect of perceiver race (White perceivers gave higher similarity ratings overall), and a non-significant interaction, with F(1, 351) = 1.49, p = .223 for face race, F(1, 351) = 66.50, p < .0001 for perceiver race, and F(1, 351) = 1.58, p = .209 for the interaction. These results were used to argue that any face-race effect on raw similarity ratings was very small.",Variable Specification,"We computed the mean similarity rating provided by each participant across all the face pairs they rated on experimental trials. To formally analyze these data, we conducted a two-way (Face Race × Perceiver Race) between-subjects analysis of variance.","rating_data <- data_allS%>%
+  filter(s_trial_type==""rating"")%>%
+  select(""run_id"",""run_id_2"",""sub_race"", ""face_race"",""trial_index"",""rt"",""response"",""s_face_1"", ""s_face_2"",""s_pair_id"",""s_left_right"")%>%
+  filter(!str_detect(s_pair_id, 'a'))%>% #get rid of attention check trials (a1, a2, ...)
+  mutate_at(c('trial_index', 'rt', 'response','s_pair_id'), as.numeric)%>%
+  mutate(rating = response+1)
+
+#mean rating across 250 trials by each participant
+sub_ratings<- rating_data%>%
+  group_by(run_id_2)%>%
+  summarise(mean_rating = mean(rating), .groups = 'drop')%>%
+      left_join(
+        rating_data%>%
+          select(run_id_2, face_race, sub_race)%>%
+          distinct(run_id_2, .keep_all = TRUE),
+          by = ""run_id_2"")
+
+anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)",match,"The code uses participants’ mean similarity rating as the outcome and includes face_race and sub_race (perceiver race) as the two between-subjects factors, matching the variables described in the paper’s ANOVA. No additional or omitted variables appear that would change the specified analysis structure.",,
+akan,1,"A two-way between-subjects ANOVA tested effects of Face Race (Black vs. White face set) and Perceiver Race (Black vs. White participants) on each participant’s mean similarity rating across all rated pairs. The analysis yielded no main effect of face race, a significant main effect of perceiver race (White perceivers gave higher similarity ratings overall), and a non-significant interaction, with F(1, 351) = 1.49, p = .223 for face race, F(1, 351) = 66.50, p < .0001 for perceiver race, and F(1, 351) = 1.58, p = .209 for the interaction. These results were used to argue that any face-race effect on raw similarity ratings was very small.",Transformation Specification,We computed the mean similarity rating provided by each participant across all the face pairs they rated on experimental trials.,"rating_data <- data_allS%>%
+  filter(s_trial_type==""rating"")%>%
+  select(""run_id"",""run_id_2"",""sub_race"", ""face_race"",""trial_index"",""rt"",""response"",""s_face_1"", ""s_face_2"",""s_pair_id"",""s_left_right"")%>%
+  filter(!str_detect(s_pair_id, 'a'))%>% #get rid of attention check trials (a1, a2, ...)
+  mutate_at(c('trial_index', 'rt', 'response','s_pair_id'), as.numeric)%>%
+  mutate(rating = response+1)
+
+#mean rating across 250 trials by each participant
+sub_ratings<- rating_data%>%
+  group_by(run_id_2)%>%
+  summarise(mean_rating = mean(rating), .groups = 'drop')%>%
+      left_join(
+        rating_data%>%
+          select(run_id_2, face_race, sub_race)%>%
+          distinct(run_id_2, .keep_all = TRUE),
+          by = ""run_id_2"")
+
+anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)",match,"The code computes each participant’s mean similarity rating across all experimental (non-attention-check) rating trials, consistent with the paper’s description of averaging ratings across all face pairs rated on experimental trials.",,
+akan,1,"A two-way between-subjects ANOVA tested effects of Face Race (Black vs. White face set) and Perceiver Race (Black vs. White participants) on each participant’s mean similarity rating across all rated pairs. The analysis yielded no main effect of face race, a significant main effect of perceiver race (White perceivers gave higher similarity ratings overall), and a non-significant interaction, with F(1, 351) = 1.49, p = .223 for face race, F(1, 351) = 66.50, p < .0001 for perceiver race, and F(1, 351) = 1.58, p = .209 for the interaction. These results were used to argue that any face-race effect on raw similarity ratings was very small.",Inference Specification,"The race of the faces did not have a significant effect on ratings of similarity, F(1, 351) = 1.49, p = .223, with a mean difference (White − Black) of 0.11 (95% confidence interval, CI [−0.08, 0.28]). The CI indicates that any potential effect is likely to be quite small, given that all population effect sizes greater than 0.28 are rejected by the sample with α = .05. ... The difference was 0.22 (95% CI [−0.12, 0.56]), which ruled out large or moderate interaction effects at the α = .05 level and was consistent with a null or negligibly small interaction effect.","anova_result <- aov(mean_rating ~ face_race * sub_race, data = sub_ratings)
+
+summary(anova_result)
+
+mse <- 0.67  # MSE from ANOVA
+df_residual <- 351  # Residual degrees of freedom
+
+n_bfbs <- 88  
+n_bfws <- 91
+n_wfbs <- 88
+n_wfws <- 88
+#means
+m_bfbs<-2.1942
+m_bfws<-2.7935
+m_wfbs<-2.1959
+m_wfws<-3.0135
+
+t_crit <- qt(0.975, df = df_residual)
+se<- sqrt((mse / n_bfbs) + (mse / n_bfws) + (mse / n_wfbs) + (mse / n_wfws))
+
+#CI for face race
+t.test(mean_rating ~ face_race, var.equal = TRUE, data = sub_ratings)
+#CI for sub race
+t.test(mean_rating ~ sub_race, var.equal = TRUE, data = sub_ratings)
+#CI for interaction
+interaction_diff <- (m_wfws - m_bfws) - (m_wfbs - m_bfbs)
+lower_ci <- interaction_diff - t_crit * se
+upper_ci <- interaction_diff + t_crit * se",match,"The code constructs 95% confidence intervals and tests consistent with an alpha level of .05, matching the paper’s stated inference criteria for using 95% CIs to rule out larger effects. There is no indication of a different alpha level or CI specification in the code.",,
+akan,3,"A second PROTEST compared the MDS face spaces for White faces derived from Black versus White perceivers to evaluate cross-race agreement in perceived similarity structure. The Procrustes correlation after alignment was 0.78, also significant with p < .001 under randomization, again indicating that Black and White participants showed highly similar relative similarity relationships among White faces.",Model Specification,"We formally assessed consistency in face spaces of same-race and cross-race perceivers in two ways. The PROcrustean Randomization TEST ( Jackson, 1995 ) assesses whether the consistency between two MDS spaces is greater than would be expected by chance (see Appendix C for details). The observed Procrustes correlation between the face spaces of White and Black perceivers was 0.77 for the Black face set and 0.78 for the White face set; both are significantly greater than expected by chance ( ps < .001).",,unknown,"The paper specifies use of a PROcrustean Randomization TEST comparing MDS spaces, but no corresponding code implementation is provided for evaluation.",,
+akan,3,"A second PROTEST compared the MDS face spaces for White faces derived from Black versus White perceivers to evaluate cross-race agreement in perceived similarity structure. The Procrustes correlation after alignment was 0.78, also significant with p < .001 under randomization, again indicating that Black and White participants showed highly similar relative similarity relationships among White faces.",Variable Specification,"We formally assessed consistency in face spaces of same-race and cross-race perceivers in two ways. The PROcrustean Randomization TEST (Jackson, 1995) assesses whether the consistency between two MDS spaces is greater than would be expected by chance (see Appendix C for details). The observed Procrustes correlation between the face spaces of White and Black perceivers was 0.77 for the Black face set and 0.78 for the White face set; both are significantly greater than expected by chance (ps < .001).","{""code_value"":""# WHITE FACES // BLACK SS\nrating_data_wb = rating_data%>%\n  filter(face_race == \""White Face Set\"")%>%\n  filter(sub_race == \""Black Perceivers\"")\n\npairs_data_wb = as.data.frame(matrix(NA,4371, 13))\n\nnames(pairs_data_wb) = c(\""pair_id\"",\""face_1\"", \""face_2\"",\""count\"", \""rating_1\"", \""rating_2\"", \""rating_3\"", \""rating_4\"", \""rating_5\"",\""rating_6\"",\""mean_rating_wfbs\"", \""s1mean_wb\"", \""s2mean_wb\"")\n\nfor (i in 1:4371){  \n  \n  pairs_data_wb[i,1] = i\n  pairs_data_wb[i,2] = as.numeric(rating_data_wb[rating_data_wb$s_pair_id==i,\""s_face_1\""][1,1])\n  pairs_data_wb[i,3] = as.numeric(rating_data_wb[rating_data_wb$s_pair_id==i,\""s_face_2\""][1,1])\n  \n  cur_ratings = as.vector(rating_data_wb[rating_data_wb$s_pair_id==i,\""rating\""])$rating\n  cur_count = length(cur_ratings)\n  inds = 1:cur_count\n  \n  pairs_data_wb[i,\""count\""] = cur_count\n  mean_cur_ratings = mean(cur_ratings)\n  pairs_data_wb[i,\""mean_rating_wfbs\""] = mean_cur_ratings\n  \n  if(cur_count ==0 ){\n    next\n  }else{\n    pairs_data_wb[i,5:(4+cur_count)]= cur_ratings\n  }\n  ...\n}\n\n# WHITE FACES // WHITE SS\nrating_data_ww = rating_data%>%\n  filter(face_race == \""White Face Set\"")%>%\n  filter(sub_race == \""White Perceivers\"")\n\npairs_data_ww = as.data.frame(matrix(NA,4371, 13))\n\nnames(pairs_data_ww) = c(\""pair_id\"",\""face_1\"", \""face_2\"",\""count\"", \""rating_1\"", \""rating_2\"", \""rating_3\"", \""rating_4\"", \""rating_5\"",\""rating_6\"",\""mean_rating_wfws\"", \""s1mean_ww\"", \""s2mean_ww\"")\n\nfor (i in 1:4371){  \n  \n  pairs_data_ww[i,1] = i\n  pairs_data_ww[i,2] = as.numeric(rating_data_ww[rating_data_ww$s_pair_id==i,\""s_face_1\""][1,1])\n  pairs_data_ww[i,3] = as.numeric(rating_data_ww[rating_data_ww$s_pair_id==i,\""s_face_2\""][1,1])\n  \n  cur_ratings = as.vector(rating_data_ww[rating_data_ww$s_pair_id==i,\""rating\""])$rating\n  cur_count = length(cur_ratings)\n  pairs_data_ww[i,\""count\""] = cur_count\n  inds = 1:cur_count\n  \n  mean_cur_ratings = mean(cur_ratings)\n  pairs_data_ww[i,\""mean_rating_wfws\""] = mean_cur_ratings\n  \n  if(cur_count ==0 ){\n    next\n  }else{\n    pairs_data_ww[i,5:(4+cur_count)]= cur_ratings\n  }\n  ...\n}\n\n# put in dissim matrix format to get ready for MDS for WHITE Faces\n\ndissim_mat_wb <- pairs_data_wb%>% \n  select(pair_id,face_1, face_2, mean_rating_wfbs)%>%\n  group_by(face_1, face_2)%>%\n  summarize(avg_dissim = mean(8-mean_rating_wfbs, na.rm = T), .groups = \""drop\"")%>%\n  arrange(face_1, face_2)%>%\n  pivot_wider(names_from=face_1, values_from = avg_dissim)%>%\n  .[,-1]%>%\n  as.matrix()%>%\n  rbind(NA,.)%>%\n  cbind(.,NA)\n\n\ndissim_mat_ww <- pairs_data_ww%>% \n  select(pair_id,face_1, face_2, mean_rating_wfws)%>%\n  group_by(face_1, face_2)%>%\n  summarize(avg_dissim = mean(8-mean_rating_wfws, na.rm = T), .groups = \""drop\"")%>%\n  arrange(face_1, face_2)%>%\n  pivot_wider(names_from=face_1, values_from = avg_dissim)%>%\n  .[,-1]%>%\n  as.matrix()%>%\n  rbind(NA,.)%>%\n  cbind(.,NA)\n"",""evidence"":{""code_path"":""/Users/jamie/git/codebot-for-psychology/data/raw/main/codebot/materials/codebot_pairs/akan/similarity_analysis_o.Rmd"",""code_lines"":""# WHITE FACES // BLACK SS\nrating_data_wb = rating_data%>%\n  filter(face_race == \""White Face Set\"")%>%\n  filter(sub_race == \""Black Perceivers\"")\n\npairs_data_wb = as.data.frame(matrix(NA,4371, 13))\n\nnames(pairs_data_wb) = c(\""pair_id\"",\""face_1\"", \""face_2\"",\""count\"", \""rating_1\"", \""rating_2\"", \""rating_3\"", \""rating_4\"", \""rating_5\"",\""rating_6\"",\""mean_rating_wfbs\"", \""s1mean_wb\"", \""s2mean_wb\"")\n\nfor (i in 1:4371){  \n  \n  pairs_data_wb[i,1] = i\n  pairs_data_wb[i,2] = as.numeric(rating_data_wb[rating_data_wb$s_pair_id==i,\""s_face_1\""][1,1])\n  pairs_data_wb[i,3] = as.numeric(rating_data_wb[rating_data_wb$s_pair_id==i,\""s_face_2\""][1,1])\n  \n  cur_ratings = as.vector(rating_data_wb[rating_data_wb$s_pair_id==i,\""rating\""])$rating\n  cur_count = length(cur_ratings)\n  inds = 1:cur_count\n  \n  pairs_data_wb[i,\""count\""] = cur_count\n  mean_cur_ratings = mean(cur_ratings)\n  pairs_data_wb[i,\""mean_rating_wfbs\""] = mean_cur_ratings\n  \n  if(cur_count ==0 ){\n    next\n  }else{\n    pairs_data_wb[i,5:(4+cur_count)]= cur_ratings\n  }\n  \n  if (cur_count %% 2 == 0){\n    ind_s1 <- sample(inds, (cur_count/2), replace = FALSE)\n  }else {\n    if (runif(1)>0.5){\n      ind_s1 <- sample(inds, (cur_count-1)/2, replace = FALSE)\n    }else {\n      ind_s1 <- sample(inds, (cur_count+1)/2, replace = FALSE)\n    }\n  }\n  \n  ind_s2 = setdiff(inds, ind_s1)\n  \n  s1<- cur_ratings[ind_s1]\n  s2<- cur_ratings[ind_s2]\n  \n  pairs_data_wb$s1mean_wb[i] = mean(s1)\n  pairs_data_wb$s2mean_wb[i] = mean(s2)\n}\n\n\n\n\n\n# WHITE FACES // WHITE SS\nrating_data_ww = rating_data%>%\n  filter(face_race == \""White Face Set\"")%>%\n  filter(sub_race == \""White Perceivers\"")\n\npairs_data_ww = as.data.frame(matrix(NA,4371, 13))\n\nnames(pairs_data_ww) = c(\""pair_id\"",\""face_1\"", \""face_2\"",\""count\"", \""rating_1\"", \""rating_2\"", \""rating_3\"", \""rating_4\"", \""rating_5\"",\""rating_6\"",\""mean_rating_wfws\"", \""s1mean_ww\"", \""s2mean_ww\"")\n\nfor (i in 1:4371){  \n  \n  pairs_data_ww[i,1] = i\n  pairs_data_ww[i,2] = as.numeric(rating_data_ww[rating_data_ww$s_pair_id==i,\""s_face_1\""][1,1])\n  pairs_data_ww[i,3] = as.numeric(rating_data_ww[rating_data_ww$s_pair_id==i,\""s_face_2\""][1,1])\n  \n  cur_ratings = as.vector(rating_data_ww[rating_data_ww$s_pair_id==i,\""rating\""])$rating\n  cur_count = length(cur_ratings)\n  pairs_data_ww[i,\""count\""] = cur_count\n  inds = 1:cur_count\n  \n  mean_cur_ratings = mean(cur_ratings)\n  pairs_data_ww[i,\""mean_rating_wfws\""] = mean_cur_ratings\n  \n  if(cur_count ==0 ){\n    next\n  }else{\n    pairs_data_ww[i,5:(4+cur_count)]= cur_ratings\n  }\n  \n  \n  if (cur_count %% 2 == 0){\n    ind_s1 <- sample(inds, (cur_count/2), replace = FALSE)\n  }else {\n    if (runif(1)>0.5){\n      ind_s1 <- sample(inds, (cur_count-1)/2, replace = FALSE)\n    }else {\n      ind_s1 <- sample(inds, (cur_count+1)/2, replace = FALSE)\n    }\n  }\n  \n  ind_s2 = setdiff(inds, ind_s1)\n  \n  s1<- cur_ratings[ind_s1]\n  s2<- cur_ratings[ind_s2]\n  \n  pairs_data_ww$s1mean_ww[i] = mean(s1)\n  pairs_data_ww$s2mean_ww[i] = mean(s2)\n  \n}\n  \n\n\nput in dissim matrix format to get ready for MDS for WHITE Faces\n\n```{r}\n\ndissim_mat_wb <- pairs_data_wb%>% \n  select(pair_id,face_1, face_2, mean_rating_wfbs)%>%\n  group_by(face_1, face_2)%>%\n  summarize(avg_dissim = mean(8-mean_rating_wfbs, na.rm = T), .groups = \""drop\"")%>%\n  arrange(face_1, face_2)%>%\n  pivot_wider(names_from=face_1, values_from = avg_dissim)%>%\n  .[,-1]%>%\n  as.matrix()%>%\n  rbind(NA,.)%>%\n  cbind(.,NA)\n\n\ndissim_mat_ww <- pairs_data_ww%>% \n  select(pair_id,face_1, face_2, mean_rating_wfws)%>%\n  group_by(face_1, face_2)%>%\n  summarize(avg_dissim = mean(8-mean_rating_wfws, na.rm = T), .groups = \""drop\"")%>%\n  arrange(face_1, face_2)%>%\n  pivot_wider(names_from=face_1, values_from = avg_dissim)%>%\n  .[,-1]%>%\n  as.matrix()%>%\n  rbind(NA,.)%>%\n  cbind(.,NA)\n\n#write.csv(dissim_mat_wb, file = \""dissim_mat_wb.csv\"", row.names = FALSE)\n\n#write.csv(dissim_mat_ww, file = \""dissim_mat_ww.csv\"", row.names = FALSE)\n```""}}}",match,"The code uses pairwise similarity ratings of White faces from Black versus White perceivers to construct dissimilarity matrices for MDS, matching the paper’s description of comparing MDS face spaces of White faces derived from Black vs. White participants.",,
+akan,3,"A second PROTEST compared the MDS face spaces for White faces derived from Black versus White perceivers to evaluate cross-race agreement in perceived similarity structure. The Procrustes correlation after alignment was 0.78, also significant with p < .001 under randomization, again indicating that Black and White participants showed highly similar relative similarity relationships among White faces.",Transformation Specification,"Based on the similarity ratings given by each racial group for each face set, we derived perceptual spaces using ordinal (nonmetric) MDS. In these spaces, Euclidean distances between faces represent perceived similarity. That is, faces perceived as more similar are spatially located closer together, while faces perceived as less similar are spatially located further apart.
+
+The dimensionality of the face spaces was set to 6. This value was determined by evaluating lack of fit as a function of increasing dimensionality and by drawing on prior research that used similarity ratings to derive face spaces (e.g., Busey, 1998 ; Byatt & Rhodes, 2004; see Appendix B for details). In an ordinal MDS face space, the relative distance between faces reflects relative perceived similarities. All other aspects of the face space—namely, scale, rotation, and origin—can be changed without affecting relative distances, and are not in any way constrained by the observed similarity ratings. Therefore, to compare two different perceptual spaces, we must first bring the two spaces into alignment. We aligned the two spaces via a Procrustes transformation by scaling, rotating, and translating the face space of White perceivers to minimize the sum of squared distances of the location of each face to its associated location in the face space of Black perceivers.","rating_data <- data_allS%>%
+  filter(s_trial_type==""rating"")%>%
+  select(""run_id"",""run_id_2"",""sub_race"", ""face_race"",""trial_index"",""rt"",""response"",""s_face_1"", ""s_face_2"",""s_pair_id"",""s_left_right"")%>%
+  filter(!str_detect(s_pair_id, 'a'))%>% #get rid of attention check trials (a1, a2, ...)
+  mutate_at(c('trial_index', 'rt', 'response','s_pair_id'), as.numeric)%>%
+  mutate(rating = response+1)
+...
+# WHITE FACES // BLACK SS
+rating_data_wb = rating_data%>%
+  filter(face_race == ""White Face Set"")%>%
+  filter(sub_race == ""Black Perceivers"")
+
+pairs_data_wb = as.data.frame(matrix(NA,4371, 13))
+
+names(pairs_data_wb) = c(""pair_id"",""face_1"", ""face_2"",""count"", ""rating_1"", ""rating_2"", ""rating_3"", ""rating_4"", ""rating_5"",""rating_6"",""mean_rating_wfbs"", ""s1mean_wb"", ""s2mean_wb"")
+
+for (i in 1:4371){  
+  
+  pairs_data_wb[i,1] = i
+  pairs_data_wb[i,2] = as.numeric(rating_data_wb[rating_data_wb$s_pair_id==i,""s_face_1""][1,1])
+  pairs_data_wb[i,3] = as.numeric(rating_data_wb[rating_data_wb$s_pair_id==i,""s_face_2""][1,1])
+  
+  cur_ratings = as.vector(rating_data_wb[rating_data_wb$s_pair_id==i,""rating""])$rating
+  cur_count = length(cur_ratings)
+  inds = 1:cur_count
+  
+  pairs_data_wb[i,""count""] = cur_count
+  mean_cur_ratings = mean(cur_ratings)
+  pairs_data_wb[i,""mean_rating_wfbs""] = mean_cur_ratings
+  
+  if(cur_count ==0 ){
+    next
+  }else{
+    pairs_data_wb[i,5:(4+cur_count)]= cur_ratings
+  }
+  
+  if (cur_count %% 2 == 0){
+    ind_s1 <- sample(inds, (cur_count/2), replace = FALSE)
+  }else {
+    if (runif(1)>0.5){
+      ind_s1 <- sample(inds, (cur_count-1)/2, replace = FALSE)
+    }else {
+      ind_s1 <- sample(inds, (cur_count+1)/2, replace = FALSE)
+    }
+  }
+  
+  ind_s2 = setdiff(inds, ind_s1)
+  
+  s1<- cur_ratings[ind_s1]
+  s2<- cur_ratings[ind_s2]
+  
+  pairs_data_wb$s1mean_wb[i] = mean(s1)
+  pairs_data_wb$s2mean_wb[i] = mean(s2)
+}
+...
+# WHITE FACES // WHITE SS
+rating_data_ww = rating_data%>%
+  filter(face_race == ""White Face Set"")%>%
+  filter(sub_race == ""White Perceivers"")
+
+pairs_data_ww = as.data.frame(matrix(NA,4371, 13))
+
+names(pairs_data_ww) = c(""pair_id"",""face_1"", ""face_2"",""count"", ""rating_1"", ""rating_2"", ""rating_3"", ""rating_4"", ""rating_5"",""rating_6"",""mean_rating_wfws"", ""s1mean_ww"", ""s2mean_ww"")
+
+for (i in 1:4371){  
+  
+  pairs_data_ww[i,1] = i
+  pairs_data_ww[i,2] = as.numeric(rating_data_ww[rating_data_ww$s_pair_id==i,""s_face_1""][1,1])
+  pairs_data_ww[i,3] = as.numeric(rating_data_ww[rating_data_ww$s_pair_id==i,""s_face_2""][1,1])
+  
+  cur_ratings = as.vector(rating_data_ww[rating_data_ww$s_pair_id==i,""rating""])$rating
+  cur_count = length(cur_ratings)
+  pairs_data_ww[i,""count""] = cur_count
+  inds = 1:cur_count
+  
+  mean_cur_ratings = mean(cur_ratings)
+  pairs_data_ww[i,""mean_rating_wfws""] = mean_cur_ratings
+  
+  if(cur_count ==0 ){
+    next
+  }else{
+    pairs_data_ww[i,5:(4+cur_count)]= cur_ratings
+  }
+  
+  
+  if (cur_count %% 2 == 0){
+    ind_s1 <- sample(inds, (cur_count/2), replace = FALSE)
+  }else {
+    if (runif(1)>0.5){
+      ind_s1 <- sample(inds, (cur_count-1)/2, replace = FALSE)
+    }else {
+      ind_s1 <- sample(inds, (cur_count+1)/2, replace = FALSE)
+    }
+  }
+  
+  ind_s2 = setdiff(inds, ind_s1)
+  
+  s1<- cur_ratings[ind_s1]
+  s2<- cur_ratings[ind_s2]
+  
+  pairs_data_ww$s1mean_ww[i] = mean(s1)
+  pairs_data_ww$s2mean_ww[i] = mean(s2)
+  
+}
+...
+# put in dissim matrix format to get ready for MDS for WHITE Faces
+
+dissim_mat_wb <- pairs_data_wb%>% 
+  select(pair_id,face_1, face_2, mean_rating_wfbs)%>%
+  group_by(face_1, face_2)%>%
+  summarize(avg_dissim = mean(8-mean_rating_wfbs, na.rm = T), .groups = ""drop"")%>%
+  arrange(face_1, face_2)%>%
+  pivot_wider(names_from=face_1, values_from = avg_dissim)%>%
+  .[,-1]%>%
+  as.matrix()%>%
+  rbind(NA,.)%>%
+  cbind(.,NA)
+
+
+dissim_mat_ww <- pairs_data_ww%>% 
+  select(pair_id,face_1, face_2, mean_rating_wfws)%>%
+  group_by(face_1, face_2)%>%
+  summarize(avg_dissim = mean(8-mean_rating_wfws, na.rm = T), .groups = ""drop"")%>%
+  arrange(face_1, face_2)%>%
+  pivot_wider(names_from=face_1, values_from = avg_dissim)%>%
+  .[,-1]%>%
+  as.matrix()%>%
+  rbind(NA,.)%>%
+  cbind(.,NA)
+",unknown,"The paper describes using ordinal MDS and a Procrustes transformation to align White- and Black-perceiver face spaces, but the provided code excerpt only shows construction and transformation of dissimilarity matrices and does not include the MDS or Procrustes alignment steps. Because the key described transformation (Procrustes alignment) is not visible in the code snippet, it is unclear whether the implementation matches the paper’s transformation description.",,
+akan,3,"A second PROTEST compared the MDS face spaces for White faces derived from Black versus White perceivers to evaluate cross-race agreement in perceived similarity structure. The Procrustes correlation after alignment was 0.78, also significant with p < .001 under randomization, again indicating that Black and White participants showed highly similar relative similarity relationships among White faces.",Inference Specification,The observed Procrustes correlation between the face spaces of White and Black perceivers was 0.77 for the Black face set and 0.78 for the White face set; both are significantly greater than expected by chance (ps < .001).,,unknown,"There is no code provided related to how the Procrustes correlation significance (p < .001) was assessed, so it is not possible to determine whether the inferential procedure in the code matches the paper’s description. Without this information, alignment between the reported p-values and any implemented randomization or significance testing cannot be evaluated.",,
+akan,4,"A rank-order correlation analysis quantified the agreement in pairwise distances between the Black-perceiver and White-perceiver MDS spaces for the Black face set. Using all unique face–face pairs, the Spearman-type correlation between ranked distances was r(4,369) = .68, p < .0001, showing strong correspondence in how Black and White observers judge relative similarity among Black faces.",Model Specification,"For this analysis, we first computed the correlation between the ranked distances in the face spaces of White and Black perceivers. For both face sets, the rank-order correlations between the face spaces of the two perceiver groups were notably high: For the Black face set, the correlation was r(4369) = .68, p < .0001, and for the White face set, it was r(4369) = .66, p < .0001.",,unknown,"No relevant code implementing the rank-order (Spearman-type) correlation analysis is provided, so it is not possible to assess whether the implementation matches the described model specification in the paper.",,
+akan,4,"A rank-order correlation analysis quantified the agreement in pairwise distances between the Black-perceiver and White-perceiver MDS spaces for the Black face set. Using all unique face–face pairs, the Spearman-type correlation between ranked distances was r(4,369) = .68, p < .0001, showing strong correspondence in how Black and White observers judge relative similarity among Black faces.",Variable Specification,"We also examined the consistency in the face spaces of same-race and cross-race perceivers with a bootstrap analysis to determine whether the correlations between the face spaces of same- and cross-race perceivers are in alignment with the level of correlation that would be expected from the estimation variability within each perceiver group. For this analysis, we first computed the correlation between the ranked distances in the face spaces of White and Black perceivers. For both face sets, the rank-order correlations between the face spaces of the two perceiver groups were notably high: For the Black face set, the correlation was r(4369) = .68, p < .0001, and for the White face set, it was r(4369) = .66, p < .0001.",,unknown,There is not enough information about the code to determine whether the variables used in the rank-order correlation analysis match the paper’s description.,,
+akan,4,"A rank-order correlation analysis quantified the agreement in pairwise distances between the Black-perceiver and White-perceiver MDS spaces for the Black face set. Using all unique face–face pairs, the Spearman-type correlation between ranked distances was r(4,369) = .68, p < .0001, showing strong correspondence in how Black and White observers judge relative similarity among Black faces.",Transformation Specification,"We also examined the consistency in the face spaces of same-race and cross-race perceivers with a bootstrap analysis to determine whether the correlations between the face spaces of same- and cross-race perceivers are in alignment with the level of correlation that would be expected from the estimation variability within each perceiver group. For this analysis, we first computed the correlation between the ranked distances in the face spaces of White and Black perceivers. For both face sets, the rank-order correlations between the face spaces of the two perceiver groups were notably high: For the Black face set, the correlation was r(4369) = .68, p < .0001, and for the White face set, it was r(4369) = .66, p < .0001. These observed correlation values (.68 and .66) reflect the degree of alignment between the face spaces of Black and White perceivers, based on the original similarity ratings they provided.","rating_data <- data_allS%>%
+  filter(s_trial_type==""rating"")%>%
+  select(""run_id"",""run_id_2"",""sub_race"", ""face_race"",""trial_index"",""rt"",""response"",""s_face_1"", ""s_face_2"",""s_pair_id"",""s_left_right"")%>%
+  filter(!str_detect(s_pair_id, 'a'))%>% #get rid of attention check trials (a1, a2, ...)
+  mutate_at(c('trial_index', 'rt', 'response','s_pair_id'), as.numeric)%>%
+  mutate(rating = response+1)
+...
+# BLACK FACES // BLACK SS
+rating_data_bb = rating_data%>%
+  filter(face_race == ""Black Face Set"")%>%
+  filter(sub_race == ""Black Perceivers"")
+...
+  cur_ratings = as.vector(rating_data_bb[rating_data_bb$s_pair_id==i,""rating""])$rating
+  cur_count = length(cur_ratings)
+  inds = 1:cur_count
+  
+  pairs_data_bb[i,""count""] = cur_count
+  mean_cur_ratings = mean(cur_ratings)
+  pairs_data_bb[i,""mean_rating_bfbs""] = mean_cur_ratings
+...
+# BLACK FACES // WHITE SS
+rating_data_bw = rating_data%>%
+  filter(face_race == ""Black Face Set"")%>%
+  filter(sub_race == ""White Perceivers"")
+...
+  cur_ratings = as.vector(rating_data_bw[rating_data_bw$s_pair_id==i,""rating""])$rating
+  cur_count = length(cur_ratings)
+  pairs_data_bw[i,""count""] = cur_count
+  mean_cur_ratings = mean(cur_ratings)
+  pairs_data_bw[i,""mean_rating_bfws""] = mean_cur_ratings
+...
+# MDS for Black Faces
+
+dissim_mat_bb <- pairs_data_bb%>% 
+  select(pair_id,face_1, face_2, mean_rating_bfbs)%>%
+  group_by(face_1, face_2)%>%
+  summarize(avg_dissim = mean(8-mean_rating_bfbs, na.rm = T), .groups = ""drop"")%>%
+  arrange(face_1, face_2)%>%
+  pivot_wider(names_from=face_1, values_from = avg_dissim)%>%
+  .[,-1]%>%
+  as.matrix()%>%
+  rbind(NA,.)%>%
+  cbind(.,NA)
+
+
+dissim_mat_bw <- pairs_data_bw%>% 
+  select(pair_id,face_1, face_2, mean_rating_bfws)%>%
+  group_by(face_1, face_2)%>%
+  summarize(avg_dissim = mean(8-mean_rating_bfws, na.rm = T), .groups = ""drop"")%>%
+  arrange(face_1, face_2)%>%
+  pivot_wider(names_from=face_1, values_from = avg_dissim)%>%
+  .[,-1]%>%
+  as.matrix()%>%
+  rbind(NA,.)%>%
+  cbind(.,NA)",unknown,"The paper only states that rank-order correlations were computed between distances in the face spaces based on the original similarity ratings, but does not specify how ratings were transformed into dissimilarities, whereas the code applies specific transformations (mean aggregation and 8-rating) before MDS. Because the transformation steps used to derive distances are not described in sufficient detail in the paper excerpt, it is unclear whether the implemented transformations exactly match the intended procedure.",,
+akan,4,"A rank-order correlation analysis quantified the agreement in pairwise distances between the Black-perceiver and White-perceiver MDS spaces for the Black face set. Using all unique face–face pairs, the Spearman-type correlation between ranked distances was r(4,369) = .68, p < .0001, showing strong correspondence in how Black and White observers judge relative similarity among Black faces.",Inference Specification,"For both face sets, the rank-order correlations between the face spaces of the two perceiver groups were notably high: For the Black face set, the correlation was r(4369) = .68, p < .0001, and for the White face set, it was r(4369) = .66, p < .0001.",,unknown,"The paper reports an inference (p < .0001) for the rank-order correlation, but no corresponding code or statistical testing implementation is provided to verify how this p-value was obtained or what alpha criterion was used. Therefore, it is not possible to determine whether the code’s inference procedure matches the paper’s description.",,
+akan,5,"The same rank-order correlation procedure was applied to the White face set, correlating the ordered pairwise distances from Black-perceiver and White-perceiver MDS spaces. The correlation between ranked distances was r(4,369) = .66, p < .0001, again indicating substantial cross-race agreement in the relative similarity structure for White faces.",Model Specification,"For both face sets, the rank-order correlations between the face spaces of the two perceiver groups were notably high: For the Black face set, the correlation was r(4369) = .68, p < .0001, and for the White face set, it was r(4369) = .66, p < .0001.",,unknown,There is no relevant code provided to assess whether the statistical test used for the White face set rank-order correlation matches the paper’s description.,,
+akan,5,"The same rank-order correlation procedure was applied to the White face set, correlating the ordered pairwise distances from Black-perceiver and White-perceiver MDS spaces. The correlation between ranked distances was r(4,369) = .66, p < .0001, again indicating substantial cross-race agreement in the relative similarity structure for White faces.",Variable Specification,"We also examined the consistency in the face spaces of same-race and cross-race perceivers with a bootstrap analysis to determine whether the correlations between the face spaces of same- and cross-race perceivers are in alignment with the level of correlation that would be expected from the estimation variability within each perceiver group. For this analysis, we first computed the correlation between the ranked distances in the face spaces of White and Black perceivers. For both face sets, the rank-order correlations between the face spaces of the two perceiver groups were notably high: For the Black face set, the correlation was r(4369) = .68, p < .0001, and for the White face set, it was r(4369) = .66, p < .0001.",,unknown,There is insufficient information about the code to determine whether the variables used in the implementation match those described in the paper for this analysis.,,
+akan,5,"The same rank-order correlation procedure was applied to the White face set, correlating the ordered pairwise distances from Black-perceiver and White-perceiver MDS spaces. The correlation between ranked distances was r(4,369) = .66, p < .0001, again indicating substantial cross-race agreement in the relative similarity structure for White faces.",Transformation Specification,"For this analysis, we first computed the correlation between the ranked distances in the face spaces of White and Black perceivers. For both face sets, the rank-order correlations between the face spaces of the two perceiver groups were notably high: For the Black face set, the correlation was r(4,369) = .68, p < .0001, and for the White face set, it was r(4,369) = .66, p < .0001.","rating_data <- data_allS%>%
+  filter(s_trial_type==""rating"")%>%
+  select(""run_id"",""run_id_2"",""sub_race"", ""face_race"",""trial_index"",""rt"",""response"",""s_face_1"", ""s_face_2"",""s_pair_id"",""s_left_right"")%>%
+  filter(!str_detect(s_pair_id, 'a'))%>% #get rid of attention check trials (a1, a2, ...)
+  mutate_at(c('trial_index', 'rt', 'response','s_pair_id'), as.numeric)%>%
+  mutate(rating = response+1)
+...
+# WHITE FACES // BLACK SS
+rating_data_wb = rating_data%>%
+  filter(face_race == ""White Face Set"")%>%
+  filter(sub_race == ""Black Perceivers"")
+
+pairs_data_wb = as.data.frame(matrix(NA,4371, 13))
+
+names(pairs_data_wb) = c(""pair_id"",""face_1"", ""face_2"",""count"", ""rating_1"", ""rating_2"", ""rating_3"", ""rating_4"", ""rating_5"",""rating_6"",""mean_rating_wfbs"", ""s1mean_wb"", ""s2mean_wb"")
+
+for (i in 1:4371){  
+  
+  pairs_data_wb[i,1] = i
+  pairs_data_wb[i,2] = as.numeric(rating_data_wb[rating_data_wb$s_pair_id==i,""s_face_1""][1,1])
+  pairs_data_wb[i,3] = as.numeric(rating_data_wb[rating_data_wb$s_pair_id==i,""s_face_2""][1,1])
+  
+  cur_ratings = as.vector(rating_data_wb[rating_data_wb$s_pair_id==i,""rating""])$rating
+  cur_count = length(cur_ratings)
+  inds = 1:cur_count
+  
+  pairs_data_wb[i,""count""] = cur_count
+  mean_cur_ratings = mean(cur_ratings)
+  pairs_data_wb[i,""mean_rating_wfbs""] = mean_cur_ratings
+  
+  if(cur_count ==0 ){
+    next
+  }else{
+    pairs_data_wb[i,5:(4+cur_count)]= cur_ratings
+  }
+  
+  if (cur_count %% 2 == 0){
+    ind_s1 <- sample(inds, (cur_count/2), replace = FALSE)
+  }else {
+    if (runif(1)>0.5){
+      ind_s1 <- sample(inds, (cur_count-1)/2, replace = FALSE)
+    }else {
+      ind_s1 <- sample(inds, (cur_count+1)/2, replace = FALSE)
+    }
+  }
+  
+  ind_s2 = setdiff(inds, ind_s1)
+  
+  s1<- cur_ratings[ind_s1]
+  s2<- cur_ratings[ind_s2]
+  
+  pairs_data_wb$s1mean_wb[i] = mean(s1)
+  pairs_data_wb$s2mean_wb[i] = mean(s2)
+}
+...
+# WHITE FACES // WHITE SS
+rating_data_ww = rating_data%>%
+  filter(face_race == ""White Face Set"")%>%
+  filter(sub_race == ""White Perceivers"")
+
+pairs_data_ww = as.data.frame(matrix(NA,4371, 13))
+
+names(pairs_data_ww) = c(""pair_id"",""face_1"", ""face_2"",""count"", ""rating_1"", ""rating_2"", ""rating_3"", ""rating_4"", ""rating_5"",""rating_6"",""mean_rating_wfws"", ""s1mean_ww"", ""s2mean_ww"")
+
+for (i in 1:4371){  
+  
+  pairs_data_ww[i,1] = i
+  pairs_data_ww[i,2] = as.numeric(rating_data_ww[rating_data_ww$s_pair_id==i,""s_face_1""][1,1])
+  pairs_data_ww[i,3] = as.numeric(rating_data_ww[rating_data_ww$s_pair_id==i,""s_face_2""][1,1])
+  
+  cur_ratings = as.vector(rating_data_ww[rating_data_ww$s_pair_id==i,""rating""])$rating
+  cur_count = length(cur_ratings)
+  pairs_data_ww[i,""count""] = cur_count
+  inds = 1:cur_count
+  
+  mean_cur_ratings = mean(cur_ratings)
+  pairs_data_ww[i,""mean_rating_wfws""] = mean_cur_ratings
+  
+  if(cur_count ==0 ){
+    next
+  }else{
+    pairs_data_ww[i,5:(4+cur_count)]= cur_ratings
+  }
+  
+  
+  if (cur_count %% 2 == 0){
+    ind_s1 <- sample(inds, (cur_count/2), replace = FALSE)
+  }else {
+    if (runif(1)>0.5){
+      ind_s1 <- sample(inds, (cur_count-1)/2, replace = FALSE)
+    }else {
+      ind_s1 <- sample(inds, (cur_count+1)/2, replace = FALSE)
+    }
+  }
+  
+  ind_s2 = setdiff(inds, ind_s1)
+  
+  s1<- cur_ratings[ind_s1]
+  s2<- cur_ratings[ind_s2]
+  
+  pairs_data_ww$s1mean_ww[i] = mean(s1)
+  pairs_data_ww$s2mean_ww[i] = mean(s2)
+  
+}
+...
+# put in dissim matrix format to get ready for MDS for WHITE Faces
+
+dissim_mat_wb <- pairs_data_wb%>% 
+  select(pair_id,face_1, face_2, mean_rating_wfbs)%>%
+  group_by(face_1, face_2)%>%
+  summarize(avg_dissim = mean(8-mean_rating_wfbs, na.rm = T), .groups = ""drop"")%>%
+  arrange(face_1, face_2)%>%
+  pivot_wider(names_from=face_1, values_from = avg_dissim)%>%
+  .[,-1]%>%
+  as.matrix()%>%
+  rbind(NA,.)%>%
+  cbind(.,NA)
+
+
+dissim_mat_ww <- pairs_data_ww%>% 
+  select(pair_id,face_1, face_2, mean_rating_wfws)%>%
+  group_by(face_1, face_2)%>%
+  summarize(avg_dissim = mean(8-mean_rating_wfws, na.rm = T), .groups = ""drop"")%>%
+  arrange(face_1, face_2)%>%
+  pivot_wider(names_from=face_1, values_from = avg_dissim)%>%
+  .[,-1]%>%
+  as.matrix()%>%
+  rbind(NA,.)%>%
+  cbind(.,NA)
+",unknown,"The paper describes correlating ranked distances between MDS-derived face spaces, but the provided code only shows construction of dissimilarity matrices from mean ratings and does not include the subsequent MDS, distance computation, or rank-transformation steps. Without seeing those later steps, it is unclear whether the rank-order transformation described in the paper is implemented as stated.",,
+akan,5,"The same rank-order correlation procedure was applied to the White face set, correlating the ordered pairwise distances from Black-perceiver and White-perceiver MDS spaces. The correlation between ranked distances was r(4,369) = .66, p < .0001, again indicating substantial cross-race agreement in the relative similarity structure for White faces.",Inference Specification,"For both face sets, the rank-order correlations between the face spaces of the two perceiver groups were notably high: For the Black face set, the correlation was r(4369) = .68, p < .0001, and for the White face set, it was r(4369) = .66, p < .0001.",,unknown,"The paper reports an inferential result for the rank-order correlation (r = .66, p < .0001), but there is no corresponding code snippet provided to verify how this p-value or any inference criteria were computed. Without code evidence, it is impossible to determine whether the implementation matches the described inference specification.",,
+akan,6,"A logistic regression model examined accuracy on the 2AFC discrimination task (correct vs. incorrect on each trial) as a function of Perceiver Race (Black vs. White), Face Race (Black vs. White target faces), their interaction, and z-standardized participant age. The perceiver-race by face-race interaction was significant (e^β = 1.72, 95% CI [1.25, 2.38], z = 3.33, p < .001), with White perceivers showing higher odds of correct discrimination for White versus Black faces (e^β = 1.67, 95% CI [1.33, 2.09], z = 4.47, p < .001) while Black perceivers showed no such difference (e^β = 1.03, 95% CI [0.82, 1.30], z = 0.27, p = .789); age was negatively associated with accuracy (e^β = 0.86 per 1 SD, 95% CI [0.80, 0.93], z = −3.70, p < .001). This model was used to document a cross-race effect in objective discrimination, especially among White participants.",Model Specification,"To formally examine the role of race in discrimination ability, we employed a logistic regression model.","# logistic regression analysis
+#center age
+mean_age <- mean(afc_data$age)
+sd_age <- sd(afc_data$age)
+
+afc_data <- afc_data%>%
+  mutate(age_2 = ((age-mean_age)/sd_age))
+
+#convert IVs into factors before submitting to regression model
+afc_data$sub_race_2 <- as.factor(afc_data$sub_race_2)
+afc_data$face_race_2 <- as.factor(afc_data$face_race_2)
+#change ref levels for testing
+afc_data$sub_race_3 <- relevel(afc_data$sub_race_2, ref = ""W"")
+afc_data$face_race_3 <- relevel(afc_data$face_race_2, ref = ""W"")
+
+
+model <- glm(accuracy ~ sub_race_2 * face_race_3  + age_2, data = afc_data, family = binomial)
+
+summary_model<-summary(model)",match,"The paper describes using a logistic regression model, and the code implements a binomial GLM (logistic regression) for the binary accuracy outcome. Thus, the model specification in the code aligns with the description in the paper.",,
+akan,6,"A logistic regression model examined accuracy on the 2AFC discrimination task (correct vs. incorrect on each trial) as a function of Perceiver Race (Black vs. White), Face Race (Black vs. White target faces), their interaction, and z-standardized participant age. The perceiver-race by face-race interaction was significant (e^β = 1.72, 95% CI [1.25, 2.38], z = 3.33, p < .001), with White perceivers showing higher odds of correct discrimination for White versus Black faces (e^β = 1.67, 95% CI [1.33, 2.09], z = 4.47, p < .001) while Black perceivers showed no such difference (e^β = 1.03, 95% CI [0.82, 1.30], z = 0.27, p = .789); age was negatively associated with accuracy (e^β = 0.86 per 1 SD, 95% CI [0.80, 0.93], z = −3.70, p < .001). This model was used to document a cross-race effect in objective discrimination, especially among White participants.",Variable Specification,"To formally examine the role of race in discrimination ability, we employed a logistic regression model. Due to small age differences among participant samples and the established in ﬂuence of age on face recognition memory ( Fraundorf et al., 2019 ), we included age as a covariate. Thus, the predictors in the model included perceiver race, face race, the interaction between perceiver race and face race, and perceiver age ( z-transformed).
+We found a signiﬁcant interaction between perceiver race and face race (eβ = 1.72, 95% CI [1.25, 2.38], z = 3.33, p < .001), indicating a cross-race effect. That is, the effect of face race on accuracy depended on perceiver race. White perceivers were better at distin-guishing between faces of White individuals than Black individuals (eβ = 1.67, 95% CI [1.33, 2.09], z = 4.47, p < .001), indicating that the odds of correct discrimination for White faces was 1.67 times that of Black faces. On the other hand, results for Black perceivers were consistent with little or no difference in the ability to distinguish same-race and cross-race faces ( eβ = 1.03, 95% CI [0.82, 1.30], z = 0.27, p = .789). Finally, the model indicated about a 14% drop in discrimination accuracy when age increased by 1 standard deviation (eβ = 0.86, 95% CI [0.80, 0.93], z = −3.70, p < .001).","afc_data<- data_allS%>%
+  filter(s_trial_type ==""2afc"")%>%
+  select(""run_id_2"",""age"",""gender"",""sub_race"", ""face_race"",""sus_study_img"",""s_face_1"",""s_face_2"", ""s_correct_response"", ""response"")%>%
+  mutate(sub_race_2 = case_when(sub_race == ""Black Perceivers"" ~ ""B"",
+                                sub_race == ""White Perceivers"" ~ ""W""),
+         face_race_2 = case_when(face_race == ""Black Face Set"" ~ ""B"", 
+                                 face_race == ""White Face Set"" ~ ""W""),
+         gender_2 = case_when(gender == ""Female""~  ""Female"",
+                              gender == ""Male"" ~ ""Male"", 
+                              TRUE ~ ""Other""))%>%
+  mutate_at(c(""s_correct_response"", ""response""), as.numeric)%>%
+  mutate(accuracy = ifelse(response==s_correct_response, 1,0),
+         race_match= ifelse(sub_race_2 == face_race_2, 1,0))%>%
+  filter(!row_number()%in% seq(1,4615,13)) #get rid of practice trial
+...
+# logistic regression analysis
+#center age
+mean_age <- mean(afc_data$age)
+sd_age <- sd(afc_data$age)
+
+afc_data <- afc_data%>%
+  mutate(age_2 = ((age-mean_age)/sd_age))
+
+#convert IVs into factors before submitting to regression model
+afc_data$sub_race_2 <- as.factor(afc_data$sub_race_2)
+afc_data$face_race_2 <- as.factor(afc_data$face_race_2)
+#change ref levels for testing
+afc_data$sub_race_3 <- relevel(afc_data$sub_race_2, ref = ""W"")
+afc_data$face_race_3 <- relevel(afc_data$face_race_2, ref = ""W"")
+
+
+model <- glm(accuracy ~ sub_race_2 * face_race_3  + age_2, data = afc_data, family = binomial)",match,"The code uses accuracy as the binary outcome and includes perceiver race, face race, their interaction, and z-standardized age as predictors, matching the variables described in the paper.",,
+akan,6,"A logistic regression model examined accuracy on the 2AFC discrimination task (correct vs. incorrect on each trial) as a function of Perceiver Race (Black vs. White), Face Race (Black vs. White target faces), their interaction, and z-standardized participant age. The perceiver-race by face-race interaction was significant (e^β = 1.72, 95% CI [1.25, 2.38], z = 3.33, p < .001), with White perceivers showing higher odds of correct discrimination for White versus Black faces (e^β = 1.67, 95% CI [1.33, 2.09], z = 4.47, p < .001) while Black perceivers showed no such difference (e^β = 1.03, 95% CI [0.82, 1.30], z = 0.27, p = .789); age was negatively associated with accuracy (e^β = 0.86 per 1 SD, 95% CI [0.80, 0.93], z = −3.70, p < .001). This model was used to document a cross-race effect in objective discrimination, especially among White participants.",Transformation Specification,"Thus, the predictors in the model included perceiver race, face race, the interaction between perceiver race and face race, and perceiver age (z-transformed).","afc_data<- data_allS%>%
+  filter(s_trial_type ==""2afc"")%>%
+  select(""run_id_2"",""age"",""gender"",""sub_race"", ""face_race"",""sus_study_img"",""s_face_1"",""s_face_2"", ""s_correct_response"", ""response"")%>%
+  mutate(sub_race_2 = case_when(sub_race == ""Black Perceivers"" ~ ""B"",
+                                sub_race == ""White Perceivers"" ~ ""W""),
+         face_race_2 = case_when(face_race == ""Black Face Set"" ~ ""B"", 
+                                 face_race == ""White Face Set"" ~ ""W""),
+         gender_2 = case_when(gender == ""Female""~  ""Female"",
+                              gender == ""Male"" ~ ""Male"", 
+                              TRUE ~ ""Other""))%>%
+  mutate_at(c(""s_correct_response"", ""response""), as.numeric)%>%
+  mutate(accuracy = ifelse(response==s_correct_response, 1,0),
+         race_match= ifelse(sub_race_2 == face_race_2, 1,0))%>%
+  filter(!row_number()%in% seq(1,4615,13)) #get rid of practice trial
+
+# logistic regression analysis
+#center age
+mean_age <- mean(afc_data$age)
+sd_age <- sd(afc_data$age)
+
+afc_data <- afc_data%>%
+  mutate(age_2 = ((age-mean_age)/sd_age))
+
+#convert IVs into factors before submitting to regression model
+afc_data$sub_race_2 <- as.factor(afc_data$sub_race_2)
+afc_data$face_race_2 <- as.factor(afc_data$face_race_2)
+#change ref levels for testing
+afc_data$sub_race_3 <- relevel(afc_data$sub_race_2, ref = ""W"")
+afc_data$face_race_3 <- relevel(afc_data$face_race_2, ref = ""W"")
+
+
+model <- glm(accuracy ~ sub_race_2 * face_race_3  + age_2, data = afc_data, family = binomial)",match,"The code z-standardizes age before fitting the model, as described in the paper, and no conflicting transformations are evident. Other minor data handling steps (e.g., factor coding, dropping practice trials) do not contradict the paper’s transformation description for this analysis-dimension pairing.",,
+akan,6,"A logistic regression model examined accuracy on the 2AFC discrimination task (correct vs. incorrect on each trial) as a function of Perceiver Race (Black vs. White), Face Race (Black vs. White target faces), their interaction, and z-standardized participant age. The perceiver-race by face-race interaction was significant (e^β = 1.72, 95% CI [1.25, 2.38], z = 3.33, p < .001), with White perceivers showing higher odds of correct discrimination for White versus Black faces (e^β = 1.67, 95% CI [1.33, 2.09], z = 4.47, p < .001) while Black perceivers showed no such difference (e^β = 1.03, 95% CI [0.82, 1.30], z = 0.27, p = .789); age was negatively associated with accuracy (e^β = 0.86 per 1 SD, 95% CI [0.80, 0.93], z = −3.70, p < .001). This model was used to document a cross-race effect in objective discrimination, especially among White participants.",Inference Specification,"We found a significant interaction between perceiver race and face race (eβ = 1.72, 95% CI [1.25, 2.38], z = 3.33, p < .001), indicating a cross-race effect. That is, the effect of face race on accuracy depended on perceiver race. White perceivers were better at distinguishing between faces of White individuals than Black individuals (eβ = 1.67, 95% CI [1.33, 2.09], z = 4.47, p < .001), indicating that the odds of correct discrimination for White faces was 1.67 times that of Black faces. On the other hand, results for Black perceivers were consistent with little or no difference in the ability to distinguish same-race and cross-race faces (eβ = 1.03, 95% CI [0.82, 1.30], z = 0.27, p = .789). Finally, the model indicated about a 14% drop in discrimination accuracy when age increased by 1 standard deviation (eβ = 0.86, 95% CI [0.80, 0.93], z = −3.70, p < .001).","# logistic regression analysis
+#center age
+mean_age <- mean(afc_data$age)
+sd_age <- sd(afc_data$age)
+
+afc_data <- afc_data%>%
+  mutate(age_2 = ((age-mean_age)/sd_age))
+
+#convert IVs into factors before submitting to regression model
+afc_data$sub_race_2 <- as.factor(afc_data$sub_race_2)
+afc_data$face_race_2 <- as.factor(afc_data$face_race_2)
+#change ref levels for testing
+afc_data$sub_race_3 <- relevel(afc_data$sub_race_2, ref = ""W"")
+afc_data$face_race_3 <- relevel(afc_data$face_race_2, ref = ""W"")
+
+
+model <- glm(accuracy ~ sub_race_2 * face_race_3  + age_2, data = afc_data, family = binomial)
+
+summary_model<-summary(model)
+
+coef_table <- summary_model$coefficients
+print(coef_table)
+
+# Extract coefficients and calculate odds ratios
+odds_ratios <- exp(coef_table[, ""Estimate""])
+# Calculate 95% confidence intervals for odds ratios
+conf_int <- exp(confint(model))
+
+# Combine the odds ratios and confidence intervals into a data frame
+odds_ratios_df <- data.frame(
+ # Predictor = rownames(coef_table),
+  Odds_Ratio = odds_ratios,
+  `95% CI Lower` = conf_int[, 1],
+  `95% CI Upper` = conf_int[, 2]
+)
+
+# Print the odds ratios and confidence intervals
+print(odds_ratios_df)",match,"The code uses the same inferential framework described in the paper, computing Wald z-tests with p-values and 95% confidence intervals for odds ratios from the logistic regression. No alternative alpha level or inference criterion is used in the code that would conflict with the paper’s reported 95% CIs and p-values.",,
+akan,7,"A two-way mixed-effects ANOVA tested the effects of Suspect Race (Black vs. White; within-subjects) and Constructor Race (Black vs. White; between-subjects) on the mean number of stimulus pages visited when constructing lineups (1–3 pages per lineup, averaged across 3 lineups per suspect race). Neither the main effect of suspect race (F(1, 78) = 3.74, p = .056) nor constructor race (F(1, 78) = 0.06, p = .533), nor their interaction (F(1, 78) = 0.06, p = .809) reached conventional significance, suggesting that viewing depth of the filler pool did not systematically differ by suspect–constructor race match.",Model Specification,"A mixed-effects analysis of variance on the mean number of pages visited across the three lineups constructed for suspects of a given race by each participant did not yield a significant effect of suspect race, F(1, 78) = 3.74, p = .056, with a mean difference of 0.07 (95% CI [−0.001, 0.13]) or of constructor race, F(1, 78) = 0.06, p = .533, with a mean difference of 0.07 (95% CI [−0.25, 0.09]). The interaction was also not significant, F(1, 78) = 0.06, p = .809, 95% CI [−0.15, 0.12].",,unknown,"The paper clearly describes a two-way mixed-effects ANOVA, but no corresponding code or model specification is provided to verify whether the implementation matches this description.",,
+akan,7,"A two-way mixed-effects ANOVA tested the effects of Suspect Race (Black vs. White; within-subjects) and Constructor Race (Black vs. White; between-subjects) on the mean number of stimulus pages visited when constructing lineups (1–3 pages per lineup, averaged across 3 lineups per suspect race). Neither the main effect of suspect race (F(1, 78) = 3.74, p = .056) nor constructor race (F(1, 78) = 0.06, p = .533), nor their interaction (F(1, 78) = 0.06, p = .809) reached conventional significance, suggesting that viewing depth of the filler pool did not systematically differ by suspect–constructor race match.",Variable Specification,"We conducted a two-way mixed-effects analysis of variance on the mean number of pages visited across the three lineups constructed for suspects of a given race by each participant. This analysis did not yield a significant effect of suspect race, F(1, 78) = 3.74, p = .056, with a mean difference of 0.07 (95% CI [−0.001, 0.13]) or of constructor race, F(1, 78) = 0.06, p = .533, with a mean difference of 0.07 (95% CI [−0.25, 0.09]). The interaction was also not significant, F(1, 78) = 0.06, p = .809, 95% CI [−0.15, 0.12].",,unknown,"The paper clearly specifies the variables and their roles in the mixed-effects ANOVA, but no corresponding code is provided to verify whether the implementation uses the same variables and designations.",,
+akan,7,"A two-way mixed-effects ANOVA tested the effects of Suspect Race (Black vs. White; within-subjects) and Constructor Race (Black vs. White; between-subjects) on the mean number of stimulus pages visited when constructing lineups (1–3 pages per lineup, averaged across 3 lineups per suspect race). Neither the main effect of suspect race (F(1, 78) = 3.74, p = .056) nor constructor race (F(1, 78) = 0.06, p = .533), nor their interaction (F(1, 78) = 0.06, p = .809) reached conventional significance, suggesting that viewing depth of the filler pool did not systematically differ by suspect–constructor race match.",Transformation Specification,We conducted a two-way mixed-effects analysis of variance on the mean number of pages visited across the three lineups constructed for suspects of a given race by each participant…,,unknown,"The paper describes using the mean number of pages visited across three lineups per suspect race, but no corresponding code related to this transformation is provided for comparison.",,
+akan,7,"A two-way mixed-effects ANOVA tested the effects of Suspect Race (Black vs. White; within-subjects) and Constructor Race (Black vs. White; between-subjects) on the mean number of stimulus pages visited when constructing lineups (1–3 pages per lineup, averaged across 3 lineups per suspect race). Neither the main effect of suspect race (F(1, 78) = 3.74, p = .056) nor constructor race (F(1, 78) = 0.06, p = .533), nor their interaction (F(1, 78) = 0.06, p = .809) reached conventional significance, suggesting that viewing depth of the filler pool did not systematically differ by suspect–constructor race match.",Inference Specification,"A mixed-effects analysis of variance on the mean number of pages visited across the three lineups constructed for suspects of a given race by each participant did not yield a significant effect of suspect race, F(1, 78) = 3.74, p = .056, with a mean difference of 0.07 (95% CI [−0.001, 0.13]) or of constructor race, F(1, 78) = 0.06, p = .533, with a mean difference of 0.07 (95% CI [−0.25, 0.09]). The interaction was also not significant, F(1, 78) = 0.06, p = .809, 95% CI [−0.15, 0.12].",,unknown,"There is not enough information about the corresponding code to determine whether the inference procedures (e.g., significance testing, CIs) match the paper’s description.",,
+akan,8,"A two-way mixed-effects ANOVA evaluated how Suspect Race (Black vs. White; within-subjects) and Constructor Race (Black vs. White; between-subjects) affected mean lineup construction time per suspect (in seconds, averaged over 3 lineups per suspect race). The suspect-race main effect was non-significant (F(1, 78) = 0.75, p = .390), but White constructors were significantly faster than Black constructors overall (constructor race main effect F(1, 78) = 6.94, p = .010), and the interaction between suspect race and constructor race approached but did not reach significance (F(1, 78) = 3.66, p = .059). These results were used to explore whether cross-race suspects required more time to construct lineups.",Model Specification,We conducted a two-way mixed-effects analysis of variance on the mean lineup construction time with constructor race as a between-subjects factor and suspect race as a within-subjects factor.,,unknown,"It is not possible to determine whether the code matches the paper’s stated two-way mixed-effects ANOVA model specification because no relevant code was provided. Without seeing the analysis code, the implemented statistical test cannot be verified.",,
+akan,8,"A two-way mixed-effects ANOVA evaluated how Suspect Race (Black vs. White; within-subjects) and Constructor Race (Black vs. White; between-subjects) affected mean lineup construction time per suspect (in seconds, averaged over 3 lineups per suspect race). The suspect-race main effect was non-significant (F(1, 78) = 0.75, p = .390), but White constructors were significantly faster than Black constructors overall (constructor race main effect F(1, 78) = 6.94, p = .010), and the interaction between suspect race and constructor race approached but did not reach significance (F(1, 78) = 3.66, p = .059). These results were used to explore whether cross-race suspects required more time to construct lineups.",Variable Specification,"We also examined the time participants took to construct each lineup. For each participant, we averaged lineup construction times for the three lineups they created for the three suspects of a given race. Figure 6 shows the distribution of these means for each Suspect Race × Constructor Race condition.
+
+We conducted a two-way mixed-effects analysis of variance on the mean lineup construction time with constructor race as a between-subjects factor and suspect race as a within-subjects factor.",,unknown,"The paper clearly specifies the variables and their roles in the ANOVA, but no corresponding code is provided to verify how these variables were implemented. Without the code, it is impossible to determine whether the implementation matches the described variable specification.",,
+akan,8,"A two-way mixed-effects ANOVA evaluated how Suspect Race (Black vs. White; within-subjects) and Constructor Race (Black vs. White; between-subjects) affected mean lineup construction time per suspect (in seconds, averaged over 3 lineups per suspect race). The suspect-race main effect was non-significant (F(1, 78) = 0.75, p = .390), but White constructors were significantly faster than Black constructors overall (constructor race main effect F(1, 78) = 6.94, p = .010), and the interaction between suspect race and constructor race approached but did not reach significance (F(1, 78) = 3.66, p = .059). These results were used to explore whether cross-race suspects required more time to construct lineups.",Transformation Specification,"We also examined the time participants took to construct each lineup. For each participant, we averaged lineup construction times for the three lineups they created for the three suspects of a given race. Figure 6 shows the distribution of these means for each Suspect Race × Constructor Race condition. We conducted a two-way mixed-effects analysis of variance on the mean lineup construction time with constructor race as a between-subjects factor and suspect race as a within-subjects factor.",,unknown,"No relevant code for this analysis-dimension pairing is provided, so it is impossible to determine whether the implementation matches the described averaging of lineup construction times and subsequent ANOVA.",,
+akan,8,"A two-way mixed-effects ANOVA evaluated how Suspect Race (Black vs. White; within-subjects) and Constructor Race (Black vs. White; between-subjects) affected mean lineup construction time per suspect (in seconds, averaged over 3 lineups per suspect race). The suspect-race main effect was non-significant (F(1, 78) = 0.75, p = .390), but White constructors were significantly faster than Black constructors overall (constructor race main effect F(1, 78) = 6.94, p = .010), and the interaction between suspect race and constructor race approached but did not reach significance (F(1, 78) = 3.66, p = .059). These results were used to explore whether cross-race suspects required more time to construct lineups.",Inference Specification,"We conducted a two-way mixed-effects analysis of variance on the mean lineup construction time with constructor race as a between-subjects factor and suspect race as a within-subjects factor. The effect of suspect race on the time taken to construct lineups was not significant, F(1, 78) = 0.75, p = .390, with a mean difference (White suspect – Black suspect) of 2.5 s (95% CI [−1.53, 6.53]). The effect of constructor race was statistically significant, F(1, 78) = 6.94, p = .010, with a mean difference (Black constructor – White constructor) of 21.4 s (95% CI [5.20, 37.60]). The interaction between suspect race and constructor race was not statistically significant, F(1, 78) = 3.66, p = .059. … The CI indicates that any potential effect is likely to be quite small, given that all population effect sizes greater than 0.28 are rejected by the sample with α = .05.",,unknown,"No relevant code related to inference criteria (e.g., alpha level, CI computation, or decision rules) is provided, so it is impossible to determine whether the implementation matches the paper’s described inference specification.",,
+akan,9,"For Black-suspect lineups, an independent-samples t-test compared the mean suspect–filler distance (z-scored in the Black-perceiver MDS space, averaged across the three Black-suspect lineups per participant) between lineups created by Black versus White constructors. The mean difference (White − Black constructors) was 0.06 with a 95% CI [−0.19, 0.30], indicating no evidence that constructor race affected how similar fillers were to the suspect as perceived by Black observers.",Model Specification,We conducted independent-samples t tests to statistically compare suspect–filler distance between lineups created by Black and White constructors for each perceiver race.,,unknown,"The paper specifies an independent-samples t-test, but no corresponding code or model specification is provided to verify this implementation.",,
+akan,9,"For Black-suspect lineups, an independent-samples t-test compared the mean suspect–filler distance (z-scored in the Black-perceiver MDS space, averaged across the three Black-suspect lineups per participant) between lineups created by Black versus White constructors. The mean difference (White − Black constructors) was 0.06 with a 95% CI [−0.19, 0.30], indicating no evidence that constructor race affected how similar fillers were to the suspect as perceived by Black observers.",Variable Specification,"We conducted independent-samples t tests to statistically compare suspect–filler distance between lineups created by Black and White constructors for each perceiver race. As in previous analyses, we first averaged the mean suspect–filler distance values across the three lineups constructed by each participant, for suspects of a given race. This analysis revealed that lineups created by Black and White constructors have similar mean suspect–filler distances, as perceived by both Black and White perceivers. The mean difference in suspect–filler distance between lineups created by the two constructor groups (White – Black) was 0.06 (95% CI [−0.19, 0.30]) from the perspective of Black perceivers and 0.06 (95% CI [−0.21, 0.33]) from the perspective of White perceivers.",,unknown,"No relevant code related to this analysis was provided, so it is impossible to determine whether the implemented variables match those described in the paper.",,
+akan,9,"For Black-suspect lineups, an independent-samples t-test compared the mean suspect–filler distance (z-scored in the Black-perceiver MDS space, averaged across the three Black-suspect lineups per participant) between lineups created by Black versus White constructors. The mean difference (White − Black constructors) was 0.06 with a 95% CI [−0.19, 0.30], indicating no evidence that constructor race affected how similar fillers were to the suspect as perceived by Black observers.",Transformation Specification,"Recall that face pairs that were perceived to be more similar are positioned closer together, while faces perceived to be less similar were positioned further apart, in the face space. To render the distance values more interpretable, we z-transformed the distances between each face pair in each face space. Thus, a distance of 0 between a pair of faces within a given face space indicates an average level of similarity with respect to all other face pairs in that face space. Negative distance values indicate higher than average perceived similarity, and positive distance values indicate lower than average perceived similarity.
+
+Suspect–filler similarity was defined by averaging the five suspect–filler distances for each lineup. Given that we converted all distances to z scores, negative values indicate a lineup with fillers that tend to be more similar to the suspect than a typical member of the face set, and positive values indicate the opposite.
+
+We conducted independent-samples t tests to statistically compare suspect–filler distance between lineups created by Black and White constructors for each perceiver race. As in previous analyses, we first averaged the mean suspect–filler distance values across the three lineups constructed by each participant, for suspects of a given race.",,unknown,"There is insufficient information about the code to determine whether the described z-transformation of distances, averaging across suspect–filler distances, and averaging across three lineups per participant was implemented as stated in the paper.",,
+akan,9,"For Black-suspect lineups, an independent-samples t-test compared the mean suspect–filler distance (z-scored in the Black-perceiver MDS space, averaged across the three Black-suspect lineups per participant) between lineups created by Black versus White constructors. The mean difference (White − Black constructors) was 0.06 with a 95% CI [−0.19, 0.30], indicating no evidence that constructor race affected how similar fillers were to the suspect as perceived by Black observers.",Inference Specification,"We conducted independent-samples t tests to statistically com-
+pare suspect–ﬁller distance between lineups created by Black and
+White constructors for each perceiver race. As in previous analyses,
+we ﬁrst averaged the mean suspect–ﬁller distance values across the
+three lineups constructed by each participant, for suspects of a given
+race. This analysis revealed that lineups created by Black and White
+constructors have similar mean suspect–ﬁller distances, as perceived
+by both Black and White perceivers. The mean difference in
+suspect–ﬁller distance between lineups created by the two con-
+structor groups (White – Black) was 0.06 (95% conﬁdence interval,
+CI [−0.19, 0.30]) from the perspective of Black perceivers and 0.06
+(95% CI [−0.21, 0.33]) from the perspective of White perceivers.",,unknown,"The paper describes an independent-samples t-test with a reported mean difference and 95% confidence interval, but no corresponding code is provided to verify how this inference was implemented. Without the analysis code, it is impossible to determine whether the inferential procedure in the code matches the paper description.",,
+akan,10,"The same independent-samples t-test framework was applied to Black-suspect lineups using suspect–filler distances computed in the White-perceiver MDS space, again averaging across three Black-suspect lineups per participant. The mean difference in suspect–filler distance between lineups created by White versus Black constructors was 0.06 with a 95% CI [−0.21, 0.33], showing no constructor-race effect on suspect–filler similarity as perceived by White observers.",Model Specification,We conducted independent-samples t tests to statistically compare suspect–filler distance between lineups created by Black and White constructors for each perceiver race.,,unknown,"The paper specifies using independent-samples t tests, but no relevant code is provided to verify whether the same model specification is implemented. Without the analysis code, it is impossible to confirm a match or mismatch.",,
+akan,10,"The same independent-samples t-test framework was applied to Black-suspect lineups using suspect–filler distances computed in the White-perceiver MDS space, again averaging across three Black-suspect lineups per participant. The mean difference in suspect–filler distance between lineups created by White versus Black constructors was 0.06 with a 95% CI [−0.21, 0.33], showing no constructor-race effect on suspect–filler similarity as perceived by White observers.",Variable Specification,"We conducted independent-samples t tests to statistically compare suspect–filler distance between lineups created by Black and White constructors for each perceiver race. As in previous analyses, we first averaged the mean suspect–filler distance values across the three lineups constructed by each participant, for suspects of a given race. This analysis revealed that lineups created by Black and White constructors have similar mean suspect–filler distances, as perceived by both Black and White perceivers. The mean difference in suspect–filler distance between lineups created by the two constructor groups (White – Black) was 0.06 (95% CI [−0.19, 0.30]) from the perspective of Black perceivers and 0.06 (95% CI [−0.21, 0.33]) from the perspective of White perceivers.",,unknown,"There is insufficient information about the variables used in the corresponding code to determine whether they match the paper’s description of the t-test on suspect–filler distance by constructor race and White perceiver. The paper specifies averaging suspect–filler distances across three Black-suspect lineups per participant and comparing White vs. Black constructors, but no code details are available to confirm this variable specification.",,
+akan,10,"The same independent-samples t-test framework was applied to Black-suspect lineups using suspect–filler distances computed in the White-perceiver MDS space, again averaging across three Black-suspect lineups per participant. The mean difference in suspect–filler distance between lineups created by White versus Black constructors was 0.06 with a 95% CI [−0.21, 0.33], showing no constructor-race effect on suspect–filler similarity as perceived by White observers.",Transformation Specification,"Recall that face pairs that were perceived to be more similar are positioned closer together, while faces perceived to be less similar were positioned further apart, in the face space. To render the distance values more interpretable, we z-transformed the distances between each face pair in each face space.
+
+Suspect–ﬁller similarity was deﬁned by averaging the ﬁve suspect–ﬁller distances for each lineup.
+
+As in previous analyses, we ﬁrst averaged the mean suspect–ﬁller distance values across the three lineups constructed by each participant, for suspects of a given race.",,unknown,"The paper clearly describes z-transforming pairwise distances and averaging suspect–filler distances across five fillers and then across three lineups, but no corresponding code implementation is provided to verify these transformations. Therefore, it is not possible to determine whether the code matches the described transformations.",,
+akan,10,"The same independent-samples t-test framework was applied to Black-suspect lineups using suspect–filler distances computed in the White-perceiver MDS space, again averaging across three Black-suspect lineups per participant. The mean difference in suspect–filler distance between lineups created by White versus Black constructors was 0.06 with a 95% CI [−0.21, 0.33], showing no constructor-race effect on suspect–filler similarity as perceived by White observers.",Inference Specification,"The mean difference in suspect–filler distance between lineups created by the two constructor groups (White – Black) was 0.06 (95% CI [ −0.21, 0.33]) from the perspective of White perceivers.",,unknown,"There is no relevant code provided to assess how the confidence interval or inference criteria were implemented, so alignment with the paper’s reported 95% CI cannot be evaluated.",,
+akan,11,"For Black-suspect lineups, an independent-samples t-test compared mean fairness scores (suspect–filler distance minus filler-to-lineup distance, averaged per participant) between lineups constructed by Black versus White participants, using distances measured in the Black-perceiver MDS space. The mean fairness difference (White − Black constructors) was 0.01 with a 95% CI [−0.12, 0.16], indicating no substantial effect of constructor race on lineup fairness from a Black observer’s perspective.",Model Specification,We conducted independent-samples t tests to statistically compare suspect–filler distance between lineups created by Black and White constructors for each perceiver race.,,unknown,"The paper specifies independent-samples t-tests, but no corresponding code is provided to verify that this model was implemented as described.",,
+akan,11,"For Black-suspect lineups, an independent-samples t-test compared mean fairness scores (suspect–filler distance minus filler-to-lineup distance, averaged per participant) between lineups constructed by Black versus White participants, using distances measured in the Black-perceiver MDS space. The mean fairness difference (White − Black constructors) was 0.01 with a 95% CI [−0.12, 0.16], indicating no substantial effect of constructor race on lineup fairness from a Black observer’s perspective.",Variable Specification,"Consistent with suspect–filler distance, fairness scores also appeared to be similar across lineups created by same-race and cross-race constructors. The mean difference in fairness across constructor race (White − Black) was 0.01 for Black perceivers (95% CI [−0.12, 0.16]) and 0.02 for White perceivers (95% CI [−0.12, 0.14]).",,unknown,There is not enough information about the code implementation to determine whether the variables used match the paper’s description for this analysis-dimension pairing.,,
+akan,11,"For Black-suspect lineups, an independent-samples t-test compared mean fairness scores (suspect–filler distance minus filler-to-lineup distance, averaged per participant) between lineups constructed by Black versus White participants, using distances measured in the Black-perceiver MDS space. The mean fairness difference (White − Black constructors) was 0.01 with a 95% CI [−0.12, 0.16], indicating no substantial effect of constructor race on lineup fairness from a Black observer’s perspective.",Transformation Specification,"To render the distance values more interpretable, we z-transformed the distances between each face pair in each face space. Suspect–filler similarity was defined by averaging the five suspect–filler distances for each lineup. Given that we converted all distances to z scores, negative values indicate a lineup with fillers that tend to be more similar to the suspect than a typical member of the face set, and positive values indicate the opposite. To calculate fairness, we first measured suspect–filler similarity as mentioned above. Then we calculated filler-to-lineup similarity by averaging the distance between each filler and all other lineup members, resulting in five average distance values (one for each filler). The filler-to-lineup distance is the average of these average distances across the five fillers. Finally, the fairness score was determined by subtracting the filler-to-lineup distance from the suspect–filler distance. As in previous analyses, we first averaged the mean suspect–filler distance values across the three lineups constructed by each participant, for suspects of a given race. The mean difference in fairness across constructor race (White – Black) was 0.01 for Black perceivers (95% CI [−0.12, 0.16]) and 0.02 for White perceivers (95% CI [−0.12, 0.14]).",,unknown,"No relevant code excerpts were provided, so it is not possible to determine whether the described z-transformations and averaging procedures for fairness scores were implemented as stated in the paper.",,
+akan,11,"For Black-suspect lineups, an independent-samples t-test compared mean fairness scores (suspect–filler distance minus filler-to-lineup distance, averaged per participant) between lineups constructed by Black versus White participants, using distances measured in the Black-perceiver MDS space. The mean fairness difference (White − Black constructors) was 0.01 with a 95% CI [−0.12, 0.16], indicating no substantial effect of constructor race on lineup fairness from a Black observer’s perspective.",Inference Specification,"Lineup fairness was also similar across lineups created by same-race and cross-race constructors. The mean difference in fairness across constructor race (White – Black) was 0.01 for Black perceivers (95% CI [−0.12, 0.16]) and 0.02 for White perceivers (95% CI [−0.12, 0.14]).",,unknown,It is unclear whether the code’s inference criteria match the paper’s description because no relevant code excerpts were provided for this analysis-dimension pairing.,,
+akan,12,"An analogous independent-samples t-test compared fairness scores for Black-suspect lineups across Black versus White constructors using distances from the White-perceiver MDS space. The mean difference in fairness (White − Black constructors) was 0.02 with a 95% CI [−0.12, 0.14], again providing no evidence that constructor race influenced fairness as it would be perceived by White eyewitnesses.",Model Specification,We conducted independent-samples t tests to statistically compare suspect–filler distance between lineups created by Black and White constructors for each perceiver race.,,unknown,"The paper states that independent-samples t tests were conducted, but no corresponding code snippet is available to confirm that the same test was implemented.",,
+akan,12,"An analogous independent-samples t-test compared fairness scores for Black-suspect lineups across Black versus White constructors using distances from the White-perceiver MDS space. The mean difference in fairness (White − Black constructors) was 0.02 with a 95% CI [−0.12, 0.14], again providing no evidence that constructor race influenced fairness as it would be perceived by White eyewitnesses.",Variable Specification,"We evaluated lineups in terms of two dependent measures: suspect–ﬁller similarity and fairness. ... The fairness score was determined by subtracting the ﬁller-to-lineup distance from the suspect–ﬁller distance. ... The mean difference in fairness across constructor race (White – Black) was 0.01 for Black perceivers (95% CI [ −0.12, 0.16]) and 0.02 for White perceivers (95% CI [−0.12, 0.14]).",,unknown,"No code related to this analysis-dimension pairing was provided, so it is not possible to determine whether the variables used in the implementation match those described in the paper.",,
+akan,12,"An analogous independent-samples t-test compared fairness scores for Black-suspect lineups across Black versus White constructors using distances from the White-perceiver MDS space. The mean difference in fairness (White − Black constructors) was 0.02 with a 95% CI [−0.12, 0.14], again providing no evidence that constructor race influenced fairness as it would be perceived by White eyewitnesses.",Transformation Specification,"To render the distance values more interpretable, we z-transformed the distances between each face pair in each face space. Thus, a distance of 0 between a pair of faces within a given face space indicates an average level of similarity with respect to all other face pairs in that face space. Negative distance values indicate higher than average perceived similarity, and positive distance values indicate lower than average perceived similarity.
+...
+We evaluated lineups in terms of two dependent measures: suspect–filler similarity and fairness. Suspect–filler similarity was defined by averaging the five suspect–filler distances for each lineup. Given that we converted all distances to z scores, negative values indicate a lineup with fillers that tend to be more similar to the suspect than a typical member of the face set, and positive values indicate the opposite. Fairness was assessed by checking if the suspect “blends in” with the overall similarity structure of the lineup. To measure this, we compared suspect–filler similarity with filler-to-lineup similarity, which is the average distance between each filler to all other members of the lineup, including the suspect.
+...
+The fairness score was determined by subtracting the filler-to-lineup distance from the suspect–filler distance.",,unknown,There is not enough information about the actual code implementation to determine whether the described z-transformations and fairness-score computations were applied as specified in the paper.,,
+akan,12,"An analogous independent-samples t-test compared fairness scores for Black-suspect lineups across Black versus White constructors using distances from the White-perceiver MDS space. The mean difference in fairness (White − Black constructors) was 0.02 with a 95% CI [−0.12, 0.14], again providing no evidence that constructor race influenced fairness as it would be perceived by White eyewitnesses.",Inference Specification,"Consistent with suspect–filler distance, fairness scores also appeared to be similar across lineups created by same-race and cross-race constructors. The mean difference in fairness across constructor race (White – Black) was 0.01 for Black perceivers (95% CI [−0.12, 0.16]) and 0.02 for White perceivers (95% CI [−0.12, 0.14]).
+
+""The CI indicates that any potential effect is likely to be quite small, given that all population effect sizes greater than 0.28 are rejected by the sample with α = .05.""",,unknown,"The paper specifies inference criteria using 95% confidence intervals and α = .05, but no relevant code is provided to verify how these criteria were implemented. Without the corresponding code, it is impossible to determine whether the implementation matches the paper’s inference specification.",,
+akan,13,"For White-suspect lineups, an independent-samples t-test compared mean suspect–filler distance (averaged per participant) between lineups created by Black versus White constructors, evaluated in the White-perceiver MDS space. The observed mean difference in suspect–filler distance (White − Black constructors) was −0.05 with a 95% CI [−0.28, 0.19], indicating no detectable constructor-race effect on how similar fillers were to White suspects as perceived by White observers.",Model Specification,We conducted independent-samples t tests to statistically compare suspect–filler distance between lineups created by Black and White constructors for each perceiver race.,,unknown,"No relevant code implementing this specific analysis is provided, so it is not possible to verify whether the independent-samples t-test described in the paper is actually used in the code.",,
+akan,13,"For White-suspect lineups, an independent-samples t-test compared mean suspect–filler distance (averaged per participant) between lineups created by Black versus White constructors, evaluated in the White-perceiver MDS space. The observed mean difference in suspect–filler distance (White − Black constructors) was −0.05 with a 95% CI [−0.28, 0.19], indicating no detectable constructor-race effect on how similar fillers were to White suspects as perceived by White observers.",Variable Specification,"We evaluated lineups in terms of two dependent measures: suspect–filler similarity and fairness. Suspect–filler similarity was defined by averaging the five suspect–filler distances for each lineup. ... We also evaluated lineups created for White suspects by the same constructors using the same measures: mean suspect–filler distance and fairness. As in Black-suspect lineups, both mean suspect–filler distance and fairness scores were similar across lineups created by same-race and cross-race lineup constructors. From the perspective of White perceivers, the difference in suspect–filler distance across constructor groups (White − Black) was −0.05 (95% CI [−0.28, 0.19]) ...",,unknown,There is insufficient information about the variables used in the code to determine whether they match the paper’s description of the variables for this analysis.,,
+akan,13,"For White-suspect lineups, an independent-samples t-test compared mean suspect–filler distance (averaged per participant) between lineups created by Black versus White constructors, evaluated in the White-perceiver MDS space. The observed mean difference in suspect–filler distance (White − Black constructors) was −0.05 with a 95% CI [−0.28, 0.19], indicating no detectable constructor-race effect on how similar fillers were to White suspects as perceived by White observers.",Transformation Specification,"Recall that face pairs that were perceived to be more similar are positioned closer together, while faces perceived to be less similar were positioned further apart, in the face space. To render the distance values more interpretable, we z-transformed the distances between each face pair in each face space. Thus, a distance of 0 between a pair of faces within a given face space indicates an average level of similarity with respect to all other face pairs in that face space. Negative distance values indicate higher than average perceived similarity, and positive distance values indicate lower than average perceived similarity.
+
+We evaluated lineups in terms of two dependent measures: suspect–filler similarity and fairness. Suspect–filler similarity was defined by averaging the five suspect–filler distances for each lineup.
+
+As in previous analyses, we first averaged the mean suspect–filler distance values across the three lineups constructed by each participant, for suspects of a given race.
+
+We also evaluated lineups created for White suspects by the same constructors using the same measures: mean suspect–filler distance and fairness. As in Black-suspect lineups, both mean suspect–filler distance and fairness scores were similar across lineups created by same-race and cross-race lineup constructors.",,unknown,"The paper clearly describes z-transforming pairwise distances and averaging suspect–filler distances per lineup and then across three lineups per participant, but no corresponding code is provided to verify whether these transformations were implemented as described. Without any code snippets, it is impossible to assess alignment between the documented transformations and the actual analysis code.",,
+akan,13,"For White-suspect lineups, an independent-samples t-test compared mean suspect–filler distance (averaged per participant) between lineups created by Black versus White constructors, evaluated in the White-perceiver MDS space. The observed mean difference in suspect–filler distance (White − Black constructors) was −0.05 with a 95% CI [−0.28, 0.19], indicating no detectable constructor-race effect on how similar fillers were to White suspects as perceived by White observers.",Inference Specification,"As in Black-suspect lineups, both mean suspect–filler distance and fairness scores were similar across lineups created by same-race and cross-race lineup constructors. From the perspective of White perceivers, the difference in suspect–filler distance across constructor groups (White − Black) was −0.05 (95% CI [−0.28, 0.19]), and from the perspective of Black perceivers, this difference was 0.04 (95% CI [−0.18, 0.27]).",,unknown,"The paper reports a mean difference with a 95% confidence interval, but no corresponding code or inference criteria (e.g., alpha level, CI computation method) are provided to verify alignment.",,
+akan,14,"A parallel independent-samples t-test on White-suspect lineups used suspect–filler distances from the Black-perceiver MDS space to assess effects from a Black eyewitness perspective. The mean suspect–filler distance difference (White − Black constructors) was 0.04 with a 95% CI [−0.18, 0.27], again suggesting no meaningful influence of constructor race on suspect–filler similarity for White-suspect lineups.",Model Specification,We conducted independent-samples t tests to statistically compare suspect–filler distance between lineups created by Black and White constructors for each perceiver race.,,unknown,"The paper describes using independent-samples t tests, but no corresponding code is provided to verify the implemented model specification.",,
+akan,14,"A parallel independent-samples t-test on White-suspect lineups used suspect–filler distances from the Black-perceiver MDS space to assess effects from a Black eyewitness perspective. The mean suspect–filler distance difference (White − Black constructors) was 0.04 with a 95% CI [−0.18, 0.27], again suggesting no meaningful influence of constructor race on suspect–filler similarity for White-suspect lineups.",Variable Specification,"White-Suspect Lineups. We also evaluated lineups created for White suspects by the same constructors using the same measures: mean suspect–filler distance and fairness. ... As in Black-suspect lineups, both mean suspect–filler distance and fairness scores were similar across lineups created by same-race and cross-race lineup constructors. From the perspective of White perceivers, the difference in suspect–filler distance across constructor groups (White − Black) was −0.05 (95% CI [−0.28, 0.19]), and from the perspective of Black perceivers, this difference was 0.04 (95% CI [−0.18, 0.27]).",,unknown,There is insufficient information about the code implementation to determine whether the variables used and their roles match the paper’s description for this analysis.,,
+akan,14,"A parallel independent-samples t-test on White-suspect lineups used suspect–filler distances from the Black-perceiver MDS space to assess effects from a Black eyewitness perspective. The mean suspect–filler distance difference (White − Black constructors) was 0.04 with a 95% CI [−0.18, 0.27], again suggesting no meaningful influence of constructor race on suspect–filler similarity for White-suspect lineups.",Transformation Specification,"To render the distance values more interpretable, we z-transformed the distances between each face pair in each face space. Thus, a distance of 0 between a pair of faces within a given face space indicates an average level of similarity with respect to all other face pairs in that face space. Negative distance values indicate higher than average perceived similarity, and positive distance values indicate lower than average perceived similarity.
+
+Suspect–filler similarity was defined by averaging the five suspect–filler distances for each lineup. Given that we converted all distances to z scores, negative values indicate a lineup with fillers that tend to be more similar to the suspect than a typical member of the face set, and positive values indicate the opposite.
+
+As in previous analyses, we first averaged the mean suspect–filler distance values across the three lineups constructed by each participant, for suspects of a given race.",,unknown,"The paper clearly describes several transformations (z-transforming distances, averaging suspect–filler distances per lineup, and then averaging across three lineups per participant), but no corresponding code was provided to verify whether these transformations were implemented as described.",,
+akan,14,"A parallel independent-samples t-test on White-suspect lineups used suspect–filler distances from the Black-perceiver MDS space to assess effects from a Black eyewitness perspective. The mean suspect–filler distance difference (White − Black constructors) was 0.04 with a 95% CI [−0.18, 0.27], again suggesting no meaningful influence of constructor race on suspect–filler similarity for White-suspect lineups.",Inference Specification,"As in Black-suspect lineups, both mean suspect–filler distance and fairness scores were similar across lineups created by same-race and cross-race lineup constructors. From the perspective of White perceivers, the difference in suspect–filler distance across constructor groups (White − Black) was −0.05 (95% CI [−0.28, 0.19]), and from the perspective of Black perceivers, this difference was 0.04 (95% CI [ −0.18, 0.27]).",,unknown,"The paper reports a 95% confidence interval for the mean difference, but no corresponding code is provided to verify how this interval or any inference criteria were implemented.",,
+akan,15,"For White-suspect lineups, an independent-samples t-test compared mean fairness scores between lineups created by Black versus White constructors, using distances measured in the White-perceiver MDS space. The mean difference in fairness (White − Black constructors) was −0.04 with a 95% CI [−0.18, 0.10], indicating that constructor race did not meaningfully affect lineup fairness from the perspective of White perceivers.",Model Specification,"We conducted independent-samples t tests to statistically com-
+pare suspect–filler distance between lineups created by Black and
+White constructors for each perceiver race.",,unknown,"The paper specifies use of independent-samples t tests, but no corresponding code is provided to verify the implemented model. Without code evidence, it is impossible to determine if the implementation matches the described analysis.",,
+akan,15,"For White-suspect lineups, an independent-samples t-test compared mean fairness scores between lineups created by Black versus White constructors, using distances measured in the White-perceiver MDS space. The mean difference in fairness (White − Black constructors) was −0.04 with a 95% CI [−0.18, 0.10], indicating that constructor race did not meaningfully affect lineup fairness from the perspective of White perceivers.",Variable Specification,"Lineup fairness was also similar across lineups created by same-race and cross-race constructors. The mean difference in fairness across constructor race (White − Black) was −0.04 (95% CI of [−0.18, 0.10]) from the perspective of White perceivers, and this difference was 0.06 (95% CI of [−0.08, 0.20]) from the perspective of Black perceivers.",,unknown,There is insufficient information about the code implementation (no relevant code shown) to determine whether the variables used and their roles match the description in the paper.,,
+akan,15,"For White-suspect lineups, an independent-samples t-test compared mean fairness scores between lineups created by Black versus White constructors, using distances measured in the White-perceiver MDS space. The mean difference in fairness (White − Black constructors) was −0.04 with a 95% CI [−0.18, 0.10], indicating that constructor race did not meaningfully affect lineup fairness from the perspective of White perceivers.",Transformation Specification,"To render the distance values more interpretable, we z-transformed the distances between each face pair in each face space. Thus, a distance of 0 between a pair of faces within a given face space indicates an average level of similarity with respect to all other face pairs in that face space. Negative distance values indicate higher than average perceived similarity, and positive distance values indicate lower than average perceived similarity.
+
+We evaluated lineups in terms of two dependent measures: suspect–filler similarity and fairness. Suspect–filler similarity was defined by averaging the five suspect–filler distances for each lineup. Given that we converted all distances to z scores, negative values indicate a lineup with fillers that tend to be more similar to the suspect than a typical member of the face set, and positive values indicate the opposite.
+
+As in previous analyses, we first averaged the mean suspect–filler distance values across the three lineups constructed by each participant, for suspects of a given race.",,unknown,"The paper clearly describes z-transforming pairwise distances and averaging suspect–filler distances across lineups, but no corresponding code related to these transformations is provided to verify implementation. Without the relevant code, it is impossible to determine whether the described transformations were actually applied in the analysis implementation.",,
+akan,15,"For White-suspect lineups, an independent-samples t-test compared mean fairness scores between lineups created by Black versus White constructors, using distances measured in the White-perceiver MDS space. The mean difference in fairness (White − Black constructors) was −0.04 with a 95% CI [−0.18, 0.10], indicating that constructor race did not meaningfully affect lineup fairness from the perspective of White perceivers.",Inference Specification,"Lineup fairness was also similar across lineups created by same-race and cross-race constructors.
+
+The mean difference in fairness across constructor race (White − Black) was −0.04 (95% CI of [−0.18, 0.10]) from the perspective of White perceivers, and this difference was 0.06 (95% CI of [−0.08, 0.20]) from the perspective of Black perceivers.",,unknown,"The paper reports mean differences with 95% confidence intervals, but no relevant code is provided to verify how these intervals or inferences were computed or applied.",,
+akan,16,"An equivalent independent-samples t-test on fairness scores for White-suspect lineups, computed using the Black-perceiver MDS space, assessed fairness from a Black eyewitness perspective. The mean fairness difference between White and Black constructors was 0.06 with a 95% CI [−0.08, 0.20], again supporting the conclusion that constructor race had little impact on lineup fairness.",Model Specification,We conducted independent-samples t tests to statistically compare suspect–filler distance between lineups created by Black and White constructors for each perceiver race.,,unknown,"The paper specifies an independent-samples t-test, but no relevant code is provided to verify that this exact test was implemented for this analysis.",,
+akan,16,"An equivalent independent-samples t-test on fairness scores for White-suspect lineups, computed using the Black-perceiver MDS space, assessed fairness from a Black eyewitness perspective. The mean fairness difference between White and Black constructors was 0.06 with a 95% CI [−0.08, 0.20], again supporting the conclusion that constructor race had little impact on lineup fairness.",Variable Specification,"Lineup fairness was also similar across lineups created by same-race and cross-race constructors. The mean difference in fairness across constructor race (White − Black) was −0.04 (95% CI of [−0.18, 0.10]) from the perspective of White perceivers, and this difference was 0.06 (95% CI of [−0.08, 0.20]) from the perspective of Black perceivers.",,unknown,There is insufficient information about the code implementation to determine whether the variables used match the paper’s description for this analysis.,,
+akan,16,"An equivalent independent-samples t-test on fairness scores for White-suspect lineups, computed using the Black-perceiver MDS space, assessed fairness from a Black eyewitness perspective. The mean fairness difference between White and Black constructors was 0.06 with a 95% CI [−0.08, 0.20], again supporting the conclusion that constructor race had little impact on lineup fairness.",Transformation Specification,"To render the distance values more interpretable, we z-transformed the distances between each face pair in each face space. Thus, a distance of 0 between a pair of faces within a given face space indicates an average level of similarity with respect to all other face pairs in that face space. Negative distance values indicate higher than average perceived similarity, and positive distance values indicate lower than average perceived similarity.
+
+We evaluated lineups in terms of two dependent measures: suspect–filler similarity and fairness. Suspect–filler similarity was defined by averaging the five suspect–filler distances for each lineup. Given that we converted all distances to z scores, negative values indicate a lineup with fillers that tend to be more similar to the suspect than a typical member of the face set, and positive values indicate the opposite.
+
+To calculate fairness, we first measured suspect–filler similarity as mentioned above. Then we calculated filler-to-lineup similarity by averaging the distance between each filler and all other lineup members, resulting in five average distance values (one for each filler). The filler-to-lineup distance is the average of these average distances across the five fillers. Finally, the fairness score was determined by subtracting the filler-to-lineup distance from the suspect–filler distance.",,unknown,"The paper describes several specific transformations (z-transforming distances, averaging distances for similarity and fairness scores), but no corresponding code is provided to verify their implementation. Without code evidence, it is impossible to assess whether the described transformations match the actual implementation.",,
+akan,16,"An equivalent independent-samples t-test on fairness scores for White-suspect lineups, computed using the Black-perceiver MDS space, assessed fairness from a Black eyewitness perspective. The mean fairness difference between White and Black constructors was 0.06 with a 95% CI [−0.08, 0.20], again supporting the conclusion that constructor race had little impact on lineup fairness.",Inference Specification,"Lineup fairness was also similar across lineups created by same-race and cross-race constructors. The mean difference in fairness across constructor race (White − Black) was −0.04 (95% CI of [−0.18, 0.10]) from the perspective of White perceivers, and this difference was 0.06 (95% CI of [ −0.08, 0.20]) from the perspective of Black perceivers.",,unknown,"There is no relevant code provided to compare against the paper’s reported inference details (mean difference and 95% CI), so alignment cannot be assessed.",,

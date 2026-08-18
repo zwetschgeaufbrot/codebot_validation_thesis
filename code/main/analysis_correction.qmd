@@ -237,6 +237,7 @@ ci_percent <- map_dbl(c(1,2),
                                                method = "Wald")[.x]) * 100, 
                                 digits = 2
                       ))
+
 ```
 
 Out of the `r nrow(df)` total possible specifications, `r both` observations were coded by both rater. This reflects `r round_up(both/nrow(df)*100, digits = 2)`% of the entire adjudicated sample and `r round_up(both/h_total_rated*100, digits = 2)`% of all observations coded by me. 

@@ -1,0 +1,1042 @@
+paper_id,analysis_id,brief_description,dimension,paper_value,code_value,match_status,explanation,paper_evidence,code_evidence
+bloy,1,"In Study 1, a paired-samples t-test compared the standard deviation of item responses between gibberish scales and content scales for the same respondents. The test evaluated whether response variability (within-person SD across items) was lower on gibberish items (M = 0.5) than on meaningful content items (M = 2.0), as an indicator of careless responding patterns. Results showed a large, statistically significant difference, t(619) = -41.1, p < .001, Cohen’s d = -2.23.",Model Specification,"Second, we ran paired-samples t tests comparing these careless-responses-index scores among the content items with the gibberish items. … Table 1 presents the results of the paired-samples t test, indicating significant differences for all examined metrics.","# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+
+# Paired t-tests between gibberish and content
+t.test(data = filtered_data, sd ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, sd ~ condition, paired = TRUE)",match,"The paper describes using paired-samples t-tests to compare variability between gibberish and content items, and the code implements a paired t-test on standard deviations by condition for participants with both scale types. This aligns the statistical model used in the analysis with the paper’s description.",,
+bloy,1,"In Study 1, a paired-samples t-test compared the standard deviation of item responses between gibberish scales and content scales for the same respondents. The test evaluated whether response variability (within-person SD across items) was lower on gibberish items (M = 0.5) than on meaningful content items (M = 2.0), as an indicator of careless responding patterns. Results showed a large, statistically significant difference, t(619) = -41.1, p < .001, Cohen’s d = -2.23.",Variable Specification,"Second, we ran paired-samples t tests comparing these careless-responses-index scores among the content items with the gibberish items.
+
+Table 1.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+Method M gibberish M content Difference 95% CI t(df = 619) p value Cohen’s d
+Standard deviation 0.5 2.0 −1.5 [−1.6, −1.4] −41.1 < .001 −2.23","# Calculation of within-subject indices to identify careless responses 
+# (indices also based on the responses of all respondents in the sample 
+# will be calculated later, after splitting the data into training and testing)
+data_study_1$sd <- careless::irv(data_study_1[,1:16])
+...
+# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+
+# Paired t-tests between gibberish and content
+t.test(data = filtered_data, sd ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, sd ~ condition, paired = TRUE)",match,"The code uses within-person standard deviation (irv) as the careless-response index and compares this index between gibberish and content conditions with a paired-samples t-test, matching the paper’s description. The variables’ roles (SD as outcome, condition as within-subject factor) align with the reported analysis.",,
+bloy,1,"In Study 1, a paired-samples t-test compared the standard deviation of item responses between gibberish scales and content scales for the same respondents. The test evaluated whether response variability (within-person SD across items) was lower on gibberish items (M = 0.5) than on meaningful content items (M = 2.0), as an indicator of careless responding patterns. Results showed a large, statistically significant difference, t(619) = -41.1, p < .001, Cohen’s d = -2.23.",Transformation Specification,"IRV is the standard deviation of each person’s responses. This measure examines the extent to which respondents are self-similar. If IRV is either exceptionally small or large, it may indicate careless responding.
+
+The data set originally contained 32 columns comprising two types of scales: 16 columns with gibberish questions and 16 columns with content questions. We transformed the data into long format by stacking the 32 columns into 16 columns representing the questions and adding a 17th column to indicate whether each row originated from the gibberish or content scale. The analysis included six steps. First, we calculated six indexes of careless responses for each row: long string, standard deviation, the correlation between two half scales, Mahalanobis distance by the R package careless (Yentes & Wilhelm, 2021), and two person-fit indices by the R package PerFit (Tendeiro et al., 2016). Second, we ran paired-samples t tests comparing these careless-responses-index scores among the content items with the gibberish items.
+
+Table 1.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+Method M gibberish M content Difference 95% CI t(df = 619) p value Cohen’s d
+Standard deviation 0.5 2.0 −1.5 [−1.6, −1.4] −41.1 < .001 −2.23","# Calculation of within-subject indices to identify careless responses 
+# (indices also based on the responses of all respondents in the sample 
+# will be calculated later, after splitting the data into training and testing)
+data_study_1$sd <- careless::irv(data_study_1[,1:16])
+data_study_1$longstring <- longstring(data_study_1[,1:16])
+data_study_1$personal_relialibity <- careless::evenodd(data_study_1[,1:16], factors = c(4,4,8))
+data_study_1$personal_relialibity <- ifelse(is.na(data_study_1$personal_relialibity), 1, data_study_1$personal_relialibity) 
+...
+# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+
+# Paired t-tests between gibberish and content
+t.test(data = filtered_data, sd ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, sd ~ condition, paired = TRUE)",match,"The code computes IRV as the within-person standard deviation across the 16 item responses for each row (scale instance) and then uses these values in a paired t-test comparing gibberish vs. content conditions, matching the paper’s description of transformations. The long-format structure with one row per scale type per participant and an indicator for gibberish/content is consistent between the narrative and the code.",,
+bloy,1,"In Study 1, a paired-samples t-test compared the standard deviation of item responses between gibberish scales and content scales for the same respondents. The test evaluated whether response variability (within-person SD across items) was lower on gibberish items (M = 0.5) than on meaningful content items (M = 2.0), as an indicator of careless responding patterns. Results showed a large, statistically significant difference, t(619) = -41.1, p < .001, Cohen’s d = -2.23.",Inference Specification,"Table 1.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+Method M gibberish M content Difference 95% CI t(df = 619) p value Cohen’s d
+Standard deviation 0.5 2.0 −1.5 [−1.6, −1.4] −41.1 < .001 −2.23","# Paired t-tests between gibberish and content
+t.test(data = filtered_data, sd ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, sd ~ condition, paired = TRUE)",match,"The code uses a paired t-test with default 95% confidence interval and computes Cohen’s d, matching the inferential outputs (t, p, 95% CI, Cohen’s d) reported in the table for this analysis.",,
+bloy,2,"In Study 1, a paired-samples t-test compared the long-string index (maximum run of identical responses) between gibberish and content scales within respondents. The analysis tested whether gibberish scales had longer stretches of identical responses (M = 12.5) than content scales (M = 5.0), consistent with straightlining as a form of carelessness. The difference was statistically significant and large, t(619) = 36.6, p < .001, Cohen’s d = 2.02.",Model Specification,"Second, we ran paired-samples t tests comparing these careless-responses-index scores among the content items with the gibberish items.","# Paired t-tests between gibberish and content
+t.test(data = filtered_data, sd ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, sd ~ condition, paired = TRUE)
+t.test(data = filtered_data, longstring ~ condition)#, paired = TRUE)
+cohen.d(data = filtered_data, longstring ~ condition, paired = TRUE)",mismatch,"The paper describes a paired-samples t-test for the long-string index, but the corresponding code runs an unpaired t-test for the longstring variable. Thus, the implemented model specification does not fully align with the described analysis.",,
+bloy,2,"In Study 1, a paired-samples t-test compared the long-string index (maximum run of identical responses) between gibberish and content scales within respondents. The analysis tested whether gibberish scales had longer stretches of identical responses (M = 12.5) than content scales (M = 5.0), consistent with straightlining as a form of carelessness. The difference was statistically significant and large, t(619) = 36.6, p < .001, Cohen’s d = 2.02.",Variable Specification,"First, we calculated six indexes of careless responses for each row: long string, standard deviation, the correlation between two half scales, Mahalanobis distance by the R package careless (Yentes & Wilhelm, 2021), and two person-fit indices by the  R package PerFit (Tendeiro et al., 2016). Second, we ran paired-samples t tests comparing these careless-responses-index scores among the content items with the gibberish items.
+...
+Table 1.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+Method M gibberish M content Difference 95% CI t(df = 619) p value Cohen’s d
+...
+Long string 12.5 5.0 7.5 [7.1, 7.9] 36.6 < .001 2.02","# Calculation of within-subject indices to identify careless responses 
+# (indices also based on the responses of all respondents in the sample 
+# will be calculated later, after splitting the data into training and testing)
+data_study_1$sd <- careless::irv(data_study_1[,1:16])
+data_study_1$longstring <- longstring(data_study_1[,1:16])
+...
+# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+
+# Paired t-tests between gibberish and content
+...
+t.test(data = filtered_data, longstring ~ condition)#, paired = TRUE)
+cohen.d(data = filtered_data, longstring ~ condition, paired = TRUE)",match,"The code uses the longstring index as the outcome and the gibberish vs. content condition as the within-subject grouping variable, matching the paper’s description of comparing long-string indices between gibberish and content scales via paired tests. Although the paired flag is commented out in the t-test, the variable roles themselves align with the paper’s specified analysis.",,
+bloy,2,"In Study 1, a paired-samples t-test compared the long-string index (maximum run of identical responses) between gibberish and content scales within respondents. The analysis tested whether gibberish scales had longer stretches of identical responses (M = 12.5) than content scales (M = 5.0), consistent with straightlining as a form of carelessness. The difference was statistically significant and large, t(619) = 36.6, p < .001, Cohen’s d = 2.02.",Transformation Specification,"The data set originally contained 32 columns comprising two types of scales: 16 columns with gibberish questions and 16 columns with content questions. We transformed the data into long format by stacking the 32 columns into 16 columns representing the questions and adding a 17th column to indicate whether each row originated from the gibberish or content scale. ... Before conducting these t tests, we removed two respondents who did not have both content and gibberish responses to ensure the analysis included only complete data from all participants.","# Calculation of within-subject indices to identify careless responses 
+# (indices also based on the responses of all respondents in the sample 
+# will be calculated later, after splitting the data into training and testing)
+data_study_1$sd <- careless::irv(data_study_1[,1:16])
+data_study_1$longstring <- longstring(data_study_1[,1:16])
+data_study_1$personal_relialibity <- careless::evenodd(data_study_1[,1:16], factors = c(4,4,8))
+data_study_1$personal_relialibity <- ifelse(is.na(data_study_1$personal_relialibity), 1, data_study_1$personal_relialibity) 
+...
+# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)",match,"The code operates on a long-format dataset with 16 item columns and a condition variable and explicitly removes respondents lacking both scale types, consistent with the described transformations in the paper.",,
+bloy,2,"In Study 1, a paired-samples t-test compared the long-string index (maximum run of identical responses) between gibberish and content scales within respondents. The analysis tested whether gibberish scales had longer stretches of identical responses (M = 12.5) than content scales (M = 5.0), consistent with straightlining as a form of carelessness. The difference was statistically significant and large, t(619) = 36.6, p < .001, Cohen’s d = 2.02.",Inference Specification,"Table 1.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+
+Method M gibberish M content Difference 95% CI t(df = 619) p value Cohen’s d
+...
+Long string 12.5 5.0 7.5 [7.1, 7.9] 36.6 < .001 2.02
+...
+
+""To evaluate Hypothesis 1, we compared the means of gibberish and content scales across various classification metrics. Table 1 presents the results of the paired-samples t test, indicating significant differences for all examined metrics. Consistent with Hypothesis 1, all measures were significantly different between the gibberish and content scales.""","# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+
+# Paired t-tests between gibberish and content
+...
+t.test(data = filtered_data, longstring ~ condition)#, paired = TRUE)
+cohen.d(data = filtered_data, longstring ~ condition, paired = TRUE)",match,"The paper reports 95% confidence intervals and p-values for a t-test, and the code uses R’s default t.test settings, which produce two-sided p-values and 95% CIs, aligning with those inference criteria. No conflicting alpha level or CI specification appears in either source.",,
+bloy,3,"In Study 1, a paired-samples t-test examined differences in Mahalanobis distance between gibberish and content responses for each participant. The goal was to assess whether gibberish responses were, on average, closer or farther from the multivariate mean response pattern than content responses (M_gibberish = 7.5, M_content = 24.5). The test showed that gibberish responses had significantly smaller Mahalanobis distances, t(619) = -21.6, p < .001, Cohen’s d = -1.13.",Model Specification,"Second, we ran paired-samples t tests comparing these careless-responses-index scores among the content items with the gibberish items.
+
+Table 1 presents the results of the paired-samples t test, indicating significant differences for all examined metrics.
+
+Mahalanobis distance 7.5 24.5 −17.0 [−18.6, −15.5] −21.6 < .001 −1.13","# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+
+# Paired t-tests between gibberish and content
+t.test(data = filtered_data, sd ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, sd ~ condition, paired = TRUE)
+t.test(data = filtered_data, longstring ~ condition)#, paired = TRUE)
+cohen.d(data = filtered_data, longstring ~ condition, paired = TRUE)
+t.test(data = filtered_data, mahalanobis_d ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, mahalanobis_d ~ condition, paired = TRUE)
+filtered_data$gpoly <- unlist(filtered_data$gpoly); filtered_data$lzpoly <- unlist(filtered_data$lzpoly)
+t.test(data = filtered_data, gpoly ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, gpoly ~ condition, paired = TRUE)
+t.test(data = filtered_data, lzpoly ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, lzpoly ~ condition, paired = TRUE)",match,"The code uses a paired-samples t-test to compare Mahalanobis distance between gibberish and content conditions, which aligns with the model specification described in the paper.",,
+bloy,3,"In Study 1, a paired-samples t-test examined differences in Mahalanobis distance between gibberish and content responses for each participant. The goal was to assess whether gibberish responses were, on average, closer or farther from the multivariate mean response pattern than content responses (M_gibberish = 7.5, M_content = 24.5). The test showed that gibberish responses had significantly smaller Mahalanobis distances, t(619) = -21.6, p < .001, Cohen’s d = -1.13.",Variable Specification,"“First, we calculated six indexes of careless responses for each row: long string, standard deviation, the correlation between two half scales, Mahalanobis distance by the R package careless (Yentes & Wilhelm, 2021), and two person-fit indices by the R package PerFit (Tendeiro et al., 2016). Second, we ran paired-samples t tests comparing these careless-responses-index scores among the content items with the gibberish items.”
+
+“To evaluate Hypothesis 1, we compared the means of gibberish and content scales across various classification metrics. Table 1 presents the results of the paired-samples t test, indicating significant differences for all examined metrics.”","# Calculating the metrics that were calculated only on the training and test sets again, on the full data
+
+data_study_1$mahalanobis_d <- mahad(data_study_1[, 1:7])
+...
+# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+
+# Paired t-tests between gibberish and content
+...
+t.test(data = filtered_data, mahalanobis_d ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, mahalanobis_d ~ condition, paired = TRUE)",match,"The code uses Mahalanobis distance as the dependent variable and condition (gibberish vs. content) as the within-subject factor in a paired t-test, consistent with the paper’s description. Thus, the variable roles and specification align between the paper and the implementation.",,
+bloy,3,"In Study 1, a paired-samples t-test examined differences in Mahalanobis distance between gibberish and content responses for each participant. The goal was to assess whether gibberish responses were, on average, closer or farther from the multivariate mean response pattern than content responses (M_gibberish = 7.5, M_content = 24.5). The test showed that gibberish responses had significantly smaller Mahalanobis distances, t(619) = -21.6, p < .001, Cohen’s d = -1.13.",Transformation Specification,"“The data set originally contained 32 columns comprising two types of scales: 16 columns with gibberish questions and 16 columns with content questions. We transformed the data into long format by stacking the 32 columns into 16 columns representing the questions and adding a 17th column to indicate whether each row originated from the gibberish or content scale. … Before conducting these t  tests, we removed two respondents who did not have both content and gibberish responses to ensure the analysis included only complete data from all participants.”","# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+
+# Paired t-tests between gibberish and content
+t.test(data = filtered_data, mahalanobis_d ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, mahalanobis_d ~ condition, paired = TRUE)",unknown,"The code clearly matches the paper’s description of removing respondents without both response types, but there is no visible code corresponding to the described long-format transformation, so full alignment of all described transformations cannot be confirmed.",,
+bloy,3,"In Study 1, a paired-samples t-test examined differences in Mahalanobis distance between gibberish and content responses for each participant. The goal was to assess whether gibberish responses were, on average, closer or farther from the multivariate mean response pattern than content responses (M_gibberish = 7.5, M_content = 24.5). The test showed that gibberish responses had significantly smaller Mahalanobis distances, t(619) = -21.6, p < .001, Cohen’s d = -1.13.",Inference Specification,"Table 1.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t Test
+Method M gibberish M content Difference 95% CI t(df = 619) p value Cohen’s d
+...
+Mahalanobis distance 7.5 24.5 −17.0 [−18.6, −15.5] −21.6 < .001 −1.13","# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+
+# Paired t-tests between gibberish and content
+...
+t.test(data = filtered_data, mahalanobis_d ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, mahalanobis_d ~ condition, paired = TRUE)
+...",match,"The code uses a paired-samples t-test with default 95% confidence intervals, matching the inferential approach implied by the paper’s reporting of a paired t-test with 95% CI and p-value. No conflicting inference criteria (e.g., different alpha level or CI level) are evident in the code.",,
+bloy,4,"In Study 1, a paired-samples t-test compared within-person ""personal reliability"" (correlation between even and odd items of each scale) for gibberish versus content scales. This analysis tested whether gibberish responses showed higher internal consistency (M = 0.3) than content responses (M = -0.7), contrary to the assumption that inconsistency flags carelessness. Results indicated gibberish scales had significantly higher personal reliability, t(619) = 22.9, p < .001, Cohen’s d = 1.29.",Model Specification,"Second, we ran paired-samples t tests comparing these careless-responses-index scores among the content items with the gibberish items.
+
+""Table 1.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test"" and the table column header ""t(df = 619)"" indicate that a paired-samples t test was used, with t(619) reported for each metric, including personal reliability.","# Paired t-tests between gibberish and content
+t.test(data = filtered_data, sd ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, sd ~ condition, paired = TRUE)
+t.test(data = filtered_data, longstring ~ condition)#, paired = TRUE)
+cohen.d(data = filtered_data, longstring ~ condition, paired = TRUE)
+t.test(data = filtered_data, mahalanobis_d ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, mahalanobis_d ~ condition, paired = TRUE)
+t.test(data = filtered_data, personal_relialibity ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, personal_relialibity ~ condition, paired = TRUE)
+filtered_data$gpoly <- unlist(filtered_data$gpoly); filtered_data$lzpoly <- unlist(filtered_data$lzpoly)
+t.test(data = filtered_data, gpoly ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, gpoly ~ condition, paired = TRUE)
+t.test(data = filtered_data, lzpoly ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, lzpoly ~ condition, paired = TRUE)",match,"The paper describes using paired-samples t-tests to compare gibberish vs. content scores, and the code implements paired t-tests for the personal reliability metric accordingly. Thus, the model specification in the code matches the described statistical test in the paper for this analysis-dimension pairing.",,
+bloy,4,"In Study 1, a paired-samples t-test compared within-person ""personal reliability"" (correlation between even and odd items of each scale) for gibberish versus content scales. This analysis tested whether gibberish responses showed higher internal consistency (M = 0.3) than content responses (M = -0.7), contrary to the assumption that inconsistency flags carelessness. Results indicated gibberish scales had significantly higher personal reliability, t(619) = 22.9, p < .001, Cohen’s d = 1.29.",Variable Specification,"“The personal reliability of each respondent is the within-persons correlation between the even and odd items within each scale of the reliable construct. A low correlation points to careless responding because careful respondents are likely to answer the even and odd items of the same construct similarly (Huang, Liu, & Bowling, 2015; Johnson, 2005).” “First, we calculated six indexes of careless responses for each row: long string, standard deviation, the correlation between two half scales, Mahalanobis distance by the R package careless (Yentes & Wilhelm, 2021), and two person-fit indices by the R package PerFit (Tendeiro et al., 2016).” “To evaluate Hypothesis 1, we compared the means of gibberish and content scales across various classification metrics. Table 1 presents the results of the paired-samples t test, indicating significant differences for all examined metrics.” “Table 1. Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t Test … Personal reliability 0.3  −0.7  1.0 [0.9, 1.1]  22.9  < .001  1.29.”","data_study_1$personal_relialibity <- careless::evenodd(data_study_1[,1:16], factors = c(4,4,8))
+...
+# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+
+# Paired t-tests between gibberish and content
+...
+t.test(data = filtered_data, personal_relialibity ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, personal_relialibity ~ condition, paired = TRUE)
+",match,"The code constructs a per-respondent personal reliability variable as the even–odd item correlation across specified scales and then uses it in a paired-samples t-test comparing gibberish versus content conditions, matching the paper’s description. The same variable (personal reliability) is treated as the outcome in the paired comparison across conditions, consistent with the Table 1 analysis description.",,
+bloy,4,"In Study 1, a paired-samples t-test compared within-person ""personal reliability"" (correlation between even and odd items of each scale) for gibberish versus content scales. This analysis tested whether gibberish responses showed higher internal consistency (M = 0.3) than content responses (M = -0.7), contrary to the assumption that inconsistency flags carelessness. Results indicated gibberish scales had significantly higher personal reliability, t(619) = 22.9, p < .001, Cohen’s d = 1.29.",Transformation Specification,"The ""personal reliability of each respondent"" is the within-persons correlation between the even and odd items within each scale of the reliable construct.
+
+""The data set originally contained 32 columns comprising two types of scales: 16 columns with gibberish questions and 16 columns with content questions. We transformed the data into long format by stacking the 32 columns into 16 columns representing the questions and adding a 17th column to indicate whether each row originated from the gibberish or content scale. The analysis included six steps. First, we calculated six indexes of careless responses for each row: long string, standard deviation, the correlation between two half scales, Mahalanobis distance by the R package careless (Yentes & Wilhelm, 2021), and two person-fit indices by the  R package PerFit (Tendeiro et al., 2016).""
+
+""Before conducting these t  tests, we removed two respondents who did not have both content and gibberish responses to ensure the analysis included only complete data from all participants.""","# Calculation of within-subject indices to identify careless responses 
+# (indices also based on the responses of all respondents in the sample 
+# will be calculated later, after splitting the data into training and testing)
+data_study_1$sd <- careless::irv(data_study_1[,1:16])
+data_study_1$longstring <- longstring(data_study_1[,1:16])
+data_study_1$personal_relialibity <- careless::evenodd(data_study_1[,1:16], factors = c(4,4,8))
+data_study_1$personal_relialibity <- ifelse(is.na(data_study_1$personal_relialibity), 1, data_study_1$personal_relialibity) 
+...
+# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+
+# Paired t-tests between gibberish and content
+t.test(data = filtered_data, personal_relialibity ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, personal_relialibity ~ condition, paired = TRUE)",mismatch,"The code computes the even–odd correlation using a specific factor structure and then replaces missing values with 1, transformations not described in the paper’s description of personal reliability or preprocessing. The paper only specifies within-person even–odd correlations and removal of incomplete respondents, not imputation of NA reliability scores or the particular factor partitioning used.",,
+bloy,4,"In Study 1, a paired-samples t-test compared within-person ""personal reliability"" (correlation between even and odd items of each scale) for gibberish versus content scales. This analysis tested whether gibberish responses showed higher internal consistency (M = 0.3) than content responses (M = -0.7), contrary to the assumption that inconsistency flags carelessness. Results indicated gibberish scales had significantly higher personal reliability, t(619) = 22.9, p < .001, Cohen’s d = 1.29.",Inference Specification,"Personal reliability 0.3 −0.7 1.0 [0.9, 1.1] 22.9 < .001 1.29","# Paired t-tests between gibberish and content
+t.test(data = filtered_data, personal_relialibity ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, personal_relialibity ~ condition, paired = TRUE)",match,"The code performs a paired t-test and computes Cohen’s d using standard defaults (two-sided test, 95% confidence interval), which aligns with the paper’s reporting of a paired t-test with p < .001, a confidence interval, and Cohen’s d. No conflicting or alternative inference criteria are indicated in either the paper excerpt or the code.",,
+bloy,5,"In Study 1, a paired-samples t-test evaluated differences in the person-fit lpzm index between gibberish and content scales. The lpzm index, reflecting the likelihood of a response pattern under an IRT model, was compared to see if gibberish responses appeared more or less consistent with the model than content responses (M_gibberish = 0.81, M_content = -0.69). The difference was statistically significant, t(619) = 15.0, p < .001, Cohen’s d = 0.83.",Model Specification,"Second, we ran paired-samples t tests comparing these careless-responses-index scores among the content items with the gibberish items.","# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+
+# Paired t-tests between gibberish and content
+...
+filtered_data$gpoly <- unlist(filtered_data$gpoly); filtered_data$lzpoly <- unlist(filtered_data$lzpoly)
+t.test(data = filtered_data, gpoly ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, gpoly ~ condition, paired = TRUE)
+t.test(data = filtered_data, lzpoly ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, lzpoly ~ condition, paired = TRUE)",match,"The paper describes using paired-samples t-tests, and the code implements paired t-tests for the relevant indices with the paired option explicitly set to TRUE.",,
+bloy,5,"In Study 1, a paired-samples t-test evaluated differences in the person-fit lpzm index between gibberish and content scales. The lpzm index, reflecting the likelihood of a response pattern under an IRT model, was compared to see if gibberish responses appeared more or less consistent with the model than content responses (M_gibberish = 0.81, M_content = -0.69). The difference was statistically significant, t(619) = 15.0, p < .001, Cohen’s d = 0.83.",Variable Specification,"“Finally, the person-fit analysis evaluates the consistency of participants’ responses using item-response-theory (IRT) models. It examines whether individual response patterns align with overall sample trends or IRT-model predictions. The method includes several indices, two of which we use. … The second index is lpzm (standardized likelihood). It is a calculation of the likelihood of a response pattern based on the participant’s trait level in the IRT model.”
+
+“First, we calculated six indexes of careless responses for each row: long string, standard deviation, the correlation between two half scales, Mahalanobis distance by the R package careless (Yentes & Wilhelm, 2021), and two person-fit indices by the R package PerFit (Tendeiro et al., 2016). Second, we ran paired-samples t tests comparing these careless-responses-index scores among the content items with the gibberish items.”
+
+“Table 1.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t Test … Person-fit lpzm  0.81  −0.69  1.5  [1.3, 1.7]  15.0  < .001  0.83”","counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+...
+filtered_data$gpoly <- unlist(filtered_data$gpoly); filtered_data$lzpoly <- unlist(filtered_data$lzpoly)
+...
+t.test(data = filtered_data, gpoly ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, gpoly ~ condition, paired = TRUE)
+t.test(data = filtered_data, lzpoly ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, lzpoly ~ condition, paired = TRUE)",unknown,"The paper reports a paired-samples t-test on the lpzm person-fit index, whereas the code uses a variable named lzpoly, and it is not explicitly stated that lzpoly corresponds to lpzm. Without a clear mapping between lpzm in the text and lzpoly in the code, it is unclear whether the same variable is being analyzed.",,
+bloy,5,"In Study 1, a paired-samples t-test evaluated differences in the person-fit lpzm index between gibberish and content scales. The lpzm index, reflecting the likelihood of a response pattern under an IRT model, was compared to see if gibberish responses appeared more or less consistent with the model than content responses (M_gibberish = 0.81, M_content = -0.69). The difference was statistically significant, t(619) = 15.0, p < .001, Cohen’s d = 0.83.",Transformation Specification,"The data set originally contained 32 columns comprising two types of scales: 16 columns with gibberish questions and 16 columns with content questions. We transformed the data into long format by stacking the 32 columns into 16 columns representing the questions and adding a 17th column to indicate whether each row originated from the gibberish or content scale. The analysis included six steps. First, we calculated six indexes of careless responses for each row: long string, standard deviation, the correlation between two half scales, Mahalanobis distance by the R package careless (Yentes & Wilhelm, 2021), and two person-fit indices by the R package PerFit (Tendeiro et al., 2016). Second, we ran paired-samples t tests comparing these careless-responses-index scores among the content items with the gibberish items. Before conducting these t  tests, we removed two respondents who did not have both content and gibberish responses to ensure the analysis included only complete data from all participants.","irtdata <- data_study_1[, 1:16]-1
+data_study_1$gpoly <- Gpoly(matrix = irtdata,
+                            Ncat = 7)$PFscores
+data_study_1$lzpoly <- lzpoly(matrix = irtdata,
+                                     Ncat = 7)$PFscores
+...
+# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+...
+filtered_data$gpoly <- unlist(filtered_data$gpoly); filtered_data$lzpoly <- unlist(filtered_data$lzpoly)
+t.test(data = filtered_data, lzpoly ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, lzpoly ~ condition, paired = TRUE)",mismatch,"The code applies an additional numeric recoding (subtracting 1 from all item responses) that is not described in the paper’s transformation description, even though the other described steps (long-format structure and exclusion of incomplete cases) are consistent. Because this recoding is a data transformation relevant to the analysis and omitted from the paper, the implementation does not fully match the stated transformation specification.",,
+bloy,5,"In Study 1, a paired-samples t-test evaluated differences in the person-fit lpzm index between gibberish and content scales. The lpzm index, reflecting the likelihood of a response pattern under an IRT model, was compared to see if gibberish responses appeared more or less consistent with the model than content responses (M_gibberish = 0.81, M_content = -0.69). The difference was statistically significant, t(619) = 15.0, p < .001, Cohen’s d = 0.83.",Inference Specification,"Table 1.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+...
+Method M gibberish M content Difference 95% CI t(df = 619) p value Cohen’s d
+...
+Person-fit lp
+zm 0.81 −0.69 1.5 [1.3, 1.7] 15.0 < .001 0.83","# Paired t-tests between gibberish and content
+
+t.test(data = filtered_data, lzpoly ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, lzpoly ~ condition, paired = TRUE)",match,"The code uses a standard paired t-test with default 95% confidence intervals, matching the inferential outputs (t, p-value < .001, 95% CI, Cohen’s d) reported in the paper’s table for the lpzm index comparison. There is no indication of alternative inference criteria (e.g., non-standard alpha or CI level) in either source, so the inferential specification aligns.",,
+bloy,6,"In Study 1, a paired-samples t-test compared the person-fit Gpm index between gibberish and content scales for each respondent. This test examined whether gibberish response patterns showed fewer Guttman-type errors (lower Gpm values) than content responses (M_gibberish = 124.1, M_content = 396.9), challenging the idea that misfit signals carelessness. The result was a large, significant difference, t(619) = -21.4, p < .001, Cohen’s d = -1.17.",Model Specification,"Second, we ran paired-samples t tests comparing these careless-responses-index scores among the content items with the gibberish items.","# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+
+# Paired t-tests between gibberish and content
+...
+filtered_data$gpoly <- unlist(filtered_data$gpoly); filtered_data$lzpoly <- unlist(filtered_data$lzpoly)
+t.test(data = filtered_data, gpoly ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, gpoly ~ condition, paired = TRUE)",match,"The code implements a paired-samples t-test comparing indices between gibberish and content conditions, matching the paper’s description of paired-samples t-tests for these scores.",,
+bloy,6,"In Study 1, a paired-samples t-test compared the person-fit Gpm index between gibberish and content scales for each respondent. This test examined whether gibberish response patterns showed fewer Guttman-type errors (lower Gpm values) than content responses (M_gibberish = 124.1, M_content = 396.9), challenging the idea that misfit signals carelessness. The result was a large, significant difference, t(619) = -21.4, p < .001, Cohen’s d = -1.17.",Variable Specification,"Finally, the person-fit analysis evaluates the consistency of participants’ responses using item-response-theory (IRT) models. It examines whether individual response patterns align with overall sample trends or IRT-model predictions. The method includes several indices, two of which we use. One index is G
+p
+m (Guttman errors). It measures deviations in response order when items are arranged by difficulty or popularity. For polytomous items, it considers “item steps,” representing thresholds between response options. Errors are presumed when less popular steps are chosen over more popular ones, and higher error counts indicate less consistency. ... The data set originally contained 32 columns comprising two types of scales: 16 columns with gibberish questions and 16 columns with content questions. ... First, we calculated six indexes of careless responses for each row: long string, standard deviation, the correlation between two half scales, Mahalanobis distance by the R package careless (Yentes & Wilhelm, 2021), and two person-fit indices by the  R package PerFit (Tendeiro et al., 2016). Second, we ran paired-samples t tests comparing these careless-responses-index scores among the content items with the gibberish items. ... Table 1 presents the results of the paired-samples t test, indicating significant differences for all examined metrics. ... Person-fit Gp
+m 124.1 396.9 −272.79 [−298.6, −246.9] −21.4 < .001 −1.17","# Calculation of within-subject indices to identify careless responses 
+# (indices also based on the responses of all respondents in the sample 
+# will be calculated later, after splitting the data into training and testing)
+...
+irtdata <- data_study_1[, 1:16]-1
+data_study_1$gpoly <- Gpoly(matrix = irtdata,
+                            Ncat = 7)$PFscores
+...
+# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+...
+filtered_data$gpoly <- unlist(filtered_data$gpoly); filtered_data$lzpoly <- unlist(filtered_data$lzpoly)
+t.test(data = filtered_data, gpoly ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, gpoly ~ condition, paired = TRUE)",match,"The code uses the person-fit Guttman-error index (gpoly) as the dependent variable and compares it between gibberish and content conditions via a paired-samples t-test, matching the described variable usage in the paper. The naming difference (Gpm vs gpoly) reflects the specific PerFit function used but corresponds to the same construct.",,
+bloy,6,"In Study 1, a paired-samples t-test compared the person-fit Gpm index between gibberish and content scales for each respondent. This test examined whether gibberish response patterns showed fewer Guttman-type errors (lower Gpm values) than content responses (M_gibberish = 124.1, M_content = 396.9), challenging the idea that misfit signals carelessness. The result was a large, significant difference, t(619) = -21.4, p < .001, Cohen’s d = -1.17.",Transformation Specification,"The data set originally contained 32 columns comprising two types of scales: 16 columns with gibberish questions and 16 columns with content questions. We transformed the data into long format by stacking the 32 columns into 16 columns representing the questions and adding a 17th column to indicate whether each row originated from the gibberish or content scale. The analysis included six steps. First, we calculated six indexes of careless responses for each row: long string, standard deviation, the correlation between two half scales, Mahalanobis distance by the R package careless (Yentes & Wilhelm, 2021), and two person-fit indices by the R package PerFit (Tendeiro et al., 2016). Second, we ran paired-samples t tests comparing these careless-responses-index scores among the content items with the gibberish items.","irtdata <- data_study_1[, 1:16]-1
+data_study_1$gpoly <- Gpoly(matrix = irtdata,
+                            Ncat = 7)$PFscores
+data_study_1$lzpoly <- lzpoly(matrix = irtdata,
+                                     Ncat = 7)$PFscores
+
+# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+
+filtered_data$gpoly <- unlist(filtered_data$gpoly); filtered_data$lzpoly <- unlist(filtered_data$lzpoly)
+t.test(data = filtered_data, gpoly ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, gpoly ~ condition, paired = TRUE)",mismatch,"The code applies additional data transformations (participant exclusion and response recoding) that are not described in the paper’s transformation specification, so the implementation does not fully match the reported procedure.",,
+bloy,6,"In Study 1, a paired-samples t-test compared the person-fit Gpm index between gibberish and content scales for each respondent. This test examined whether gibberish response patterns showed fewer Guttman-type errors (lower Gpm values) than content responses (M_gibberish = 124.1, M_content = 396.9), challenging the idea that misfit signals carelessness. The result was a large, significant difference, t(619) = -21.4, p < .001, Cohen’s d = -1.17.",Inference Specification,"Table 1.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+Method M gibberish M content Difference 95% CI t(df = 619) p value Cohen’s d
+...
+Person-fit Gp m 124.1 396.9 −272.79 [−298.6, −246.9] −21.4 < .001 −1.17
+Note: CI = confidence interval.","# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+
+# Paired t-tests between gibberish and content
+filtered_data$gpoly <- unlist(filtered_data$gpoly); filtered_data$lzpoly <- unlist(filtered_data$lzpoly)
+t.test(data = filtered_data, gpoly ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, gpoly ~ condition, paired = TRUE)
+t.test(data = filtered_data, lzpoly ~ condition, paired = TRUE)
+cohen.d(data = filtered_data, lzpoly ~ condition, paired = TRUE)",match,"The code uses R’s default paired t-test settings to obtain p-values and 95% confidence intervals, which aligns with the paper’s reporting of t, p, and 95% CIs for the paired-samples t-test. No alternative alpha level or nonstandard inference criterion is specified in either the paper or the code, so the inference specifications are consistent.",,
+bloy,7,"To assess concurrent validity of the GibML classifier in Study 1, an independent-samples Welch t-test compared the standard deviation of content-scale responses between respondents classified as gibberish-like (careless) versus those classified as normal. The test evaluated whether the 5% of respondents whose content responses were labeled gibberish-like had lower response variability (M = 0.51) than the correctly classified group (M = 2.07). Results indicated a very large and significant difference, t(506.9) = -30.96, p < .001, Cohen’s d = -2.49.",Model Specification,"Specifically, we tested concurrent validity. We ran t tests that examined the differences in the careless-responding indicators between the 5% classified as gibberish from the content scales compared with the 95% classified correctly. The results support Hypothesis 3: The average standard deviation of the content responses classified as gibberish, M = 0.51, is smaller than the standard deviation of the content responses classified correctly, M  = 2.07, difference = −1.56, 95% confidence interval [CI] =  [ −1.66, −1.46], t(506.9) = −30.96, p < .001, Cohen’s d = −2.49.","# T-tests between respondents on content scales classified as careless and classified as content responders
+
+t.test(data = filtered_data[data_study_1$condition == ""content"",], sd ~ GibML > 0.56)
+cohen.d(data = filtered_data[data_study_1$condition == ""content"",], sd ~ GibML > 0.56)
+",match,Both the paper and the code use an independent-samples Welch t-test to compare the standard deviation of content responses between gibberish-like and normal respondents. The code’s use of t.test with a grouping indicator derived from GibML aligns with the described t-test model specification.,,
+bloy,7,"To assess concurrent validity of the GibML classifier in Study 1, an independent-samples Welch t-test compared the standard deviation of content-scale responses between respondents classified as gibberish-like (careless) versus those classified as normal. The test evaluated whether the 5% of respondents whose content responses were labeled gibberish-like had lower response variability (M = 0.51) than the correctly classified group (M = 2.07). Results indicated a very large and significant difference, t(506.9) = -30.96, p < .001, Cohen’s d = -2.49.",Variable Specification,"Finally, we used the GibML method to classify respondents into normal and anomalous groups in their content scales and used a t  test to examine the difference in the careless-response score obtained with all quantitative methods (standard deviation, long string, personal reliability, Mahalanobis dis- tance, and two indices of person-fit).
+...
+We ran t tests that examined the differences in the careless-responding indicators between the 5% classified as gibberish from the content scales compared with the 95% classified correctly. The results support Hypothesis 3: The average standard deviation of the content responses classified as gibberish, M = 0.51, is smaller than the standard deviation of the content responses classified correctly, M  = 2.07, difference = −1.56, 95% confidence interval [CI] =  [ −1.66, −1.46], t(506.9) = −30.96, p < .001, Cohen’s d = −2.49.","# T-tests between respondents on content scales classified as careless and classified as content responders
+
+t.test(data = filtered_data[data_study_1$condition == ""content"",], sd ~ GibML > 0.56)
+cohen.d(data = filtered_data[data_study_1$condition == ""content"",], sd ~ GibML > 0.56)
+",match,"The code uses the standard deviation variable as the outcome and a binary grouping based on the GibML classifier for content-condition respondents, which aligns with the paper’s description of comparing SD between gibberish-classified and correctly classified respondents. Although the exact threshold (GibML > 0.56) is not specified in the text, the variable roles and grouping concept match the described analysis.",,
+bloy,7,"To assess concurrent validity of the GibML classifier in Study 1, an independent-samples Welch t-test compared the standard deviation of content-scale responses between respondents classified as gibberish-like (careless) versus those classified as normal. The test evaluated whether the 5% of respondents whose content responses were labeled gibberish-like had lower response variability (M = 0.51) than the correctly classified group (M = 2.07). Results indicated a very large and significant difference, t(506.9) = -30.96, p < .001, Cohen’s d = -2.49.",Transformation Specification,"The data set originally contained 32 columns comprising two types of scales: 16 columns with gibberish questions and 16 columns with content questions. We transformed the data into long format by stacking the 32 columns into 16 columns representing the questions and adding a 17th column to indicate whether each row originated from the gibberish or content scale. The analysis included six steps. First, we calculated six indexes of careless responses for each row: long string, standard deviation, the correlation between two half scales, Mahalanobis distance by the R package careless (Yentes & Wilhelm, 2021), and two person-fit indices by the R package PerFit (Tendeiro et al., 2016). ... Fifth, we reapplied the SVM model training to the complete data set, including all the responses, and ran the prediction once again on the complete data set. This second process is the practical application of GibML, and it was conducted to detect anomalous respondents within the responses provided on the content and gibberish scales. ... Finally, we used the GibML method to classify respondents into normal and anomalous groups in their content scales and used a t test to examine the difference in the careless-response score obtained with all quantitative methods (standard deviation, long string, personal reliability, Mahalanobis distance, and two indices of person-fit).","# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+
+# T-tests between respondents on content scales classified as careless and classified as content responders
+
+t.test(data = filtered_data[data_study_1$condition == ""content"",], sd ~ GibML > 0.56)
+cohen.d(data = filtered_data[data_study_1$condition == ""content"",], sd ~ GibML > 0.56)",unknown,"The code snippet only shows filtering participants and subsetting to content-scale rows before running the t-test, while the paper describes more extensive data transformations (reshaping to long format, computing six indices, and reapplying the SVM) that are not visible here. Because the crucial transformation steps described in the paper are not present in the provided code excerpt, it is not possible to determine overall alignment for this analysis-dimension pairing.",,
+bloy,7,"To assess concurrent validity of the GibML classifier in Study 1, an independent-samples Welch t-test compared the standard deviation of content-scale responses between respondents classified as gibberish-like (careless) versus those classified as normal. The test evaluated whether the 5% of respondents whose content responses were labeled gibberish-like had lower response variability (M = 0.51) than the correctly classified group (M = 2.07). Results indicated a very large and significant difference, t(506.9) = -30.96, p < .001, Cohen’s d = -2.49.",Inference Specification,"The results support Hypothesis 3: The average standard deviation of the content responses classified as gibberish, M = 0.51, is smaller than the standard deviation of the content responses classified correctly, M  = 2.07, difference = −1.56, 95% confidence interval [CI] =  [ −1.66, −1.46], t(506.9) = −30.96, p < .001, Cohen’s d = −2.49.","# T-tests between respondents on content scales classified as careless and classified as content responders
+
+t.test(data = filtered_data[data_study_1$condition == ""content"",], sd ~ GibML > 0.56)
+cohen.d(data = filtered_data[data_study_1$condition == ""content"",], sd ~ GibML > 0.56)",match,"The paper reports a Welch t-test with 95% confidence interval, p-value, and Cohen’s d, and the code uses R’s t.test (which by default performs Welch’s t-test with a 95% CI) and cohen.d on the same variables/groups. No conflicting alpha or CI level is specified in the code, so the inference procedures are aligned with the description.",,
+bloy,8,"Also for concurrent validity in Study 1, an independent-samples Welch t-test compared the long-string index on content scales between respondents classified by GibML as gibberish-like versus normal. The analysis tested whether the gibberish-like group exhibited longer sequences of identical answers (M = 12.70) than the correctly classified group (M = 4.68), consistent with careless straightlining. The difference was large and statistically significant, t(442.69) = 28.46, p < .001, Cohen’s d = 2.29.",Model Specification,"Finally, we used the GibML method to classify respondents into normal and anomalous groups in their content scales and used a t test to examine the difference in the careless-response score obtained with all quantitative methods (standard deviation, long string, personal reliability, Mahalanobis distance, and two indices of person-fit). ... The average long string of the content responses classified as gibberish, M = 12.70, is greater than the long string of the content responses classified correctly, M = 4.68, difference = 8.01, 95% CI = [7.46, 8.57], t (442.69) = 28.46, p < .001, Cohen’s d = 2.29.","# T-tests between respondents on content scales classified as careless and classified as content responders
+
+t.test(data = filtered_data[data_study_1$condition == ""content"",], longstring ~ GibML > 0.56)
+cohen.d(data = filtered_data[data_study_1$condition == ""content"",], longstring ~ GibML > 0.56)",match,"The paper describes using a t-test to compare long-string scores between GibML-classified groups, and the code implements an R t.test with a grouping factor based on the GibML threshold, which corresponds to a Welch two-sample t-test by default.",,
+bloy,8,"Also for concurrent validity in Study 1, an independent-samples Welch t-test compared the long-string index on content scales between respondents classified by GibML as gibberish-like versus normal. The analysis tested whether the gibberish-like group exhibited longer sequences of identical answers (M = 12.70) than the correctly classified group (M = 4.68), consistent with careless straightlining. The difference was large and statistically significant, t(442.69) = 28.46, p < .001, Cohen’s d = 2.29.",Variable Specification,"Specifically, we tested concurrent validity. We ran t tests that examined the differences in the careless-responding indicators between the 5% classified as gibberish from the content scales compared with the 95% classified correctly. The results support Hypothesis 3: … The average long string of the content responses classified as gibberish, M = 12.70, is greater than the long string of the content responses classified correctly, M  = 4.68, difference = 8.01, 95% CI =  [7.46, 8.57], t (442.69) = 28.46, p < .001, Cohen’s d = 2.29.","# T-tests between respondents on content scales classified as careless and classified as content responders
+
+t.test(data = filtered_data[data_study_1$condition == ""content"",], sd ~ GibML > 0.56)
+cohen.d(data = filtered_data[data_study_1$condition == ""content"",], sd ~ GibML > 0.56)
+t.test(data = filtered_data[data_study_1$condition == ""content"",], longstring ~ GibML > 0.56)
+cohen.d(data = filtered_data[data_study_1$condition == ""content"",], longstring ~ GibML > 0.56)",unknown,,,
+bloy,8,"Also for concurrent validity in Study 1, an independent-samples Welch t-test compared the long-string index on content scales between respondents classified by GibML as gibberish-like versus normal. The analysis tested whether the gibberish-like group exhibited longer sequences of identical answers (M = 12.70) than the correctly classified group (M = 4.68), consistent with careless straightlining. The difference was large and statistically significant, t(442.69) = 28.46, p < .001, Cohen’s d = 2.29.",Transformation Specification,"Finally, we used the GibML method to classify respondents into normal and anomalous groups in their content scales and used a t  test to examine the difference in the careless-response score obtained with all quantitative methods (standard devia-
+tion, long string, personal reliability, Mahalanobis dis-
+tance, and two indices of person-fit).
+...
+Finally, we ran SVM on the complete data set to train
+it to detect gibberish scales and content scales, and then
+we ran the prediction formula a second time on the same
+complete data set to detect respondents in each scale
+whose response patterns more closely aligned with the
+other scale. It resulted in a Type I error of 3% and a
+Type II error of 5%. We checked whether the classifica-
+tion of the unusual respondents, who were classified in
+their responses to the scales with content as gibberish
+(Type II error), could be an indication that they are
+careless answers, that is, answers similar in pattern to
+responses to careless responding. Specifically, we tested
+concurrent validity. We ran t tests that examined the
+differences in the careless-responding indicators between
+the 5% classified as gibberish from the content scales
+compared with the 95% classified correctly. The results
+support Hypothesis 3: The average standard deviation
+of the content responses classified as gibberish, M = 0.51,
+is smaller than the standard deviation of the content
+responses classified correctly, M  = 2.07, difference =
+−1.56, 95% confidence interval [CI] =  [ −1.66, −1.46],
+t(506.9) = −30.96, p < .001, Cohen’s d = −2.49. The aver-
+age long string of the content responses classified as
+gibberish, M = 12.70, is greater than the long string of
+the content responses classified correctly, M  = 4.68, dif-
+ference = 8.01, 95% CI =  [7.46, 8.57], t (442.69) = 28.46,
+p < .001, Cohen’s d = 2.29.","# Calculation of within-subject indices to identify careless responses 
+# (indices also based on the responses of all respondents in the sample 
+# will be calculated later, after splitting the data into training and testing)
+data_study_1$sd <- careless::irv(data_study_1[,1:16])
+data_study_1$longstring <- longstring(data_study_1[,1:16])
+...
+irtdata <- data_study_1[, 1:16]-1
+data_study_1$gpoly <- Gpoly(matrix = irtdata,
+                            Ncat = 7)$PFscores
+data_study_1$lzpoly <- lzpoly(matrix = irtdata,
+                                     Ncat = 7)$PFscores
+
+tune.out <- tune.svm(as.factor(condition) ~ ., data = data_study_1[, c(1:16, 17)], kernel = 'radial', probability = TRUE)
+prob.GibML <- predict(tune.out$best.model, data_study_1[, 1:16], probability = TRUE)
+data_study_1$GibML <- attr(prob.GibML, ""probabilities"")[,2]
+...
+# Deleting two respondents who do not have both types of scales,
+# so that we can do a paired samples t-test
+counts <- table(data_study_1$Participant_ID)
+single_row_ids <- names(counts[counts < 2])
+filtered_data <- data_study_1[!data_study_1$Participant_ID %in% single_row_ids, ]
+filtered_data <- filtered_data %>%
+  arrange(Participant_ID, condition)
+...
+# T-tests between respondents on content scales classified as careless and classified as content responders
+
+t.test(data = filtered_data[filtered_data$condition == ""content"",], sd ~ GibML > 0.56)
+cohen.d(data = filtered_data[filtered_data$condition == ""content"",], sd ~ GibML > 0.56)
+t.test(data = filtered_data[filtered_data$condition == ""content"",], longstring ~ GibML > 0.56)
+cohen.d(data = filtered_data[filtered_data$condition == ""content"",], longstring ~ GibML > 0.56)",unknown,"The paper does not specify how the long-string index or other careless-responding indicators are computed or transformed, so it is not possible to verify that the transformations in the code align with the description. The code clearly implements specific transformations (e.g., computing longstring from items 1–16), but these implementation details are absent from the text.",,
+bloy,8,"Also for concurrent validity in Study 1, an independent-samples Welch t-test compared the long-string index on content scales between respondents classified by GibML as gibberish-like versus normal. The analysis tested whether the gibberish-like group exhibited longer sequences of identical answers (M = 12.70) than the correctly classified group (M = 4.68), consistent with careless straightlining. The difference was large and statistically significant, t(442.69) = 28.46, p < .001, Cohen’s d = 2.29.",Inference Specification,"The average long string of the content responses classified as gibberish, M = 12.70, is greater than the long string of the content responses classified correctly, M  = 4.68, difference = 8.01, 95% CI =  [7.46, 8.57], t (442.69) = 28.46, p < .001, Cohen’s d = 2.29.","# T-tests between respondents on content scales classified as careless and classified as content responders
+
+t.test(data = filtered_data[data_study_1$condition == ""content"",], longstring ~ GibML > 0.56)
+cohen.d(data = filtered_data[data_study_1$condition == ""content"",], longstring ~ GibML > 0.56)",match,"The code uses R’s default Welch two-sample t-test with a 95% confidence interval and computes Cohen’s d, which matches the paper’s described inference (Welch t-test, 95% CI, p-value, and Cohen’s d). No conflicting inference criteria (e.g., alpha level) are specified in the code that would diverge from the paper’s description.",,
+bloy,10,"In Study 2, a paired-samples t-test examined differences in response standard deviation between gibberish and content scales within participants, using archival data. The test compared whether response variability was lower on gibberish items (M = 0.54) than on personality-content items (M = 0.86), as an indicator of more stereotyped responding on gibberish. The difference was statistically significant, t(537) = -12.6, p < .001, Cohen’s d = -0.76.",Model Specification,"Table 4 presents the results of the paired-samples t test, indicating significant differences for all examined metrics.
+
+Table 4.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test","t.test(data = data_study_2, sd ~ condition, paired = T)
+cohen.d(data = data_study_2, sd ~ condition, paired = T)",match,"The code uses a paired-samples t-test, which matches the paper’s description of the statistical model used for this analysis.",,
+bloy,10,"In Study 2, a paired-samples t-test examined differences in response standard deviation between gibberish and content scales within participants, using archival data. The test compared whether response variability was lower on gibberish items (M = 0.54) than on personality-content items (M = 0.86), as an indicator of more stereotyped responding on gibberish. The difference was statistically significant, t(537) = -12.6, p < .001, Cohen’s d = -0.76.",Variable Specification,"Table 4.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+Method M gibberish M content Difference 95% CI t(df = 537) p value Cohen’s d
+Standard deviation 0.54 0.86 −0.32 [−0.37, −0.27] −12.6 < .001 −0.76","# Extracting two datasets of content and gibberish, and merging them into a long format
+a <- data_study_2[,c(1:7,15)]
+b <- data_study_2[,c(8:15)]
+a$condition <- ""gibberish""; b$condition <- ""content""
+colnames(b) <- colnames(a)
+data_study_2 <- rbind(b,a)
+
+# Calculation of within-subject indices to identify careless responses 
+# (indices also based on the responses of all respondents in the sample 
+# will be calculated later, after splitting the data into training and testing)
+
+data_study_2$sd <- careless::irv(data_study_2[,1:7])
+
+...
+
+# Paired t-tests between gibberish and content
+t.test(data = data_study_2, sd ~ condition, paired = T)
+cohen.d(data = data_study_2, sd ~ condition, paired = T)",match,"The analysis uses response standard deviation (intra-individual response variability) as the outcome variable and condition (gibberish vs. content) as the within-subject factor, as described in the paper. This aligns with the Study 2 description of comparing response variability between gibberish and personality-content items via a paired-samples t-test.",,
+bloy,10,"In Study 2, a paired-samples t-test examined differences in response standard deviation between gibberish and content scales within participants, using archival data. The test compared whether response variability was lower on gibberish items (M = 0.54) than on personality-content items (M = 0.86), as an indicator of more stereotyped responding on gibberish. The difference was statistically significant, t(537) = -12.6, p < .001, Cohen’s d = -0.76.",Transformation Specification,"Because the scale ranges in the current study differ from those in Study 1, we applied a transformation to all responses. To minimize the influence of response styles, such as extreme- or central-tendency bias, we collapsed the original 7-point scale into a 5-point scale that preserved both central and extreme positions. Responses of 7 were recoded as 5, and midpoint responses of 4 were recoded as 3. Responses of 2 and 3 (moderate disagreement) were recoded as 2, and responses of 5 and 6 (moderate agreement) were recoded as 4. As a result, the new scale ranged from 1 to 5 such that extreme and midpoint responses were preserved and moderate responses were clustered. Finally, we combined the Hebrew gibberish scale from Study 1 with the English content scale from the current study.","# Weak H4: Adding the gibberish scale from Study 1
+
+# import data
+gibberish_study1 <- import(""gibberish.csv"")
+
+for (i in 1:7) {
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 3, 2, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 4, 3, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 5 | gibberish_study1[,i] == 6, 4, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 7, 5, gibberish_study1[,i])
+}
+gibberish_study1 <- na.omit(gibberish_study1[,1:7])
+# merging the gibberish scale into a long format with the study 2 data
+
+gibberish_study1$condition <- ""gibberish_S1""
+colnames(gibberish_study1)[1:7] <- colnames(data_study_2)[1:7]
+data_study_2.1 <- rbind(data_study_2[,c(1:7,9)], gibberish_study1)
+",match,"The code applies the same 7-to-5-point recoding scheme described in the paper and then combines the transformed Study 1 gibberish data with the Study 2 content data, consistent with the described transformation prior to analysis. There is no evident discrepancy between the described transformation rules and their implementation for this analysis-dimension pairing.",,
+bloy,10,"In Study 2, a paired-samples t-test examined differences in response standard deviation between gibberish and content scales within participants, using archival data. The test compared whether response variability was lower on gibberish items (M = 0.54) than on personality-content items (M = 0.86), as an indicator of more stereotyped responding on gibberish. The difference was statistically significant, t(537) = -12.6, p < .001, Cohen’s d = -0.76.",Inference Specification,"Table 4. Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t Test
+...
+Method M gibberish M content Difference 95% CI t(df = 537) p value Cohen’s d
+Standard deviation 0.54 0.86 −0.32 [−0.37, −0.27] −12.6 < .001 −0.76","# Paired t-tests between gibberish and content
+t.test(data = data_study_2, sd ~ condition, paired = T)
+cohen.d(data = data_study_2, sd ~ condition, paired = T)",match,"The code uses R’s paired-samples t-test with default settings, which aligns with the paper’s reported inferential outputs (t, df, p-value, Cohen’s d, and 95% CI). No conflicting or alternative inference criteria (e.g., different alpha or CI level) are indicated in the code.",,
+bloy,11,"In Study 2, a paired-samples t-test compared the long-string index between gibberish and content responses across participants. This analysis tested whether gibberish items showed longer runs of identical responses (M = 4.43) than content items (M = 3.03), consistent with careless straightlining. The difference was significant, t(537) = 12.46, p < .001, Cohen’s d = 0.75.",Model Specification,"Table 4 presents the results of the paired-samples t test, indicating significant differences for all examined metrics.
+
+Table 4.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+
+Method M gibberish M content Difference 95% CI t(df = 537) p value Cohen’s d
+...
+Long string 4.43 3.03 1.4 [1.18, 1.62] 12.46 < .001 0.75","# Paired t-tests between gibberish and content
+t.test(data = data_study_2, longstring ~ condition, paired = T)
+cohen.d(data = data_study_2, longstring ~ condition, paired = T)",match,"The code uses a paired-samples t-test to compare the long-string index between gibberish and content conditions, matching the model specification described in the paper.",,
+bloy,11,"In Study 2, a paired-samples t-test compared the long-string index between gibberish and content responses across participants. This analysis tested whether gibberish items showed longer runs of identical responses (M = 4.43) than content items (M = 3.03), consistent with careless straightlining. The difference was significant, t(537) = 12.46, p < .001, Cohen’s d = 0.75.",Variable Specification,"To evaluate Hypothesis 1, we compared the means of gibberish and content scales across various classification metrics. Table 4 presents the results of the paired-samples t test, indicating significant differences for all examined metrics.
+
+Table 4.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+Method M gibberish M content Difference 95% CI t(df = 537) p value Cohen’s d
+...
+Long string 4.43 3.03 1.4 [1.18, 1.62] 12.46 < .001 0.75","a <- data_study_2[,c(1:7,15)]
+b <- data_study_2[,c(8:15)]
+a$condition <- ""gibberish""; b$condition <- ""content""
+colnames(b) <- colnames(a)
+data_study_2 <- rbind(b,a)
+...
+# Calculation of within-subject indices to identify careless responses 
+# (indices also based on the responses of all respondents in the sample 
+# will be calculated later, after splitting the data into training and testing)
+
+data_study_2$sd <- careless::irv(data_study_2[,1:7])
+data_study_2$longstring <- longstring(data_study_2[,1:7])
+...
+# Paired t-tests between gibberish and content
+...
+t.test(data = data_study_2, longstring ~ condition, paired = T)
+cohen.d(data = data_study_2, longstring ~ condition, paired = T)",match,"The code computes a longstring index and performs a paired-samples t-test comparing this index between gibberish and content conditions, matching the paper’s description of the analysis. The variables used (longstring as the outcome and condition as the within-subject factor) align with the reported comparison of long-string indices between gibberish and content responses.",,
+bloy,11,"In Study 2, a paired-samples t-test compared the long-string index between gibberish and content responses across participants. This analysis tested whether gibberish items showed longer runs of identical responses (M = 4.43) than content items (M = 3.03), consistent with careless straightlining. The difference was significant, t(537) = 12.46, p < .001, Cohen’s d = 0.75.",Transformation Specification,"To examine Hypothesis 4, we preprocessed the data set to conform to the shape of the 7-point gibberish-scale data from Study 1 and selected the first seven items from the questionnaire. Because the scale ranges in the current study differ from those in Study 1, we applied a transformation to all responses.4 To minimize the influence of response styles, such as extreme- or central-tendency bias, we collapsed the original 7-point scale into a 5-point scale that preserved both central and extreme positions. Responses of 7 were recoded as 5, and midpoint responses of 4 were recoded as 3. Responses of 2 and 3 (moderate disagreement) were recoded as 2, and responses of 5 and 6 (moderate agreement) were recoded as 4. As a result, the new scale ranged from 1 to 5 such that extreme and midpoint responses were preserved and moderate responses were clustered.
+
+The data set originally contained 32 columns comprising two types of scales: 16 columns with gibberish questions and 16 columns with content questions. We transformed the data into long format by stacking the 32 columns into 16 columns representing the questions and adding a 17th column to indicate whether each row originated from the gibberish or content scale. The analysis included six steps. First, we calculated six indexes of careless responses for each row: long string, standard deviation, the correlation between two half scales, Mahalanobis distance by the R package careless (Yentes & Wilhelm, 2021), and two person-fit indices by the R package PerFit (Tendeiro et al., 2016).","# Removing respondents with excessively high correlations between the two 7-item scales
+data_study_2$id <- 1000:(999+nrow(data_study_2))
+for (i in 1:nrow(data_study_2)) {
+  a1 <- as.integer(data_study_2[i,1:7])
+  a2 <- as.integer(data_study_2[i,8:14])
+  data_study_2[i,""cor""] <- cor(a2,a1,use = ""pairwise.complete.obs"")
+}
+# Create a dichotomous variable to identify excessively high correlations
+data_study_2$corDIC <- ifelse(!is.na(data_study_2$cor) & data_study_2$cor*data_study_2$cor > 0.64, 1, 0)
+...
+data_study_2 <- data_study_2[data_study_2$corDIC == 0,1:15]
+
+# Extracting two datasets of content and gibberish, and merging them into a long format
+a <- data_study_2[,c(1:7,15)]
+b <- data_study_2[,c(8:15)]
+a$condition <- ""gibberish""; b$condition <- ""content""
+colnames(b) <- colnames(a)
+data_study_2 <- rbind(b,a)
+
+# Calculation of within-subject indices to identify careless responses 
+# (uses only the first seven items in each row)
+data_study_2$sd <- careless::irv(data_study_2[,1:7])
+data_study_2$longstring <- longstring(data_study_2[,1:7])
+
+...
+
+# Weak H4: Adding the gibberish scale from Study 1
+
+# import data
+gibberish_study1 <- import(""gibberish.csv"")
+
+for (i in 1:7) {
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 3, 2, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 4, 3, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 5 | gibberish_study1[,i] == 6, 4, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 7, 5, gibberish_study1[,i])
+}
+gibberish_study1 <- na.omit(gibberish_study1[,1:7])
+# merging the gibberish scale into a long format with the study 2 data
+
+gibberish_study1$condition <- ""gibberish_S1""
+colnames(gibberish_study1)[1:7] <- colnames(data_study_2)[1:7]
+data_study_2.1 <- rbind(data_study_2[,c(1:7,9)], gibberish_study1)
+
+# Calculation of within-subject indices to identify careless responses 
+# (indices also based on the responses of all respondents in the sample 
+# will be calculated later, after splitting the data into training and testing)
+data_study_2.1$sd <- careless::irv(data_study_2.1[,1:7])
+data_study_2.1$longstring <- longstring(data_study_2.1[,1:7])
+
+# Calculating personal reliability index
+data_study_2.1$personal_relialibity <- NA
+for (i in 1:nrow(data_study_2.1)) {
+  data_study_2.1[i,""personal_relialibity""] <- cor(as.numeric(data_study_2.1[i,c(1,3,5)]), as.numeric(data_study_2.1[i,c(2,4,6)]))
+}
+data_study_2.1$personal_relialibity <- ifelse(is.na(data_study_2.1$personal_relialibity), 1, data_study_2.1$personal_relialibity) 
+
+...
+
+# Paired t-tests between gibberish and content
+t.test(data = data_study_2, longstring ~ condition, paired = T)
+cohen.d(data = data_study_2, longstring ~ condition, paired = T)",match,"The code applies the described preprocessing steps, including selecting the first seven items, transforming to long format with a condition indicator, computing the long-string index, and recoding 7-point responses to a 5-point scale using the specified mapping. These transformations align with the paper’s description for preparing data to compute careless-response indices such as the long-string index used in the paired-samples t-test.",,
+bloy,11,"In Study 2, a paired-samples t-test compared the long-string index between gibberish and content responses across participants. This analysis tested whether gibberish items showed longer runs of identical responses (M = 4.43) than content items (M = 3.03), consistent with careless straightlining. The difference was significant, t(537) = 12.46, p < .001, Cohen’s d = 0.75.",Inference Specification,"Table 4 presents the results of the paired-samples t test, indicating significant differences for all examined metrics. Consistent with Hypothesis 1, all measures were significantly different between the gibberish and content scales.
+
+""Table 4.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+Method M gibberish M content Difference 95% CI t(df = 537) p value Cohen’s d
+...
+Long string 4.43 3.03 1.4 [1.18, 1.62] 12.46 < .001 0.75""","# Paired t-tests between gibberish and content
+...
+t.test(data = data_study_2, longstring ~ condition, paired = T)
+cohen.d(data = data_study_2, longstring ~ condition, paired = T)
+...",match,"The code uses a standard paired t-test with its default 95% confidence interval and p-value, which matches the paper’s reporting of a paired-samples t-test with 95% CI and p < .001 for the long-string index. No alternative inference criteria (e.g., different alpha level or CI width) are specified in either the paper or the code, so the inference specifications are aligned.",,
+bloy,12,"A paired-samples t-test in Study 2 evaluated whether Mahalanobis distance differed between gibberish and content scales for each respondent. The test assessed whether gibberish responses (M = 5.52) were closer to the multivariate mean than content responses (M = 8.47), paralleling the Study 1 analysis. Results showed a significant difference, t(537) = -9.46, p < .001, Cohen’s d = -0.55.",Model Specification,"“Table 4 presents the results of the paired-samples t test, indicating significant differences for all examined metrics.”
+
+“Table 4.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test”","# Paired t-tests between gibberish and content
+t.test(data = data_study_2, mahalanobis_d ~ condition, paired = T)
+cohen.d(data = data_study_2, mahalanobis_d ~ condition, paired = T)",match,"The paper describes using a paired-samples t-test to compare Mahalanobis distance between gibberish and content responses, and the code implements a paired t-test for Mahalanobis distance by condition. This aligns with the stated model specification for the analysis.",,
+bloy,12,"A paired-samples t-test in Study 2 evaluated whether Mahalanobis distance differed between gibberish and content scales for each respondent. The test assessed whether gibberish responses (M = 5.52) were closer to the multivariate mean than content responses (M = 8.47), paralleling the Study 1 analysis. Results showed a significant difference, t(537) = -9.46, p < .001, Cohen’s d = -0.55.",Variable Specification,"Quantitative analysis. To evaluate Hypothesis 1, we compared the means of gibberish and content scales across various classification metrics. Table 4 presents the results of the paired-samples t test, indicating significant differences for all examined metrics. Table 4.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test. Method M gibberish M content Difference 95% CI t(df = 537) p value Cohen’s d ... Mahalanobis distance 5.52 8.47 −2.94 [−3.56, −2.33] −9.46 < .001 −0.55","# Extracting two datasets of content and gibberish, and merging them into a long format
+a <- data_study_2[,c(1:7,15)]
+b <- data_study_2[,c(8:15)]
+a$condition <- ""gibberish""; b$condition <- ""content""
+colnames(b) <- colnames(a)
+data_study_2 <- rbind(b,a)
+...
+# Calculating the metrics that were calculated only on the training and test sets again, on the full data
+
+data_study_2$mahalanobis_d <- mahad(data_study_2[, 1:7])
+...
+# Paired t-tests between gibberish and content
+...
+t.test(data = data_study_2, mahalanobis_d ~ condition, paired = T)
+cohen.d(data = data_study_2, mahalanobis_d ~ condition, paired = T)",match,"The code uses Mahalanobis distance as the dependent variable and condition (gibberish vs. content) as the within-subject factor in a paired t-test, consistent with the paper’s description. This aligns with the Study 2 analysis that compares Mahalanobis distances between gibberish and content responses for each respondent.",,
+bloy,12,"A paired-samples t-test in Study 2 evaluated whether Mahalanobis distance differed between gibberish and content scales for each respondent. The test assessed whether gibberish responses (M = 5.52) were closer to the multivariate mean than content responses (M = 8.47), paralleling the Study 1 analysis. Results showed a significant difference, t(537) = -9.46, p < .001, Cohen’s d = -0.55.",Transformation Specification,"Because the scale ranges in the current study differ from those in Study 1, we applied a transformation to all responses. To minimize the influence of response styles, such as extreme- or central-tendency bias, we collapsed the original 7-point scale into a 5-point scale that preserved both central and extreme positions. Responses of 7 were recoded as 5, and midpoint responses of 4 were recoded as 3. Responses of 2 and 3 (moderate disagreement) were recoded as 2, and responses of 5 and 6 (moderate agreement) were recoded as 4. As a result, the new scale ranged from 1 to 5 such that extreme and midpoint responses were preserved and moderate responses were clustered.","for (i in 1:7) {
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 3, 2, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 4, 3, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 5 | gibberish_study1[,i] == 6, 4, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 7, 5, gibberish_study1[,i])
+}
+gibberish_study1 <- na.omit(gibberish_study1[,1:7])",match,"The code implements the same 7-point to 5-point recoding scheme described in the paper, preserving extremes and midpoint while clustering moderate responses. Although the code also removes missing values, the core transformation of response categories matches the textual description.",,
+bloy,12,"A paired-samples t-test in Study 2 evaluated whether Mahalanobis distance differed between gibberish and content scales for each respondent. The test assessed whether gibberish responses (M = 5.52) were closer to the multivariate mean than content responses (M = 8.47), paralleling the Study 1 analysis. Results showed a significant difference, t(537) = -9.46, p < .001, Cohen’s d = -0.55.",Inference Specification,"Table 4.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+Method M gibberish M content Difference 95% CI t(df = 537) p value Cohen’s d
+...
+Mahalanobis distance 5.52 8.47 −2.94 [−3.56, −2.33] −9.46 < .001 −0.55
+...
+
+""Table 4 presents the results of the paired-samples t test, indicating significant differences for all examined metrics. Consistent with Hypothesis 1, all measures were significantly different between the gibberish and content scales.""","# Paired t-tests between gibberish and content
+t.test(data = data_study_2, mahalanobis_d ~ condition, paired = T)
+cohen.d(data = data_study_2, mahalanobis_d ~ condition, paired = T)",match,"The paper describes a paired-samples t-test with p < .001 and Cohen’s d, and the code runs a paired t.test and cohen.d on the same variable/condition structure, implying the same inferential framework with standard p-value-based significance. No alternative or non-standard inference criteria are specified in either the paper or code, so the implementation aligns with the described inference approach.",,
+bloy,13,"In Study 2, a paired-samples t-test compared personal reliability (even–odd item correlation) between gibberish and content scales. This analysis tested whether gibberish responses showed higher internal consistency (M = 0.58) than the content scale (M = 0.29), similar to Study 1 findings. The difference was statistically significant, t(537) = 6.61, p < .001, Cohen’s d = 0.40.",Model Specification,"To evaluate Hypothesis 1, we compared the means of gibberish and content scales across various classification metrics. Table 4 presents the results of the paired-samples t test, indicating significant differences for all examined metrics.
+
+Table 4.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+...
+Personal reliability 0.58 0.29 0.29 [0.20, 0.38] 6.61 < .001 0.40","# Paired t-tests between gibberish and content
+t.test(data = data_study_2, sd ~ condition, paired = T)
+cohen.d(data = data_study_2, sd ~ condition, paired = T)
+t.test(data = data_study_2, longstring ~ condition, paired = T)
+cohen.d(data = data_study_2, longstring ~ condition, paired = T)
+t.test(data = data_study_2, mahalanobis_d ~ condition, paired = T)
+cohen.d(data = data_study_2, mahalanobis_d ~ condition, paired = T)
+t.test(data = data_study_2, personal_relialibity ~ condition, paired = T)
+cohen.d(data = data_study_2, personal_relialibity ~ condition, paired = T)
+data_study_2$gpoly <- unlist(data_study_2$gpoly); data_study_2$lzpoly <- unlist(data_study_2$lzpoly)
+t.test(data = data_study_2, unlist(gpoly) ~ condition, paired = T)
+cohen.d(data = data_study_2, unlist(gpoly) ~ condition, paired = T)
+t.test(data = data_study_2, unlist(lzpoly) ~ condition, paired = T)
+cohen.d(data = data_study_2, unlist(lzpoly) ~ condition, paired = T)",match,"The paper describes using paired-samples t-tests to compare gibberish and content scales on personal reliability, and the code implements paired t-tests for this metric. Thus, the model specification (paired-samples t-test with Cohen’s d) matches between paper and code.",,
+bloy,13,"In Study 2, a paired-samples t-test compared personal reliability (even–odd item correlation) between gibberish and content scales. This analysis tested whether gibberish responses showed higher internal consistency (M = 0.58) than the content scale (M = 0.29), similar to Study 1 findings. The difference was statistically significant, t(537) = 6.61, p < .001, Cohen’s d = 0.40.",Variable Specification,"To evaluate Hypothesis 1, we compared the means of gibberish and content scales across various classification metrics. Table 4 presents the results of the paired-samples t test, indicating significant differences for all examined metrics. Consistent with Hypothesis 1, all measures were significantly different between the gibberish and content scales.
+
+Table 4.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+
+Method M gibberish M content Difference 95% CI t(df = 537) p value Cohen’s d
+...
+Personal reliability 0.58 0.29 0.29 [0.20, 0.38] 6.61 < .001 0.40","# Extracting two datasets of content and gibberish, and merging them into a long format
+a <- data_study_2[,c(1:7,15)]
+b <- data_study_2[,c(8:15)]
+a$condition <- ""gibberish""; b$condition <- ""content""
+colnames(b) <- colnames(a)
+data_study_2 <- rbind(b,a)
+
+# Calculating personal reliability index
+data_study_2$personal_relialibity <- NA
+for (i in 1:nrow(data_study_2)) {
+  data_study_2[i,""personal_relialibity""] <- cor(as.numeric(data_study_2[i,c(1,3,5)]), as.numeric(data_study_2[i,c(2,4,6)]))
+}
+data_study_2$personal_relialibity <- ifelse(is.na(data_study_2$personal_relialibity), 1, data_study_2$personal_relialibity) 
+
+# Paired t-tests between gibberish and content
+...
+t.test(data = data_study_2, personal_relialibity ~ condition, paired = T)
+cohen.d(data = data_study_2, personal_relialibity ~ condition, paired = T)",match,"The variables used in the t-test (personal reliability as even–odd item correlation, compared between gibberish and content conditions within subjects) align with the paper’s description.",,
+bloy,13,"In Study 2, a paired-samples t-test compared personal reliability (even–odd item correlation) between gibberish and content scales. This analysis tested whether gibberish responses showed higher internal consistency (M = 0.58) than the content scale (M = 0.29), similar to Study 1 findings. The difference was statistically significant, t(537) = 6.61, p < .001, Cohen’s d = 0.40.",Transformation Specification,"Because the scale ranges in the current study differ from those in Study 1, we applied a transformation to all responses.
+
+To minimize the influence of response styles, such as extreme- or central-tendency bias, we collapsed the original 7-point scale into a 5-point scale that preserved both central and extreme positions. Responses of 7 were recoded as 5, and midpoint responses of 4 were recoded as 3. Responses of 2 and 3 (moderate disagreement) were recoded as 2, and responses of 5 and 6 (moderate agreement) were recoded as 4. As a result, the new scale ranged from 1 to 5 such that extreme and midpoint responses were preserved and moderate responses were clustered. Finally, we combined the Hebrew gibberish scale from Study 1 with the English content scale from the current study.","# import data
+gibberish_study1 <- import(""gibberish.csv"")
+
+# Removing respondents who answered 6 or 7
+#for (i in 1:7) {
+#  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] > 5, NA, gibberish_study1[,i])
+#}
+#gibberish_study1 <- na.omit(gibberish_study1[,1:7])
+
+for (i in 1:7) {
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 3, 2, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 4, 3, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 5 | gibberish_study1[,i] == 6, 4, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 7, 5, gibberish_study1[,i])
+}
+gibberish_study1 <- na.omit(gibberish_study1[,1:7])
+# merging the gibberish scale into a long format with the study 2 data
+
+gibberish_study1$condition <- ""gibberish_S1""
+colnames(gibberish_study1)[1:7] <- colnames(data_study_2)[1:7]
+data_study_2.1 <- rbind(data_study_2[,c(1:7,9)], gibberish_study1)
+",match,The recoding in the code implements the same 7-point to 5-point scale transformation described in the paper before combining Study 1 gibberish with Study 2 data.,,
+bloy,13,"In Study 2, a paired-samples t-test compared personal reliability (even–odd item correlation) between gibberish and content scales. This analysis tested whether gibberish responses showed higher internal consistency (M = 0.58) than the content scale (M = 0.29), similar to Study 1 findings. The difference was statistically significant, t(537) = 6.61, p < .001, Cohen’s d = 0.40.",Inference Specification,"To evaluate Hypothesis 1, we compared the means of gibberish and content scales across various classification metrics. Table 4 presents the results of the paired-samples t test, indicating significant differences for all examined metrics. Consistent with Hypothesis 1, all measures were significantly different between the gibberish and content scales.
+
+Table 4.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+Method M gibberish M content Difference 95% CI t(df = 537) p value Cohen’s d
+...
+Personal reliability 0.58 0.29 0.29 [0.20, 0.38] 6.61 < .001 0.40","# Paired t-tests between gibberish and content
+ t.test(data = data_study_2, sd ~ condition, paired = T)
+ cohen.d(data = data_study_2, sd ~ condition, paired = T)
+ t.test(data = data_study_2, longstring ~ condition, paired = T)
+ cohen.d(data = data_study_2, longstring ~ condition, paired = T)
+ t.test(data = data_study_2, mahalanobis_d ~ condition, paired = T)
+ cohen.d(data = data_study_2, mahalanobis_d ~ condition, paired = T)
+ t.test(data = data_study_2, personal_relialibity ~ condition, paired = T)
+ cohen.d(data = data_study_2, personal_relialibity ~ condition, paired = T)
+ data_study_2$gpoly <- unlist(data_study_2$gpoly); data_study_2$lzpoly <- unlist(data_study_2$lzpoly)
+ t.test(data = data_study_2, unlist(gpoly) ~ condition, paired = T)
+ cohen.d(data = data_study_2, unlist(gpoly) ~ condition, paired = T)
+ t.test(data = data_study_2, unlist(lzpoly) ~ condition, paired = T)
+ cohen.d(data = data_study_2, unlist(lzpoly) ~ condition, paired = T)",match,"The code uses standard paired-samples t-tests with default settings that produce 95% confidence intervals and p-values, which is consistent with the paper’s inference reporting (95% CI and significance via p-values). No conflicting or alternative inference criteria (e.g., different alpha levels) are specified in either source.",,
+bloy,14,"Study 2 also used a paired-samples t-test to compare the person-fit lpzm index between gibberish and content responses. The goal was to determine whether gibberish items produced response patterns with higher model-based likelihood (M = 0.63) relative to content items (M = -0.12), again challenging assumptions that misfit reflects careless responding. The test showed a significant difference, t(537) = 8.80, p < .001, Cohen’s d = 0.53.",Model Specification,"“Table 4 presents the results of the paired-samples t test, indicating significant differences for all examined metrics.”","# Paired t-tests between gibberish and content
+t.test(data = data_study_2, sd ~ condition, paired = T)
+cohen.d(data = data_study_2, sd ~ condition, paired = T)
+t.test(data = data_study_2, longstring ~ condition, paired = T)
+cohen.d(data = data_study_2, longstring ~ condition, paired = T)
+t.test(data = data_study_2, mahalanobis_d ~ condition, paired = T)
+cohen.d(data = data_study_2, mahalanobis_d ~ condition, paired = T)
+t.test(data = data_study_2, personal_relialibity ~ condition, paired = T)
+cohen.d(data = data_study_2, personal_relialibity ~ condition, paired = T)
+data_study_2$gpoly <- unlist(data_study_2$gpoly); data_study_2$lzpoly <- unlist(data_study_2$lzpoly)
+t.test(data = data_study_2, unlist(gpoly) ~ condition, paired = T)
+cohen.d(data = data_study_2, unlist(gpoly) ~ condition, paired = T)
+t.test(data = data_study_2, unlist(lzpoly) ~ condition, paired = T)
+cohen.d(data = data_study_2, unlist(lzpoly) ~ condition, paired = T)",match,"The paper describes using paired-samples t-tests, and the code implements R’s t.test with the paired argument set to TRUE for the relevant indices, matching the specified model. The additional cohen.d calls are for effect size computation and do not alter the primary model specification.",,
+bloy,14,"Study 2 also used a paired-samples t-test to compare the person-fit lpzm index between gibberish and content responses. The goal was to determine whether gibberish items produced response patterns with higher model-based likelihood (M = 0.63) relative to content items (M = -0.12), again challenging assumptions that misfit reflects careless responding. The test showed a significant difference, t(537) = 8.80, p < .001, Cohen’s d = 0.53.",Variable Specification,"Table 4.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+Method M gibberish M content Difference 95% CI t(df = 537) p value Cohen’s d
+...
+Person-fit lp
+zm 0.63 −0.12 0.74 [0.58, 0.91] 8.80 < .001 0.53","# Extracting two datasets of content and gibberish, and merging them into a long format
+
+a <- data_study_2[,c(1:7,15)]
+b <- data_study_2[,c(8:15)]
+a$condition <- ""gibberish""; b$condition <- ""content""
+colnames(b) <- colnames(a)
+data_study_2 <- rbind(b,a)
+colnames(data_study_2)
+...
+# Calculating the metrics that were calculated only on the training and test sets again, on the full data
+
+data_study_2$mahalanobis_d <- mahad(data_study_2[, 1:7])
+
+irtdata <- data_study_2[, 1:7]-1
+data_study_2$gpoly <- Gpoly(matrix = irtdata,
+                              Ncat = 5)$PFscores
+data_study_2$lzpoly <- lzpoly(matrix = irtdata,
+                                       Ncat = 5)$PFscores
+...
+# Paired t-tests between gibberish and content
+...
+data_study_2$gpoly <- unlist(data_study_2$gpoly); data_study_2$lzpoly <- unlist(data_study_2$lzpoly)
+t.test(data = data_study_2, unlist(gpoly) ~ condition, paired = T)
+cohen.d(data = data_study_2, unlist(gpoly) ~ condition, paired = T)
+t.test(data = data_study_2, unlist(lzpoly) ~ condition, paired = T)
+cohen.d(data = data_study_2, unlist(lzpoly) ~ condition, paired = T)",match,"The analysis uses the person-fit index (lzpoly/lp_zm) as the dependent variable and compares it between gibberish and content conditions via a paired-samples t-test, matching the paper’s description of comparing the person-fit lpzm index between gibberish and content responses.",,
+bloy,14,"Study 2 also used a paired-samples t-test to compare the person-fit lpzm index between gibberish and content responses. The goal was to determine whether gibberish items produced response patterns with higher model-based likelihood (M = 0.63) relative to content items (M = -0.12), again challenging assumptions that misfit reflects careless responding. The test showed a significant difference, t(537) = 8.80, p < .001, Cohen’s d = 0.53.",Transformation Specification,"Because the scale ranges in the current study differ from those in Study 1, we applied a transformation to all responses.4 To minimize the influence of response styles, such as extreme- or central-tendency bias, we collapsed the original 7-point scale into a 5-point scale that preserved both central and extreme positions. Responses of 7 were recoded as 5, and midpoint responses of 4 were recoded as 3. Responses of 2 and 3 (moderate disagreement) were recoded as 2, and responses of 5 and 6 (moderate agreement) were recoded as 4. As a result, the new scale ranged from 1 to 5 such that extreme and midpoint responses were preserved and moderate responses were clustered.","# Calculating correlation between pairs of values for each respondent
+for (i in 1:nrow(data_study_2)) {
+  a1 <- as.integer(data_study_2[i,1:7])
+  a2 <- as.integer(data_study_2[i,8:14])
+  data_study_2[i,""cor""] <- cor(a2,a1,use = ""pairwise.complete.obs"")
+}
+# Create a dichotomous variable to identify excessively high correlations
+data_study_2$corDIC <- ifelse(!is.na(data_study_2$cor) & data_study_2$cor*data_study_2$cor > 0.64, 1, 0)
+table(data_study_2$corDIC)
+data_study_2 <- data_study_2[data_study_2$corDIC == 0,1:15]
+...
+irtdata <- data_study_2[, 1:7]-1
+data_study_2$gpoly <- Gpoly(matrix = irtdata,
+                              Ncat = 5)$PFscores
+data_study_2$lzpoly <- lzpoly(matrix = irtdata,
+                                       Ncat = 5)$PFscores
+...
+data_study_2$gpoly <- unlist(data_study_2$gpoly); data_study_2$lzpoly <- unlist(data_study_2$lzpoly)",unknown,"The paper clearly specifies a 7-point to 5-point recoding scheme, but the provided code only shows a subtraction of 1 and use of Ncat = 5 without showing how original 7-point responses were collapsed. Thus it is not possible to confirm from the snippet whether the exact transformation described in the paper was actually implemented.",,
+bloy,14,"Study 2 also used a paired-samples t-test to compare the person-fit lpzm index between gibberish and content responses. The goal was to determine whether gibberish items produced response patterns with higher model-based likelihood (M = 0.63) relative to content items (M = -0.12), again challenging assumptions that misfit reflects careless responding. The test showed a significant difference, t(537) = 8.80, p < .001, Cohen’s d = 0.53.",Inference Specification,"Table 4.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+Method M gibberish M content Difference 95% CI t(df = 537) p value Cohen’s d
+...
+Person-fit lpzm 0.63 −0.12 0.74 [0.58, 0.91] 8.80 < .001 0.53","# Paired t-tests between gibberish and content
+...
+t.test(data = data_study_2, unlist(lzpoly) ~ condition, paired = T)
+cohen.d(data = data_study_2, unlist(lzpoly) ~ condition, paired = T)",match,"The code uses R’s default paired t-test, which produces a two-sided p-value and a 95% confidence interval, aligning with the inferential outputs (p-value, 95% CI) reported in the paper’s Table 4 for the lpzm index comparison.",,
+bloy,15,"In Study 2, a paired-samples t-test compared the person-fit Gpm index between gibberish and content scales. This examined whether gibberish responses had fewer Guttman errors (M = 9.48) than content responses (M = 15.00), reflecting more orderly response patterns. The difference was statistically significant, t(537) = -7.24, p < .001, Cohen’s d = -0.44.",Model Specification,"Table 4 presents the results of the paired-samples t test, indicating significant differences for all examined metrics.
+
+""Table 4.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test""","# Paired t-tests between gibberish and content
+t.test(data = data_study_2, sd ~ condition, paired = T)
+cohen.d(data = data_study_2, sd ~ condition, paired = T)
+t.test(data = data_study_2, longstring ~ condition, paired = T)
+cohen.d(data = data_study_2, longstring ~ condition, paired = T)
+t.test(data = data_study_2, mahalanobis_d ~ condition, paired = T)
+cohen.d(data = data_study_2, mahalanobis_d ~ condition, paired = T)
+t.test(data = data_study_2, personal_relialibity ~ condition, paired = T)
+cohen.d(data = data_study_2, personal_relialibity ~ condition, paired = T)
+data_study_2$gpoly <- unlist(data_study_2$gpoly); data_study_2$lzpoly <- unlist(data_study_2$lzpoly)
+t.test(data = data_study_2, unlist(gpoly) ~ condition, paired = T)
+cohen.d(data = data_study_2, unlist(gpoly) ~ condition, paired = T)
+t.test(data = data_study_2, unlist(lzpoly) ~ condition, paired = T)
+cohen.d(data = data_study_2, unlist(lzpoly) ~ condition, paired = T)",match,"The paper describes using paired-samples t-tests to compare metrics between gibberish and content responses, and the code implements paired t-tests (and corresponding Cohen’s d) for these measures. Thus, the model specification in the code aligns with the description in the paper.",,
+bloy,15,"In Study 2, a paired-samples t-test compared the person-fit Gpm index between gibberish and content scales. This examined whether gibberish responses had fewer Guttman errors (M = 9.48) than content responses (M = 15.00), reflecting more orderly response patterns. The difference was statistically significant, t(537) = -7.24, p < .001, Cohen’s d = -0.44.",Variable Specification,"Quantitative analysis. To evaluate Hypothesis 1, we compared the means of gibberish and content scales across various classification metrics. Table 4 presents the results of the paired-samples t test, indicating significant differences for all examined metrics. Consistent with Hypothesis 1, all measures were significantly different between the gibberish and content scales.
+
+Table 4.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+Method M gibberish M content Difference 95% CI t(df = 537) p value Cohen’s d
+...
+Person-fit Gp
+m 9.48 15.00 −5.49 [−7.0, 4.0] −7.24 < .001 −0.44","# Extracting two datasets of content and gibberish, and merging them into a long format
+a <- data_study_2[,c(1:7,15)]
+b <- data_study_2[,c(8:15)]
+a$condition <- ""gibberish""; b$condition <- ""content""
+colnames(b) <- colnames(a)
+data_study_2 <- rbind(b,a)
+...
+# Calculating the metrics that were calculated only on the training and test sets again, on the full data
+
+data_study_2$mahalanobis_d <- mahad(data_study_2[, 1:7])
+
+irtdata <- data_study_2[, 1:7]-1
+data_study_2$gpoly <- Gpoly(matrix = irtdata,
+                              Ncat = 5)$PFscores
+data_study_2$lzpoly <- lzpoly(matrix = irtdata,
+                                       Ncat = 5)$PFscores
+...
+# Paired t-tests between gibberish and content
+...
+data_study_2$gpoly <- unlist(data_study_2$gpoly); data_study_2$lzpoly <- unlist(data_study_2$lzpoly)
+t.test(data = data_study_2, unlist(gpoly) ~ condition, paired = T)
+cohen.d(data = data_study_2, unlist(gpoly) ~ condition, paired = T)
+",match,"The code uses the person-fit score variable (gpoly) as the outcome and the gibberish/content condition indicator as the grouping variable, consistent with the paper’s description of comparing a person-fit Gpm index between gibberish and content scales. While the code labels the variable gpoly, it is explicitly derived from a person-fit function (Gpoly) and then compared across the two conditions via a paired t-test, matching the variable roles described in the paper.",,
+bloy,15,"In Study 2, a paired-samples t-test compared the person-fit Gpm index between gibberish and content scales. This examined whether gibberish responses had fewer Guttman errors (M = 9.48) than content responses (M = 15.00), reflecting more orderly response patterns. The difference was statistically significant, t(537) = -7.24, p < .001, Cohen’s d = -0.44.",Transformation Specification,"Because the scale ranges in the current study differ from those in Study 1, we applied a transformation to all responses.⁴ To minimize the influence of response styles, such as extreme- or central-tendency bias, we collapsed the original 7-point scale into a 5-point scale that preserved both central and extreme positions. Responses of 7 were recoded as 5, and midpoint responses of 4 were recoded as 3. Responses of 2 and 3 (moderate disagreement) were recoded as 2, and responses of 5 and 6 (moderate agreement) were recoded as 4. As a result, the new scale ranged from 1 to 5 such that extreme and midpoint responses were preserved and moderate responses were clustered.","{""code_value"":""# Calculating correlation between pairs of values for each respondent\nfor (i in 1:nrow(data_study_2)) {\n  a1 <- as.integer(data_study_2[i,1:7])\n  a2 <- as.integer(data_study_2[i,8:14])\n  data_study_2[i,\""cor\""] <- cor(a2,a1,use = \""pairwise.complete.obs\"")\n}\n# Create a dichotomous variable to identify excessively high correlations\ndata_study_2$corDIC <- ifelse(!is.na(data_study_2$cor) & data_study_2$cor*data_study_2$cor > 0.64, 1, 0)\ntable(data_study_2$corDIC)\ndata_study_2 <- data_study_2[data_study_2$corDIC == 0,1:15]\n\n# Calculation and determination of IP for IRT metrics\nirtdata_train <- training_set[, 1:7] - 1\nIP.res <- PerFit:::estIP.poly(matrix = irtdata_train, Ncat = 5,model = \""GRM\"", ip = NULL)\n# Calculating the IRT indices on the training set, to determine the cutoff point \n# (the error size will be determined later, on the test set)\ntraining_set$gpoly <- Gpoly(matrix = irtdata_train,\n                              Ncat = 5,\n                              IP = IP.res,                \n                              Ability = NULL,             \n                              Ability.PModel = \""EB\"",    \n                              IRT.PModel = \""GRM\"")$PFscores\n...\nirtdata_test <- test_set[, 1:7] - 1\ntest_set$gpoly <- Gpoly(matrix = irtdata_test,\n                              Ncat = 5,\n                              IP = IP.res,               \n                              Ability = NULL,            \n                              Ability.PModel = \""EAP\"",   \n                              IRT.PModel = \""GRM\"")$PFscores\n\n# Calculating the metrics that were calculated only on the training and test sets again, on the full data\n\ndata_study_2$mahalanobis_d <- mahad(data_study_2[, 1:7])\n\nirtdata <- data_study_2[, 1:7]-1\ndata_study_2$gpoly <- Gpoly(matrix = irtdata,\n                              Ncat = 5)$PFscores\ndata_study_2$lzpoly <- lzpoly(matrix = irtdata,\n                                       Ncat = 5)$PFscores\n...\n# Ensure gpoly and lzpoly are atomic vectors before t-tests\ndata_study_2$gpoly <- unlist(data_study_2$gpoly); data_study_2$lzpoly <- unlist(data_study_2$lzpoly)\n\n# Weak H4: Adding the gibberish scale from Study 1\n...\nfor (i in 1:7) {\n  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 3, 2, gibberish_study1[,i])\n  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 4, 3, gibberish_study1[,i])\n  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 5 | gibberish_study1[,i] == 6, 4, gibberish_study1[,i])\n  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 7, 5, gibberish_study1[,i])\n}\ngibberish_study1 <- na.omit(gibberish_study1[,1:7])"",""evidence"":{""code_path"":""/Users/jamie/git/codebot-for-psychology/data/raw/main/codebot/materials/codebot_pairs/bloy/code_new_Study2.R"",""code_lines"":""# Calculating correlation between pairs of values for each respondent\nfor (i in 1:nrow(data_study_2)) {\n  a1 <- as.integer(data_study_2[i,1:7])\n  a2 <- as.integer(data_study_2[i,8:14])\n  data_study_2[i,\""cor\""] <- cor(a2,a1,use = \""pairwise.complete.obs\"")\n}\n# Create a dichotomous variable to identify excessively high correlations\ndata_study_2$corDIC <- ifelse(!is.na(data_study_2$cor) & data_study_2$cor*data_study_2$cor > 0.64, 1, 0)\ntable(data_study_2$corDIC)\ndata_study_2 <- data_study_2[data_study_2$corDIC == 0,1:15]\n\n# Calculation and determination of IP for IRT metrics\nirtdata_train <- training_set[, 1:7] - 1\nIP.res <- PerFit:::estIP.poly(matrix = irtdata_train, Ncat = 5,model = \""GRM\"", ip = NULL)\n# Calculating the IRT indices on the training set, to determine the cutoff point \n# (the error size will be determined later, on the test set)\ntraining_set$gpoly <- Gpoly(matrix = irtdata_train,\n                              Ncat = 5,\n                              IP = IP.res,                \n                              Ability = NULL,             \n                              Ability.PModel = \""EB\"",    \n                              IRT.PModel = \""GRM\"")$PFscores\n  \n  training_set$lzpoly <- lzpoly_custom(matrix = irtdata_train,\n                                Ncat = 5,\n                                IP = IP.res,                \n                                Ability = NULL,            \n                                Ability.PModel = \""EB\"",     \n                                IRT.PModel = \""GRM\"")$PFscores\n...\n  \n  irtdata_test <- test_set[, 1:7] - 1\n  test_set$gpoly <- Gpoly(matrix = irtdata_test,\n                              Ncat = 5,\n                              IP = IP.res,               \n                              Ability = NULL,            \n                              Ability.PModel = \""EAP\"",   \n                              IRT.PModel = \""GRM\"")$PFscores\n  \n  test_set$lzpoly <- lzpoly_custom(matrix = irtdata_test,\n                                Ncat = 5,\n                                IP = IP.res,               \n                                Ability = NULL,           \n                                Ability.PModel = \""EAP\"",   \n                                IRT.PModel = \""GRM\"")$PFscores\n...\n# Calculating the metrics that were calculated only on the training and test sets again, on the full data\n\ndata_study_2$mahalanobis_d <- mahad(data_study_2[, 1:7])\n\nirtdata <- data_study_2[, 1:7]-1\ndata_study_2$gpoly <- Gpoly(matrix = irtdata,\n                              Ncat = 5)$PFscores\ndata_study_2$lzpoly <- lzpoly(matrix = irtdata,\n                                       Ncat = 5)$PFscores\n...\ndata_study_2$gpoly <- unlist(data_study_2$gpoly); data_study_2$lzpoly <- unlist(data_study_2$lzpoly)\n...\nfor (i in 1:7) {\n  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 3, 2, gibberish_study1[,i])\n  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 4, 3, gibberish_study1[,i])\n  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 5 | gibberish_study1[,i] == 6, 4, gibberish_study1[,i])\n  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 7, 5, gibberish_study1[,i])\n}\ngibberish_study1 <- na.omit(gibberish_study1[,1:7])""}}}",match,"The code applies the described 7-point-to-5-point recoding (collapsing moderate responses, preserving midpoint and extremes) to the gibberish scale, consistent with the paper’s transformation description for harmonizing scales between studies. Although shown only for the gibberish scale from Study 1, the implemented mapping exactly matches the transformation rules stated in the paper.",,
+bloy,15,"In Study 2, a paired-samples t-test compared the person-fit Gpm index between gibberish and content scales. This examined whether gibberish responses had fewer Guttman errors (M = 9.48) than content responses (M = 15.00), reflecting more orderly response patterns. The difference was statistically significant, t(537) = -7.24, p < .001, Cohen’s d = -0.44.",Inference Specification,"Table 4.  Comparison of Classification Metrics Between Gibberish and Content Responses Using Paired-Samples t  Test
+Method M gibberish M content Difference 95% CI t(df = 537) p value Cohen’s d
+...
+Person-fit Gp
+m 9.48 15.00 −5.49 [−7.0, 4.0] −7.24 < .001 −0.44","t.test(data = data_study_2, unlist(gpoly) ~ condition, paired = T)
+cohen.d(data = data_study_2, unlist(gpoly) ~ condition, paired = T)",match,"The code conducts a paired-samples t-test and paired Cohen’s d, which aligns with the paper’s description and reporting of t, p, d, and a 95% CI. The default t.test settings (two-sided, 95% CI) are consistent with the table’s 95% CI and p-value reporting.",,
+bloy,16,"To test concurrent validity of GibML in Study 2, an independent-samples Welch t-test compared the standard deviation of content-scale responses between respondents whose content responses were classified as gibberish-like versus those classified as normal. The analysis assessed whether the 15% of content responses labeled gibberish-like had lower within-person variability (M = 0.68) than the correctly classified group (M = 0.89). The difference was statistically significant and moderate in size, t(111.6) = -4.66, p < .001, Cohen’s d = -0.56.",Model Specification,"We examined whether Type II errors (content scales misclassified as gibberish) indicated careless responding. Specifically, we tested concurrent validity. We ran t tests that examined the differences in the careless-responding indicators between the 15% classified as gibberish from the content scales compared with the 85% classified correctly. The results support Hypothesis 3: The average standard devi-
+ation of the content responses classified as gibberish, M = 0.68, is smaller than the standard deviation of the content responses classified correctly, M  = 0.89, differ-
+ence = −0.21, 95% CI =  [−0.30, −0.12], t(111.6) = −4.66, p < .001, Cohen’s d = −0.56.","# T-tests between respondents on content scales classified as careless and classified as content responders
+t.test(data = data_study_2[data_study_2$condition == ""content"",], sd ~ GibML > 0.52)
+cohen.d(data = data_study_2[data_study_2$condition == ""content"",], sd ~ GibML > 0.52)",match,"The paper describes independent-samples t-tests comparing groups based on gibberish classification, and the code uses R’s t.test with a grouping factor (GibML > 0.52), which by default is a Welch two-sample t-test, matching the described model specification.",,
+bloy,16,"To test concurrent validity of GibML in Study 2, an independent-samples Welch t-test compared the standard deviation of content-scale responses between respondents whose content responses were classified as gibberish-like versus those classified as normal. The analysis assessed whether the 15% of content responses labeled gibberish-like had lower within-person variability (M = 0.68) than the correctly classified group (M = 0.89). The difference was statistically significant and moderate in size, t(111.6) = -4.66, p < .001, Cohen’s d = -0.56.",Variable Specification,"Running the GibML on the full data set as training and test-set data simultaneously reduced Type I and Type II errors to 13% and 15%, respectively. We examined whether Type II errors (content scales misclassified as gibberish) indicated careless responding. Specifically, we tested concurrent validity. We ran t  tests that examined the differences in the careless-responding indicators between the 15% classified as gibberish from the content scales compared with the 85% classified correctly. The results support Hypothesis 3: The average standard deviation of the content responses classified as gibberish, M = 0.68, is smaller than the standard deviation of the content responses classified correctly, M  = 0.89, difference = −0.21, 95% CI =  [−0.30, −0.12], t(111.6) = −4.66, p < .001, Cohen’s d = −0.56.","# T-tests between respondents on content scales classified as careless and classified as content responders
+t.test(data = data_study_2[data_study_2$condition == ""content"",], sd ~ GibML > 0.52)
+cohen.d(data = data_study_2[data_study_2$condition == ""content"",], sd ~ GibML > 0.52)
+t.test(data = data_study_2[data_study_2$condition == ""content"",], longstring ~ GibML > 0.52)
+cohen.d(data = data_study_2[data_study_2$condition == ""content"",], longstring ~ GibML > 0.52)
+t.test(data = data_study_2[data_study_2$condition == ""content"",], mahalanobis_d ~ GibML > 0.52)
+cohen.d(data = data_study_2[data_study_2$condition == ""content"",], mahalanobis_d ~ GibML > 0.52)
+t.test(data = data_study_2[data_study_2$condition == ""content"",], personal_relialibity ~ GibML > 0.52)
+cohen.d(data = data_study_2[data_study_2$condition == ""content"",], personal_relialibity ~ GibML > 0.52)
+t.test(data = data_study_2[data_study_2$condition == ""content"",], personal_relialibity ~ GibML > 0.52)
+cohen.d(data = data_study_2[data_study_2$condition == ""content"",], personal_relialibity ~ GibML > 0.52)
+data_study_2$gpoly <- unlist(data_study_2$gpoly); data_study_2$lzpoly <- unlist(data_study_2$lzpoly)
+t.test(data = data_study_2[data_study_2$condition == ""content"",], gpoly ~ GibML > 0.52)
+cohen.d(data = data_study_2[data_study_2$condition == ""content"",], gpoly ~ GibML > 0.52)
+t.test(data = data_study_2[data_study_2$condition == ""content"",], lzpoly ~ GibML > 0.52)
+cohen.d(data = data_study_2[data_study_2$condition == ""content"",], lzpoly ~ GibML > 0.52)",match,"The code uses the within-person standard deviation of content responses (sd) as the outcome and compares it between groups defined by GibML-based gibberish classification, matching the paper’s description of the variables in the Welch t-test. It also applies the same grouping to other careless-responding indicators, consistent with the paper’s description of testing differences between the 15% gibberish-classified and 85% correctly classified respondents.",,
+bloy,16,"To test concurrent validity of GibML in Study 2, an independent-samples Welch t-test compared the standard deviation of content-scale responses between respondents whose content responses were classified as gibberish-like versus those classified as normal. The analysis assessed whether the 15% of content responses labeled gibberish-like had lower within-person variability (M = 0.68) than the correctly classified group (M = 0.89). The difference was statistically significant and moderate in size, t(111.6) = -4.66, p < .001, Cohen’s d = -0.56.",Transformation Specification,"To examine Hypothesis 4, we preprocessed the data set to conform to the shape of the 7-point gibberish-scale data from Study 1 and selected the first seven items from the questionnaire. Because the scale ranges in the current study differ from those in Study 1, we applied a trans-
+formation to all responses.4 To minimize the influence of response styles, such as extreme- or central-tendency bias, we collapsed the original 7-point scale into a 5-point scale that preserved both central and extreme positions. Responses of 7 were recoded as 5, and midpoint responses of 4 were recoded as 3. Responses of 2 and 3 (moderate disagreement) were recoded as 2, and responses of 5 and 6 (moderate agreement) were recoded as 4. As a result, the new scale ranged from 1 to 5 such that extreme and midpoint responses were preserved and moderate responses were clustered.","data_study_2$sd <- careless::irv(data_study_2[,1:7])
+
+...
+
+# T-tests between respondents on content scales classified as careless and classified as content responders
+
+tune.out <- tune.svm(as.factor(condition) ~ ., data = data_study_2[, c(1:7, 8)], kernel = 'radial', probability = TRUE)
+prob.GibML <- predict(tune.out$best.model, data_study_2[, 1:7], probability = TRUE)
+data_study_2$GibML <- attr(prob.GibML, ""probabilities"")[,2]
+
+# T-tests between respondents on content scales classified as careless and classified as content responders
+
+t.test(data = data_study_2[data_study_2$condition == ""content"",], sd ~ GibML > 0.52)
+cohen.d(data = data_study_2[data_study_2$condition == ""content"",], sd ~ GibML > 0.52)
+
+...
+
+# Weak H4: Adding the gibberish scale from Study 1
+
+# import data
+gibberish_study1 <- import(""gibberish.csv"")
+
+for (i in 1:7) {
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 3, 2, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 4, 3, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 5 | gibberish_study1[,i] == 6, 4, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 7, 5, gibberish_study1[,i])
+}
+gibberish_study1 <- na.omit(gibberish_study1[,1:7])
+",unknown,"The provided paper excerpt and code both describe a response-scale transformation for Hypothesis 4, but the analysis of interest is the concurrent validity t-test for Hypothesis 3, for which no transformation details from the paper are shown. Because we lack the corresponding Hypothesis 3 transformation description from the paper, it is unclear whether the code’s treatment of Study 2 content responses matches the paper for this specific analysis.",,
+bloy,16,"To test concurrent validity of GibML in Study 2, an independent-samples Welch t-test compared the standard deviation of content-scale responses between respondents whose content responses were classified as gibberish-like versus those classified as normal. The analysis assessed whether the 15% of content responses labeled gibberish-like had lower within-person variability (M = 0.68) than the correctly classified group (M = 0.89). The difference was statistically significant and moderate in size, t(111.6) = -4.66, p < .001, Cohen’s d = -0.56.",Inference Specification,"We ran t tests that examined the differences in the careless-responding indicators between the 15% classified as gibberish from the content scales compared with the 85% classified correctly. The results support Hypothesis 3: The average standard devi-
+ation of the content responses classified as gibberish, M = 0.68, is smaller than the standard deviation of the content responses classified correctly, M  = 0.89, differ-
+ence = −0.21, 95% CI =  [−0.30, −0.12], t(111.6) = −4.66, p < .001, Cohen’s d = −0.56.","# T-tests between respondents on content scales classified as careless and classified as content responders
+t.test(data = data_study_2[data_study_2$condition == ""content"",], sd ~ GibML > 0.52)
+cohen.d(data = data_study_2[data_study_2$condition == ""content"",], sd ~ GibML > 0.52)",match,"The paper reports results from a Welch t-test with a 95% confidence interval, p-value, and Cohen’s d, and the code uses R’s t.test (which by default computes a 95% CI and p-value) and cohen.d on the same grouping, consistent with those inference specifications.",,
+bloy,17,"In Study 2, an independent-samples Welch t-test further examined concurrent validity of GibML by comparing the long-string index on content items between those labeled as gibberish-like and those labeled as normal. The test evaluated whether the gibberish-like group showed longer runs of identical answers (M = 3.46) than the correctly classified group (M = 2.96). The result was statistically significant, t(98.82) = 2.32, p = .022, Cohen’s d = 0.32.",Model Specification,"We ran t tests that examined the differences in the careless-responding indicators between the 15% classified as gibberish from the content scales compared with the 85% classified correctly. ... The average long string of the content responses classified as gibberish, M = 3.46, is greater than the long string of the content responses classified correctly, M  = 2.96, difference =  0.50, 95%  CI = [0.07, 0.94], t (98.82) = 2.32, p  = .022, Cohen’s d = 0.32.","# T-tests between respondents on content scales classified as careless and classified as content responders
+t.test(data = data_study_2[data_study_2$condition == ""content"",], sd ~ GibML > 0.52)
+cohen.d(data = data_study_2[data_study_2$condition == ""content"",], sd ~ GibML > 0.52)
+t.test(data = data_study_2[data_study_2$condition == ""content"",], longstring ~ GibML > 0.52)
+cohen.d(data = data_study_2[data_study_2$condition == ""content"",], longstring ~ GibML > 0.52)",match,"The paper describes independent-samples t-tests (with Welch-type non-integer degrees of freedom), and the code uses R’s t.test function in a between-groups formulation, which by default performs Welch’s unequal-variance t-test on the specified variables (including longstring).",,
+bloy,17,"In Study 2, an independent-samples Welch t-test further examined concurrent validity of GibML by comparing the long-string index on content items between those labeled as gibberish-like and those labeled as normal. The test evaluated whether the gibberish-like group showed longer runs of identical answers (M = 3.46) than the correctly classified group (M = 2.96). The result was statistically significant, t(98.82) = 2.32, p = .022, Cohen’s d = 0.32.",Variable Specification,"We examined whether reducing the proportion of gibberish responses improves detection using survey-
+response-based indices, we repeated the analysis in this 
+study as well, randomly removing 90% of the gibberish 
+responses across 100 iterations. The detection perfor-
+mance of the indices improved, particularly for the per-
+son-fit index l
+p
+zm (see Table D1 in Appendix D in the 
+Supplemental Material). However, the success rates of 
+GibML remained significantly higher.
+Running the GibML on the full data set as training and 
+test-set data simultaneously reduced Type I and Type II 
+errors to 13% and 15%, respectively. We examined 
+whether Type II errors (content scales misclassified as 
+gibberish) indicated careless responding. Specifically, we 
+tested concurrent validity. We ran t  tests that examined 
+the differences in the careless-responding indicators 
+between the 15% classified as gibberish from the content 
+scales compared with the 85% classified correctly. The 
+results support Hypothesis 3: ... The average long string of 
+the content responses classified as gibberish, M = 3.46, 
+is greater than the long string of the content responses 
+classified correctly, M  = 2.96, difference =  0.50, 95%  
+CI = [0.07, 0.94], t (98.82) = 2.32, p  = .022, Cohen’s d = 
+0.32.","# Calculation of within-subject indices to identify careless responses 
+# (indices also based on the responses of all respondents in the sample 
+# will be calculated later, after splitting the data into training and testing)
+
+data_study_2$sd <- careless::irv(data_study_2[,1:7])
+data_study_2$longstring <- longstring(data_study_2[,1:7])
+...
+# T-tests between respondents on content scales classified as careless and classified as content responders
+...
+t.test(data = data_study_2[data_study_2$condition == ""content"",], longstring ~ GibML > 0.52)
+cohen.d(data = data_study_2[data_study_2$condition == ""content"",], longstring ~ GibML > 0.52)",match,"The code uses the longstring index as the outcome and a binary GibML-based classification as the grouping variable, restricted to content-scale respondents, which aligns with the paper’s description of comparing long-string indices between gibberish-like and correctly classified content responses.",,
+bloy,17,"In Study 2, an independent-samples Welch t-test further examined concurrent validity of GibML by comparing the long-string index on content items between those labeled as gibberish-like and those labeled as normal. The test evaluated whether the gibberish-like group showed longer runs of identical answers (M = 3.46) than the correctly classified group (M = 2.96). The result was statistically significant, t(98.82) = 2.32, p = .022, Cohen’s d = 0.32.",Transformation Specification,"Because the scale ranges in the current study differ from those in Study 1, we applied a transformation to all responses.4 To minimize the influence of response styles, such as extreme- or central-tendency bias, we collapsed the original 7-point scale into a 5-point scale that preserved both central and extreme positions. Responses of 7 were recoded as 5, and midpoint responses of 4 were recoded as 3. Responses of 2 and 3 (moderate disagreement) were recoded as 2, and responses of 5 and 6 (moderate agreement) were recoded as 4. As a result, the new scale ranged from 1 to 5 such that extreme and midpoint responses were preserved and moderate responses were clustered.","# Weak H4: Adding the gibberish scale from Study 1
+
+# import data
+gibberish_study1 <- import(""gibberish.csv"")
+
+# Removing respondents who answered 6 or 7
+#for (i in 1:7) {
+#  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] > 5, NA, gibberish_study1[,i])
+#}
+#gibberish_study1 <- na.omit(gibberish_study1[,1:7])
+
+for (i in 1:7) {
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 3, 2, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 4, 3, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 5 | gibberish_study1[,i] == 6, 4, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 7, 5, gibberish_study1[,i])
+}
+gibberish_study1 <- na.omit(gibberish_study1[,1:7])",match,The code recodes the 7-point response scale to a 5-point scale exactly as described in the paper’s transformation specification.,,
+bloy,17,"In Study 2, an independent-samples Welch t-test further examined concurrent validity of GibML by comparing the long-string index on content items between those labeled as gibberish-like and those labeled as normal. The test evaluated whether the gibberish-like group showed longer runs of identical answers (M = 3.46) than the correctly classified group (M = 2.96). The result was statistically significant, t(98.82) = 2.32, p = .022, Cohen’s d = 0.32.",Inference Specification,"“The average long string of the content responses classified as gibberish, M = 3.46, is greater than the long string of the content responses classified correctly, M  = 2.96, difference =  0.50, 95%  CI = [0.07, 0.94], t (98.82) = 2.32, p  = .022, Cohen’s d = 0.32.”","# T-tests between respondents on content scales classified as careless and classified as content responders
+t.test(data = data_study_2[data_study_2$condition == ""content"",], sd ~ GibML > 0.52)
+cohen.d(data = data_study_2[data_study_2$condition == ""content"",], sd ~ GibML > 0.52)
+t.test(data = data_study_2[data_study_2$condition == ""content"",], longstring ~ GibML > 0.52)
+cohen.d(data = data_study_2[data_study_2$condition == ""content"",], longstring ~ GibML > 0.52)",match,"The code uses R’s default Welch t-test with a 95% confidence interval and two-sided p-value, which aligns with the inferential statistics (t, p, 95% CI, Cohen’s d) reported in the paper for comparing long-string indices between groups. No alternative alpha level or CI specification is used in the code that would conflict with the paper’s reported inference criteria.",,
+bloy,18,"To compare the agreement between two GibML models in Study 2—one trained on a 7-point Hebrew gibberish scale and one on a 5-point English gibberish scale—a chi-square test of independence was conducted on the classification of archival content responses. The contingency table contrasted whether each content response was labeled as content versus gibberish by each model, resulting in four classification combinations (both content, both gibberish, gibberish-only by one model, etc.). The chi-square test indicated significant dependence between the two classification schemes, χ²(1) = 95.59, p < .001.",Model Specification,"These results were statistically significant, χ 2(1) = 95.59, p < .001.
+
+Although the χ2 test indicated agreement between the classifications by GibML using the 7-point scale in Hebrew from Study 1 and the archival 5-point scale in English, this agreement was primarily observed in content classification and less in identifying respondents as gibberish (only 6% agreement, compared with 4% and 9% classified as gibberish by only one of the methods).","CrossTable(data_study_2.1[data_study_2.1$condition == ""content"",]$GibML, data_study_2[data_study_2$condition == ""content"",]$GibML, prop.r = F, prop.c = F, prop.chisq = F)
+chisq.test(data_study_2.1[data_study_2.1$condition == ""content"",]$GibML, data_study_2[data_study_2$condition == ""content"",]$GibML)",match,"The paper describes using a chi-square test of independence to compare classifications from two GibML models, and the code implements a chi-square test on the cross-tabulation of the two models’ classifications for the archival content responses. Thus, the specified statistical test in the paper matches the test actually used in the code.",,
+bloy,18,"To compare the agreement between two GibML models in Study 2—one trained on a 7-point Hebrew gibberish scale and one on a 5-point English gibberish scale—a chi-square test of independence was conducted on the classification of archival content responses. The contingency table contrasted whether each content response was labeled as content versus gibberish by each model, resulting in four classification combinations (both content, both gibberish, gibberish-only by one model, etc.). The chi-square test indicated significant dependence between the two classification schemes, χ²(1) = 95.59, p < .001.",Variable Specification,"Finally, consistent with both the weak and strong forms of Hypothesis 4, we compared the classification of content responses in the archival data set between two versions of GibML: (a) the model trained using the archival 5-point gibberish scale in English (Hypothesis 2), which had the most reliable classification because of its low Type I and Type II error rates, and (b) the model trained using the 7-point gibberish scale in Hebrew from Study 1, in which GibML was trained on a combination of Study 1 and archival data (Hypothesis 4, both weak and strong). This comparison revealed that 81% of content responses were classified as content by both models, 6% were classified as gibberish by both models, 4% were classified as gibberish only by the GibML-trained model on the 7-point Hebrew scale (Hypothesis 4), and 9% were classified as gibberish only by the GibML-trained model on the 5-point English scale (Hypothesis 2). These results were statistically significant, χ 2(1) = 95.59, p < .001.","tune.out <- tune.svm(as.factor(condition) ~., data=data_study_2.1[,c(1:8)],
+                     kernel='radial')
+GibML <- predict(tune.out$best.model, data_study_2.1[,1:7])
+data_study_2.1$GibML <- GibML
+
+
+# Repeating H2 to compare the classifications:
+
+tune.out <- tune.svm(as.factor(condition) ~., data=data_study_2[,c(1:7,9)],
+                     kernel='radial')
+GibML <- predict(tune.out$best.model, data_study_2[,1:7])
+data_study_2$GibML <- GibML
+
+
+
+CrossTable(data_study_2.1$GibML, data_study_2.1$condition, prop.r = F, prop.t = F, prop.chisq = F)
+CrossTable(data_study_2.1[data_study_2.1$condition == ""content"",]$GibML, data_study_2[data_study_2$condition == ""content"",]$GibML, prop.r = F, prop.c = F, prop.chisq = F)
+chisq.test(data_study_2.1[data_study_2.1$condition == ""content"",]$GibML, data_study_2[data_study_2$condition == ""content"",]$GibML)",match,"The chi-square uses, as variables, the two GibML model classifications (content vs gibberish) for archival responses that were human-coded as content, matching the paper’s description of comparing the two models’ classifications of content responses only. No additional variables beyond the two model outputs and the content-only filter are introduced, aligning with the stated variable specification in the results section.",,
+bloy,18,"To compare the agreement between two GibML models in Study 2—one trained on a 7-point Hebrew gibberish scale and one on a 5-point English gibberish scale—a chi-square test of independence was conducted on the classification of archival content responses. The contingency table contrasted whether each content response was labeled as content versus gibberish by each model, resulting in four classification combinations (both content, both gibberish, gibberish-only by one model, etc.). The chi-square test indicated significant dependence between the two classification schemes, χ²(1) = 95.59, p < .001.",Transformation Specification,"Because the scale ranges in the current study differ from those in Study 1, we applied a transformation to all responses.4 To minimize the influence of response styles, such as extreme- or central-tendency bias, we collapsed the original 7-point scale into a 5-point scale that preserved both central and extreme positions. Responses of 7 were recoded as 5, and midpoint responses of 4 were recoded as 3. Responses of 2 and 3 (moderate disagreement) were recoded as 2, and responses of 5 and 6 (moderate agreement) were recoded as 4. As a result, the new scale ranged from 1 to 5 such that extreme and midpoint responses were preserved and moderate responses were clustered. Finally, we combined the Hebrew gibberish scale from Study 1 with the English content scale from the current study.","# Weak H4: Adding the gibberish scale from Study 1
+
+# import data
+gibberish_study1 <- import(""gibberish.csv"")
+
+# Removing respondents who answered 6 or 7
+#for (i in 1:7) {
+#  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] > 5, NA, gibberish_study1[,i])
+#}
+#gibberish_study1 <- na.omit(gibberish_study1[,1:7])
+
+for (i in 1:7) {
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 3, 2, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 4, 3, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 5 | gibberish_study1[,i] == 6, 4, gibberish_study1[,i])
+  gibberish_study1[,i] <- ifelse(gibberish_study1[,i] == 7, 5, gibberish_study1[,i])
+}
+gibberish_study1 <- na.omit(gibberish_study1[,1:7])
+# merging the gibberish scale into a long format with the study 2 data
+
+gibberish_study1$condition <- ""gibberish_S1""
+colnames(gibberish_study1)[1:7] <- colnames(data_study_2)[1:7]
+data_study_2.1 <- rbind(data_study_2[,c(1:7,9)], gibberish_study1)
+",match,"The code applies the same 7-to-5 point recoding scheme described in the paper and then combines the transformed Study 1 gibberish data with the Study 2 data, consistent with the transformation description.",,
+bloy,18,"To compare the agreement between two GibML models in Study 2—one trained on a 7-point Hebrew gibberish scale and one on a 5-point English gibberish scale—a chi-square test of independence was conducted on the classification of archival content responses. The contingency table contrasted whether each content response was labeled as content versus gibberish by each model, resulting in four classification combinations (both content, both gibberish, gibberish-only by one model, etc.). The chi-square test indicated significant dependence between the two classification schemes, χ²(1) = 95.59, p < .001.",Inference Specification,"“These results were statistically significant, χ 2(1) = 95.59, p < .001.”","CrossTable(data_study_2.1[data_study_2.1$condition == ""content"",]$GibML, data_study_2[data_study_2$condition == ""content"",]$GibML, prop.r = F, prop.c = F, prop.chisq = F)
+chisq.test(data_study_2.1[data_study_2.1$condition == ""content"",]$GibML, data_study_2[data_study_2$condition == ""content"",]$GibML)",match,"Both the paper and code use a chi-square test of independence and interpret results via the p-value without specifying a nonstandard alpha level, implying the conventional NHST criterion (e.g., α = .05).",,

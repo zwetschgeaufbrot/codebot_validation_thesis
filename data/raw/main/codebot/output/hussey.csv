@@ -1,0 +1,74 @@
+paper_id,analysis_id,brief_description,dimension,paper_value,code_value,match_status,explanation,paper_evidence,code_evidence
+hussey,1,"The author conducted a Chi-square test of independence to examine whether the presence of any Data Availability Statement (vs. no statement) in an article was associated with the likelihood that authors actually shared their data upon request. Using a 2 (Data Availability Statement: present vs. absent) by 2 (data shared upon request: yes vs. no) contingency table across the 52 IRAP articles, the test indicated no significant association between statement presence and data sharing, χ²(1) = 0.35, p = .55.",Model Specification,"A Chi- squared test suggested that the presence of a Data Avail- ability Statement was not associated with a higher rate of actual data sharing upon request, χ(1) = 0.35, p = .55.","tab_results <- counts |>
+  filter(data_sharing_statement_type != ""actual"") |>
+  dplyr::select(n_total, n_positive) |>
+  as.matrix()
+
+chisq.test(tab_results, correct = FALSE) |>
+  broom::tidy() |>
+  kable() |>
+  kable_classic(full_width = FALSE)",match,"Both the paper and the code indicate the use of a Chi-square test of independence on a contingency table relating data availability statements to data sharing. The code explicitly calls chisq.test on the contingency matrix, matching the described analysis.",,
+hussey,1,"The author conducted a Chi-square test of independence to examine whether the presence of any Data Availability Statement (vs. no statement) in an article was associated with the likelihood that authors actually shared their data upon request. Using a 2 (Data Availability Statement: present vs. absent) by 2 (data shared upon request: yes vs. no) contingency table across the 52 IRAP articles, the test indicated no significant association between statement presence and data sharing, χ²(1) = 0.35, p = .55.",Variable Specification,"Of the 31 articles without a Data Availability Statement, 8 shared data upon request (25.8%, 95% CI [11.9, 44.6]). Of the 18 articles with a promissory Data Availability Statement, 3 shared data upon request (16.7%, 95% CI [3.6, 41.4]). That is, data sharing was descriptively lower in articles with a promissory data sharing statement than no statement at all. A Chi-squared test suggested that the presence of a Data Availability Statement was not associated with a higher rate of actual data sharing upon request, χ(1) = 0.35, p = .55.","counts <- data_requests |>
+  select(shared_data, data_sharing_statement_type) |>
+  group_by(data_sharing_statement_type) |>
+  summarize(n_total = n(),
+            n_positive = sum(shared_data)) |>
+  rowwise() |>
+  mutate(proportion = n_positive/n_total,
+         ci_lower = ufs::confIntProp(n_positive, n_total)[1],
+         ci_upper = ufs::confIntProp(n_positive, n_total)[2]) |>
+  mutate_if(is.numeric, janitor::round_half_up, digits = 3)
+
+counts |>
+  kable() |>
+  kable_classic(full_width = FALSE)
+
+
+
+## Are promissory data availability statements associated with greater sharing upon request?
+
+Ie excluding cases with data sharing statements stating actual sharing upon publication. 
+
+Chi square test
+
+
+
+tab_results <- counts |>
+  filter(data_sharing_statement_type != ""actual"") |>
+  dplyr::select(n_total, n_positive) |>
+  as.matrix()
+
+chisq.test(tab_results, correct = FALSE) |>
+  broom::tidy() |>
+  kable() |>
+  kable_classic(full_width = FALSE)
+",match,"The code uses the same two conceptual variables as the paper: type/presence of a (promissory) Data Availability Statement versus none, and whether data were actually shared upon request. The chi-square is then computed on these variables after excluding 'actual' DAS cases, which aligns with the paper’s focus on promissory statements versus no statement.",,
+hussey,1,"The author conducted a Chi-square test of independence to examine whether the presence of any Data Availability Statement (vs. no statement) in an article was associated with the likelihood that authors actually shared their data upon request. Using a 2 (Data Availability Statement: present vs. absent) by 2 (data shared upon request: yes vs. no) contingency table across the 52 IRAP articles, the test indicated no significant association between statement presence and data sharing, χ²(1) = 0.35, p = .55.",Transformation Specification,"It is useful to consider data sharing in the subsets of different types of Data Availability Statements. I make a distinction between statements of actual sharing at the time of publication (e.g., a URL included in the article that links to a data repository containing the data for the study, or reference to supplementary materials published alongside the article) and promissory data sharing (e.g., a statement that data is available upon request, or upon 'reasonable' request).","data_requests <- 
+  read_excel(""../data/results of data sharing requests - blinded and shuffled.xlsx"", sheet = ""contacted"") |>
+  janitor::clean_names() |>
+  mutate(data_sharing_statement = ifelse(data_sharing_statement == ""NA"", NA, data_sharing_statement),
+         data_sharing_statement_adhered_to = ifelse(data_sharing_statement_adhered_to == ""NA"", NA, data_sharing_statement_adhered_to),
+         data_sharing_statement_type = ifelse(data_sharing_statement_type == ""NA"", ""No data availability statement"", data_sharing_statement_type))
+
+counts <- data_requests |>
+  select(shared_data, data_sharing_statement_type) |>
+  group_by(data_sharing_statement_type) |>
+  summarize(n_total = n(),
+            n_positive = sum(shared_data)) |>
+  rowwise() |>
+  mutate(proportion = n_positive/n_total,
+         ci_lower = ufs::confIntProp(n_positive, n_total)[1],
+         ci_upper = ufs::confIntProp(n_positive, n_total)[2]) |>
+  mutate_if(is.numeric, janitor::round_half_up, digits = 3)
+
+
+
+ tab_results <- counts |>
+  filter(data_sharing_statement_type != ""actual"") |>
+  dplyr::select(n_total, n_positive) |>
+  as.matrix()",mismatch,"The paper describes comparing articles with any Data Availability Statement to those with no statement, whereas the code explicitly excludes articles with an 'actual' data sharing statement when constructing the contingency table. This means the transformation of the data availability variable in the code does not align with the paper’s described presence-versus-absence contrast.",,
+hussey,1,"The author conducted a Chi-square test of independence to examine whether the presence of any Data Availability Statement (vs. no statement) in an article was associated with the likelihood that authors actually shared their data upon request. Using a 2 (Data Availability Statement: present vs. absent) by 2 (data shared upon request: yes vs. no) contingency table across the 52 IRAP articles, the test indicated no significant association between statement presence and data sharing, χ²(1) = 0.35, p = .55.",Inference Specification,"A Chi-squared test suggested that the presence of a Data Availability Statement was not associated with a higher rate of actual data sharing upon request, χ(1) = 0.35, p = .55.","chisq.test(tab_results, correct = FALSE) |>
+  broom::tidy() |>
+  kable() |>
+  kable_classic(full_width = FALSE)
+",unknown,"The paper reports a chi-square test result and p-value but does not state an explicit inference criterion (e.g., alpha level), and the code similarly only computes and tidies the chi-square test without encoding any decision rule. Because no explicit inferential threshold is visible in either source, it is unclear whether any pre-specified inference criteria were implemented to match the description.",,

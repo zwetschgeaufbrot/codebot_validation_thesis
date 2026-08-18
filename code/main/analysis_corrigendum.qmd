@@ -1,0 +1,1291 @@
+---
+title: "Correction to: Main Analysis"
+author: "Anna T. Wittmann"
+date: today
+format:
+  html:
+    code-fold: false
+    highlight-style: haddock
+    toc: true
+    toc-depth: 3
+    toc-location: left
+execute:
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+#| 
+# Turn off scientific notation globally
+options(scipen = 999)
+# set seed for reproducibility
+set.seed(42)
+# clear environment
+rm(list = ls())
+```
+
+# Dependencies
+```{r}
+#| output: false
+# packages and setup 
+library(dplyr)
+library(easystats)
+library(kableExtra)
+library(lme4)
+library(purrr)
+library(readr)
+library(roundwork)
+library(stringr)
+library(tibble)
+
+# read in raw output from CodeBot
+df_base <- read_csv("../../data/raw/main/codebot/output/all_papers.csv")
+
+# read in processed main data from combined reports
+df <- read_rds("../../data/processed/main/res_main_corrigendum.rds")
+
+# load all necessary data frames for Q4
+carvalho <- read_csv("../../data/raw/main/codebot/output/carvalho.csv")
+nguyen <- read_csv("../../data/raw/main/codebot/output/nguyen.csv")
+cha <- read_csv("../../data/raw/main/codebot/output/cha.csv")
+helm <- read_csv("../../data/raw/main/codebot/output/helm.csv")
+berger <- read_csv("../../data/raw/main/codebot/output/berger.csv")
+bloy <- read_csv("../../data/raw/main/codebot/output/bloy.csv")
+evans <- read_csv("../../data/raw/main/codebot/output/evans.csv")
+hsieh <- read_csv("../../data/raw/main/codebot/output/hsieh.csv")
+mancassola <- read_csv("../../data/raw/main/codebot/output/mancassola.csv")
+muenster <- read_csv("../../data/raw/main/codebot/output/muenster.csv")
+yang <- read_csv("../../data/raw/main/codebot/output/yang.csv")
+```
+
+# Taking a Look at the Combined Reports Data
+
+## Total number of coded specifications (rows) and unique analyses (analysis_id).
+
+```{r}
+total_obs <- nrow(df)
+
+analyses <- df |> 
+  group_by(author) |> 
+  summarize(analyses_per_paper = max(analysis_id)) |>
+  summarize(total_n_analyses = sum(analyses_per_paper))
+```
+The adjudicated sample consisted of `r total_obs` analysis specifications, divided across `r pull(analyses)` unique analyses and 17 different papers.
+
+## Unique analyses per paper
+```{r}
+temp <- df |> 
+  group_by(author) |> 
+  summarize(analyses_per_paper = max(analysis_id)) |>  
+  arrange(analyses_per_paper)
+
+# extract min and max number of analyses_per_paper
+minimum <- temp[[1,2]]
+maximum <- temp[[17,2]]
+
+temp |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+```
+The number of analyses per paper ranged from `r minimum` to `r maximum`.
+
+## Judgement per rater
+```{r}
+# aux vector
+col <- c("human_match_judgement",
+         "codebot_match_judgement", 
+         "codebot_human_agreement")
+
+# ratings for each category separately
+matches <- tibble(
+  variable = col,
+  match = map_dbl(df[col], 
+                  ~sum(.x == 1, na.rm = TRUE)),
+  mismatch = map_dbl(df[col], 
+                     ~sum(.x == 0, na.rm = TRUE)),
+  undecided = map_dbl(df[col], 
+                      ~sum(.x == 99, na.rm = TRUE)),
+  "NA" = map_dbl(df[col], 
+                 ~sum(is.na(.x)))
+)
+
+matches |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+
+```
+:::{.callout-caution}
+Following the changed processing, this table (which does not show numbers filtered for exclude == FALSE) changed as followes: codebot_human_agreement x mismatch from 56 to 374 ergo delta 318 and thus codebot_human_agreement x NA decreased by 318 from 2540 to 2222. -> Requires change of table in thesis.
+:::
+
+# Q1: Examining Frequency of Matchingness
+
+How often does the narrative description of statistical analyses in the manuscript match the analyses reported in the analytic scripts according to the human and CodeBot rating, respectively? → Descriptive examination of (mis-)matches for human and CodeBot ratings.
+
+## Inspection of Raw CodeBot Output Sample
+
+```{r}
+# check for any empty rows
+check_empty <- df_base |> 
+  group_by(paper_value) |> 
+  count() |> 
+  filter(paper_value == "" | is.na(paper_value)) |> 
+  pull()
+
+# count judgments + percentages
+baser <- tibble(
+  value = c("match","mismatch","unknown"),
+  codebot_count = map_dbl(value, 
+                        ~df_base |> 
+                          filter(match_status == .x) |> 
+                          nrow()
+  ),
+  codebot_percent = map_dbl(codebot_count,
+                                ~round_up((.x/nrow(df_base) * 100), 
+                                          digits = 2)))
+baser |> 
+  kable() |> 
+  kable_classic(full_width = FALSE)
+
+df_base |> 
+  count(dimension)
+```
+
+In total, CodeBot coded `r nrow(df_base)` observations. This corresponds to `r nrow(df_base)/4` unique analyses.
+
+## Inspection of Adjudicated Sample
+```{r}
+# how many observations in total were coded not NA by the raters
+h_total_rated <- df |> 
+  filter(!is.na(human_match_judgement)) |> 
+  nrow()
+
+c_total_rated <- df |> 
+  filter(!is.na(codebot_match_judgement)) |> 
+  nrow()
+
+mr <- tibble(
+  value = c("1","0","99"),
+  human_count = map_dbl(value, 
+                        ~df |> 
+                          filter(human_match_judgement == .x) |> 
+                          nrow()
+  ),
+  human_count_percent = map_dbl(human_count,
+                                ~round_up((.x/h_total_rated * 100), 
+                                          digits = 2)),
+  
+  codebot_count = map_dbl(value, 
+                          ~df |> 
+                            filter(codebot_match_judgement == .x) |> 
+                            nrow()
+  ),
+  codebot_count_percent = map_dbl(codebot_count,
+                                  ~round_up((.x/c_total_rated * 100), 
+                                            digits = 2)))
+
+mr |> 
+  kable(caption = "RQ1 Judgement Rates Per Rater (Adjudicated Sample)") |>
+  kable_classic(full_width = FALSE)
+```
+The adjudicated sample contains `r h_total_rated` (`r round_up(h_total_rated/nrow(df)*100, digits = 2)`%) observations coded by the human and `r c_total_rated` (`r round_up(c_total_rated/nrow(df)*100, digits = 2)`%) observations by coded by CodeBot.
+
+```{r}
+delta <- nrow(df_base)- c_total_rated
+
+delta_p <- round_up(delta/nrow(df_base)*100, digits = 2)
+```
+Furthermore, the adjudicator only matched `r 100-delta_p`% of the total raw CodeBot output to human judgments.
+```{r}
+# sanity check 
+h_total_rated == sum(mr$human_count)
+sum(mr$human_count_percent)
+c_total_rated == sum(mr$codebot_count)
+sum(mr$codebot_count_percent)
+```
+
+# Q2: GLMM Agreement Estimation 
+
+How high is the estimated agreement of the human and CodeBot ratings of the judgement of (mis-)matches between the narrative description of statistical main analyses and the respective analytic code? → GLMM estimating agreement while considering nesting effects per paper?
+
+```{r}
+# sampe size
+both <- df |> 
+  filter(exclude == FALSE & 
+           !is.na(codebot_human_agreement)) |> 
+  nrow()
+
+both_na <- df |> 
+  filter(exclude == TRUE &
+           is.na(codebot_human_agreement)) |> 
+  nrow()
+
+# commentted out and manipulated because glmm struggled with the pipe 
+
+#model <- df |> 
+#  # exclude data, see processing
+#  filter(exclude == FALSE & codebot_human_agreement %in% c(1,0)) |> 
+#  filter(exclude == FALSE & !is.na(codebot_human_agreement))|> 
+#  # rename variable to match preregistered formula
+#  rename(agree = codebot_human_agreement) |> 
+#  glmer(agree ~ 1 + (1|paper_id),
+#        data = .,
+#        family = binomial)
+
+df_glmm <- df |> 
+  # exclude data, see processing
+  filter(exclude == FALSE & codebot_human_agreement %in% c(1,0)) |> 
+  rename(agree = codebot_human_agreement) |>  
+  select(agree, paper_id)
+
+model <- glmer(agree ~ 1 + (1|paper_id),
+        data = df_glmm,
+        family = binomial)
+
+results <- report(model)
+```
+
+```{r}
+# convert to percentage
+intercept_percent <- round_up(plogis(fixef(model)[1]) * 100, 
+                              digits = 2)
+
+ci_percent <- map_dbl(c(1,2),
+                      ~round_up(plogis(confint(model, 
+                                               parm = "beta_", 
+                                               method = "Wald")[.x]) * 100, 
+                                digits = 2
+                      ))
+
+```
+
+Out of the `r nrow(df)` total possible specifications, ~~1011~~ `r both` observations were coded by both rater. This reflects ~~28.46%~~ `r round_up(both/nrow(df)*100, digits = 2)`% of the entire adjudicated sample and ~~39.13%~~ `r round_up(both/h_total_rated*100, digits = 2)`% of all observations coded by me. 
+
+EasyStats Results Report: ... ~~The model’s intercept is at 3.08 (95% CI [2.34, 3.83], p < .001)~~ "`r results`"
+
+In probability terms: The probability of CodeBot's judgement agreeing with the human judgment is estimated to be ~~95.62%~~ `r intercept_percent`% ~~(95%CI [91.2, 97.87])~~ (95%CI [`r ci_percent[1]`, `r ci_percent[2]`]).
+
+:::{.callout-caution}
+This is the section most impacted by the shift in the distribution of the observed data. Since my processing error resulted in a positive bias by only including the 10 new matches and missing the 318 mismatches introduced by the differentiation between missingness and indecisiveness, the estimand is now more conservative than in the thesis. -> change GLMM results and discuss implications of new estimand and broader confidence interval. 
+
+Furthermore, there is a general issue with using Wald CIs with binary data like mine, which further impacts the interpretation of the resulting estimand.
+:::
+
+# Q3: Exploratory Examination of Reasons for Missingness
+
+:::{.callout-information}
+Since the changed processing only affected the distribution of codebot_human_agreement ratings but not those of the individual matching variables, the samples of observations only coded by one reater respectively remains unchanged. 
+:::
+
+What could explain why CodeBot coded analyses the human did not code and vice versa? → Qualitative examination of 3% randomly sampled specifications that were code by CodeBot or the human coding only.
+
+## Overview 3% Sample Entries Only Coded by the Human 
+```{r}
+# subset relevant entries
+q3_h <- df |> 
+  filter(is.na(codebot_manuscript_content) & !is.na(human_manuscript_content))
+
+# determine number of relevant instances
+n_only_human <- nrow(q3_h)
+
+# determine size of sample by calculating 3% from the previously drawn sample
+size_h <- round_up(n_only_human * 0.03, 
+                   digits = 0) 
+
+# indexes for the 3 % sampled rows
+index_only_human <- sample(c(1:n_only_human), 
+                           size_h,
+                           replace = FALSE)
+
+sample_only_human <- q3_h |> 
+  slice(index_only_human)
+
+sample_only_human |>
+  select(author, paper_id, analysis_id, dimension, human_manuscript_content, human_manuscript_location, human_code_content, human_code_location) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE) |> 
+  scroll_box(width = "100%", height = "400px")
+  
+```
+
+```{r}
+# frequency of dimensions
+sample_only_human |> 
+  group_by(dimension) |> 
+  count() |> 
+  arrange(n) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+
+# frequency of location
+sample_only_human |> 
+  mutate(human_manuscript_location = if_else(human_manuscript_location == "0;2", 
+                                             "2;0", human_manuscript_location)) |>
+  group_by(human_manuscript_location) |> 
+  count() |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+
+#frequency of authors
+sample_only_human |> 
+  group_by(author) |> 
+  count() |> 
+  arrange(n) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+```
+**Pre-registered analysis outcome:** 
+In this sample of `r size_h`/`r n_only_human`, i.e. 3% of all the cases, the majority of entries missing by CodeBot are of the category "variable specification" (`r sample_only_human |> filter(dimension == "variable specification") |>  nrow()`/`r size_h`).
+The number of missing entries by CodeBot is higher in cases where the human rater noted crucial manuscript information to be located in a table (*2*) rather than the text (*0*). 
+
+### Non Pre-Registered Exploratory Analysis
+To examine whether this pattern of dimensions is simply noise created by the small sample size of `r size_h` observations, I will now apply the same grouping/filtering to the full sample of entries only coded by the human and descriptively compare the two.
+
+```{r}
+# frequency of dimensions
+q3_h |> 
+  group_by(dimension) |> 
+  count() |>
+  arrange(n) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+
+# frequency of location
+q3_h |>
+  group_by(human_manuscript_location) |> 
+  count() |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE) 
+
+# frequency of dimensions x location 
+q3_h |> 
+  group_by(dimension, human_manuscript_location) |> 
+  count() |>
+  arrange(n) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+
+# frequency of dimensions x location - simplified
+q3_h |> 
+  mutate(human_manuscript_location = case_when(
+    human_manuscript_location %in% c("0;2","2;0") ~ "2,0",
+    human_manuscript_location %in% c("0;0","0") ~ "0",
+    .default = human_manuscript_location)) |> 
+  group_by(dimension, human_manuscript_location) |> 
+  count() |>
+  arrange(dimension) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+
+#frequency of authors
+q3_h |> 
+  group_by(author) |> 
+  count() |> 
+  arrange(n) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+```
+
+Here, again, the number of missed analyses which were quoted (exclusively) from tables by the human is noticeably higher than the number of information missed when the necessary info was in the text.
+
+## Overview 3% Sample Entries Only Coded by CodeBot
+
+```{r}
+# subset relevant entries
+q3_c <- df |> 
+  filter(is.na(human_match_judgement) & !is.na(codebot_match_judgement))
+
+# determine number of relevant instances
+n_only_codebot <- nrow(q3_c)
+
+# determine size of sample by calculating 3% from the previously drawn sample
+size_c <- round_up(n_only_codebot * 0.03, digits = 0) 
+
+# indexes for the 3 % sampled rows
+index_only_codebot <- sample(c(1:n_only_codebot), 
+                             size_c,
+                             replace = FALSE)
+
+sample_only_codebot <- q3_c |> 
+  slice(index_only_codebot)
+
+sample_only_codebot |>
+  select(author, paper_id, analysis_id, 
+         dimension, codebot_brief_description, codebot_manuscript_content, 
+         codebot_manuscript_location, codebot_code_content, codebot_code_location) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE) |> 
+  scroll_box(width = "100%", height = "400px")
+```
+
+In total, there are `r n_only_codebot` observations which were only coded by CodeBot, making up `r round_up(n_only_codebot/nrow(df)*100, digits = 2)`% of all observations in the adjudicated sample.
+
+```{r}
+# frequency of dimensions
+sample_dimensions <- sample_only_codebot |> 
+  group_by(dimension) |> 
+  count() 
+
+# location
+df |> 
+  select(codebot_manuscript_location) |> 
+  group_by(codebot_manuscript_location) |> 
+  count() |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+
+
+```
+The random sample consists of `r sample_dimensions[2]` `r sample_dimensions[1]`s. The number of manuscript locations provided by CodeBot in this sample (and in general) is 0 since all are NAs.
+
+```{r}
+#frequency of authors
+sample_only_codebot |> 
+  group_by(author) |> 
+  count() |> 
+  arrange(n) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+
+```
+
+### Non pre-registered exploratory analysis
+To examine whether the pattern of unfitting transformations quoted by CodeBot is due to the small sample size of `r nrow(sample_only_codebot)`, I will group the entire sample by dimension.
+
+```{r}
+q3_c |> 
+  group_by(dimension) |> 
+  count() |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+```
+It appears as though CodeBot exclusively found *inference criteria* and *transformation* specifications I did not code.
+
+```{r}
+#frequency of authors
+q3_c |> 
+  group_by(author) |> 
+  count() |> 
+  arrange(n) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+```
+
+
+
+### Detailed Inspection of 3% of Entries Only Coded by CodeBot
+
+#### Evans et al.  
+```{r} 
+df |> 
+  filter(author == "evans" & analysis_id == 35) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE) |> 
+  scroll_box(width = "100%", height = "400px")
+```
+In this case, the disagreement seems to stem from CodeBot having **wrongfully attributed** transformations described for a regression **analysis** to the prior correlation analysis.
+
+```{r} 
+df |> 
+  filter(author == "evans" & analysis_id == 30) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE) |> 
+  scroll_box(width = "100%", height = "400px")
+```
+Same as above, the disagreement seems to stem from CodeBot having **wrongfully attributed** transformations described for a regression **analysis** to the prior correlation analysis.
+
+#### Nguyen et al. 
+```{r}
+df |> 
+  filter(author == "nguyen" & analysis_id == 93) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE) |> 
+  scroll_box(width = "100%", height = "400px")
+```
+Here, CodeBot coded the description of the employed **Likert scales as transformations** even though no further aggregation of the participant's responses or scores were mentioned.
+
+```{r}
+# 2x
+df |> 
+  filter(author == "nguyen" & analysis_id == 82) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE) |> 
+  scroll_box(width = "100%", height = "400px")
+```
+CodeBot coded the same quote for all transformations in analysis 82 even though it was **only (partially) fitting for the last one out of 14 variables**. -> Twice the same analysis number
+
+```{r}
+df |> 
+  filter(author == "nguyen" & analysis_id == 101) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE) |> 
+  scroll_box(width = "100%", height = "400px")
+```
+The quotes provided **do not describe transformations** as described by the inclusion criteria.
+
+```{r}
+df |> 
+  filter(author == "nguyen" & analysis_id == 65) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE) |> 
+  scroll_box(width = "100%", height = "400px")
+```
+The variables of interest are **not related to the provided quotes**. While the analysis reflects a correlation analysis, the provided quote talks about a moderated mediation analysis without any connection to the variables of interest.
+
+#### Avilles et al.
+```{r}
+df |> 
+  filter(author == "avilles" & analysis_id %in% c(1,2)) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE) |> 
+  scroll_box(width = "100%", height = "400px")
+```
+The **human** coder appears to have **failed to identify** the creation of the new variable *prevalence of singles* as a transformation in both analysis 1 and 2.
+
+
+#### Besken et al.
+
+```{r}
+df |> 
+  filter(author == "besken" & analysis_id == 11) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE) |> 
+  scroll_box(width = "100%", height = "400px")
+```
+CodeBot quotes: "The actual recall was calculated by multiplying the percent correct recognition by 100 to provide a comparison between JOLs (predicted) and percent correct (actual) recognition." However, the model compares the accuracy rate which is not the same as the actual recognition.
+
+```{r}
+df |> 
+  filter(author == "besken" & analysis_id == 22) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE) |> 
+  scroll_box(width = "100%", height = "400px")
+```
+The quote does **not match** the described **analysis of interest**.
+
+#### Bloy et al.
+```{r}
+df |> 
+  filter(author == "bloy" & analysis_id == 5) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE) |> 
+  scroll_box(width = "100%", height = "400px")
+```
+
+CodeBot appears to count the fact that the t.test() function technically calculates the means from the given data as a transformation. However, this would be an assessment in the **wrong direction** because the manuscript does not mention explicitly that means were calculated to perform the t.test, therefore it should not have been coded.
+
+#### Berger et al.
+```{r}
+df |> 
+  filter(author == "berger" & analysis_id == 22) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE) |> 
+  scroll_box(width = "100%", height = "400px")
+```
+
+Counted **Likert scale description** as transformation.
+
+# Q4: Rater disagreement
+
+(Why) are there reoccurring characteristics of the analyses that lead to
+disagreement in ratings? → Quantification of which categories show the highest rates of
+disagreement and examination of 10% randomly selected observations with disagreement.
+
+## Overview Full Sample
+```{r}
+disagree <- df |> 
+  filter(codebot_human_agreement == 0) 
+
+disagree |>  
+  count(dimension) |> 
+  arrange(desc(n)) |>
+  mutate(percentage = round_up(n/nrow(disagree)*100, digits = 2)) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+
+# represented authors
+dis_authors <- disagree |> 
+  count(author) |> 
+  arrange(n) 
+
+dis_authors |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+
+# represented dimensions
+dis_dim <- disagree |> 
+  count(dimension) |> 
+  arrange(n) 
+
+dis_dim |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+
+# represented locations
+dis_loc <- disagree |> 
+  mutate(human_manuscript_location = if_else(human_manuscript_location == "2;0", 
+                                             "0;2", 
+                                             human_manuscript_location)) |> 
+  count(human_manuscript_location) |> 
+  arrange(n) 
+
+dis_loc |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+
+# frequency of dimensions x location 
+disagree |> 
+  group_by(dimension, human_manuscript_location) |> 
+  count() |>
+  arrange(n) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+
+# frequency of dimensions x location - simplified
+disagree |> 
+  mutate(human_manuscript_location = case_when(
+    human_manuscript_location %in% c("0;2","2;0") ~ "2,0",
+    human_manuscript_location %in% c("0;0","0") ~ "0",
+    .default = human_manuscript_location)) |> 
+  group_by(dimension, human_manuscript_location) |> 
+  count() |>
+  arrange(dimension) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+
+```
+:::{.callout-caution}
+Logically, in all of the above tables, one or more numbers reported changed significantly in the corrected sample. Since the tables merely provide an overview and are not all discussed in detail, I will refrain from explicitly pointing out every single change and focus on the values mentioned in the thesis or inline instead.
+:::
+
+In total, the raters disagreed in ~~56/3552 (1.58%)~~ `r nrow(disagree)`/`r nrow(df)` (`r round_up(nrow(disagree)/nrow(df)*100, digits = 2)`%) of all instances.
+~~10~~`r nrow(dis_authors)` out of 17 authors are represented in the total disagreement sample.
+
+## Overview 10% Sample
+```{r}
+disagree_size <- disagree |> 
+  nrow()
+
+disagree <- df |> 
+  filter(codebot_human_agreement == 0) 
+
+disagree_size <- disagree |> 
+  nrow()
+
+disagree_index <- sample(1:disagree_size,
+                        disagree_size * 0.1)
+
+disagree_only <- disagree |> 
+  slice(disagree_index) 
+
+# overview of represented dimension
+disagree_only |> 
+  count(dimension) |> 
+  arrange(n) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE) 
+
+# overview of represented authors
+disagree_only |> 
+  count(author) |> 
+  arrange(n) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE)
+
+# overview of represented locations
+disagree_only |> 
+  count(human_manuscript_location) |> 
+  arrange(n) |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE) 
+
+# full drawn sample
+disagree_only |> 
+  kable(format = "html") |> 
+  kable_classic(full_width = FALSE) |> 
+  scroll_box(width = "100%", height = "400px")
+```
+
+:::{.callout-caution}
+The sample has increased by 32 data points, totaling to 37 sampled observations. Unfortunately, the composition of the sample has changed significantly. Re-analysis necessary. Thus I am commenting out the previous analysis and adding th eupdated analyses.
+Now, model specifications are also represented in the sample. Yet the pattern of variable specifications making up the biggest part of the represented dimensions remains stable.
+:::
+
+~~Since the adjudicator did not keep the explanations provided by CodeBot in the results file, it is necessary to go back to "./data/raw/main/codebot/output" and identify each individual case by hand (see: setup chunk at the top).~~
+
+### OLD
+#### Carvalho et el.
+```{r}
+#test <- disagree_only |> 
+#  filter(author == "carvalho" & analysis_id == 1) |>  
+#  select(codebot_manuscript_content,analysis_id) |>  
+#  pull(codebot_manuscript_content)
+#
+#carvalho |> 
+#  filter(analysis_id == 1 & paper_value == test) |> 
+#  select(dimension, brief_description, paper_value, #code_value, explanation) |> 
+#  kable(format = "html") |> 
+#  kable_classic(full_width = FALSE) |> 
+#  scroll_box(width = "100%", height = "400px")
+```
+~~While there was no problem with the correct identification for the model specification, CodeBot rated the absence of the TOST snippet as proof of mismatch between the specified alpha level for the t-test and the code snippet in the inference criteria. However, this is irrelevant to the t-test actually conducted, since the t-test and the equivalence test are not the same.
+I rated this as a match since an alpha level of .05 is standard in the t-test function. Since the default function was used, it was counted as a match.
+CodeBot problem -> Differentiating between analyses which are intertwined but not identical. 
+--> Which info needs to be stated explicitly and which can be counted as automatically implied due to e.g. reporting standards in the field?~~
+
+```{r}
+#test <- disagree_only |> 
+#  filter(author == "carvalho") |>  
+#  select(codebot_manuscript_content) |> 
+#  pull()
+#
+#carvalho |> 
+#  filter(paper_value == test) |> 
+#  kable(format = "html") |> 
+#  kable_classic(full_width = FALSE) |> 
+#  scroll_box(width = "100%", height = "400px")
+```
+~~Here, CodeBot might have spotted an error which I missed by pointing out that different variables/data sets for different groups are employed.
+--> Because no author really posted ALL material to the repo (e.g. also due to privacy concerns) it was never 100% clear which variable came from where and why exactly there was a new data set.~~
+
+#### Nguyen et al.
+```{r}
+#test <- disagree_only |> 
+#  filter(author == "nguyen") |>  
+#  select(codebot_manuscript_content) |> 
+#  pull()
+#
+#nguyen |> 
+#  filter(paper_value == test) |> 
+#  kable(format = "html") |> 
+#  kable_classic(full_width = FALSE) |> 
+#  scroll_box(width = "100%", height = "400px")
+```
+~~In this case, it its hard to tell who was "right". Due to inconsistent and partially incomprehensible naming of the variables the human rater "assumed" the variables to match even though the names were not unambiguous. CodeBot highlighted this as a mismatch which could also be valid.
+--> In cases like this, clearer criteria & a second rater could help. A sub-optimal option would be attempting to recalculate the script but that was a) explicitly not the focus of this work and b) creates a disproportional amount of extra work.~~
+
+#### Cha et al.
+```{r}
+#test <- disagree_only |> 
+#  filter(author == "cha") |>  
+#  select(codebot_manuscript_content) |> 
+#  pull()
+#
+#cha |> 
+#  filter(paper_value == test) |> 
+#  kable(format = "html") |> 
+#  kable_classic(full_width = FALSE) |> 
+#  scroll_box(width = "100%", height = "400px")
+```
+~~Here, CodeBot seems to have spotted an issue the human coder missed. While the standardisation of cum_stress is in the code, the summing of the 11 variables which make up cumulative stress in the first place is not to be found.
+--> CodeBot might be especially helpful in cases where there is a big amount of Code in a format like this, which make it hard for humans to spot errors since it is so much code on so little lines.~~ 
+
+#### Helm et al.
+```{r}
+#test <- disagree_only |> 
+#  filter(author == "helm") |>  
+#  select(codebot_manuscript_content) |> 
+#  pull()
+#
+#helm |> 
+#  filter(paper_value == test) |> 
+#  kable(format = "html") |> 
+#  kable_classic(full_width = FALSE) |> 
+#  scroll_box(width = "100%", height = "400px")
+```
+~~Based off re-inspection of the source code, I judge that CodeBot confused witness_accuracy with accuracy because it sounds more like what the authors are doing but does not truly reflect their actions since the variables aren't always named unambiguously.
+--> Unclear variable naming was a reoccurring issue when screening the scripts.~~
+
+### NEW Berger et al.
+
+```{r}
+test <- disagree_only |> 
+  filter(author == "berger") |>  
+  select(codebot_manuscript_content) |> 
+  pull()
+```
+
+#### 79
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[1]) 
+
+berger |> 
+  filter(paper_value == test[1]) 
+```
+
+(+) Here, CB was correct since I had overlooked line 600 specifying the first model mentioned in this snippet.
+
+#### 3
+
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[2]) 
+
+berger |> 
+  filter(paper_value == test[2]) 
+```
+(-) Here, CB coded the right manuscript content but matched an unrelated code snippet since the code in question was missing from the script.
+
+#### 121; 121
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[3]) 
+
+berger |> 
+  filter(paper_value == test[3]) 
+```
+(-) Both times, I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+
+:::{.callout-warning}
+Both raters reported the code in question as missing. But this observation is still rated as a mismatch because 99 /= 0. When code is missing, this is not the same as ambiguity. But this shows that my criterion of rating something as 99 if there was a model in the text but no/ambiguous code info was imprecise. This is not as "grave" of a mismatch as if one rater had rated 1 and the other 0. -> Future research should adapt the calibration to prevent disproportionate distortion of the agreement estimand.
+:::
+
+#### 136;136;138
+
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[4]) 
+
+berger |> 
+  filter(paper_value == test[4]) |> View()
+```
+(-) All three times, I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+
+#### 109
+
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[5]) 
+
+berger |> 
+  filter(paper_value == test[5])
+```
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description".  
+
+#### 79
+
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[6]) 
+
+berger |> 
+  filter(paper_value == test[6])
+```
+(+) CB was correct in pointing out, that the described transformation is accountet for thanks to the argument 'scale == TRUE'. Since I both missed the regression in question and did not know of the export_summs() function, I would likely have misjudged this either way.
+
+#### 36
+
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[7]) 
+
+berger |> 
+  filter(paper_value == test[7]) 
+```
+(-) While the code values match, CB's brief description and the manuscript quotes do not. It appears as though the adjudicator matched the snippets based on the identical code snippets even though they do not belong together.
+
+#### 124
+
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[8]) 
+
+berger |> 
+  filter(paper_value == test[8]) 
+```
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description".  
+
+#### 127
+
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[9]) 
+
+berger |> 
+  filter(paper_value == test[9]) 
+```
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description".  
+
+#### 110
+
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[10]) 
+
+berger |> 
+  filter(paper_value == test[10]) 
+```
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+
+#### 121
+
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[11]) 
+
+berger |> 
+  filter(paper_value == test[11]) 
+```
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+
+#### 136; 136; 138
+
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[12]) 
+
+berger |> 
+  filter(paper_value == test[12]) 
+```
+(-) All three times, I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+
+#### 87
+
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[13]) 
+
+berger |> 
+  filter(paper_value == test[13]) 
+```
+(-) CB coded the right snippet but "lost track" of the focus. It rated 99 because: "The code applies several data filters and exclusions before the Mann–Whitney test that are not described in the provided paper excerpt, but the excerpt is too limited to determine whether these transformations are inconsistent with the full paper’s methods." Yet the question was only whether the gender variable was transformed as intended. this is indeed the case.
+
+#### 118
+
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[14]) 
+
+berger |> 
+  filter(paper_value == test[14]) 
+```
+
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+
+#### 115
+
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[15]) 
+
+berger |> 
+  filter(paper_value == test[15]) 
+```
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+
+#### 136;136;138
+
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[16]) 
+
+berger |> 
+  filter(paper_value == test[16]) 
+```
+(-) All three times, I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+
+#### 83
+
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[17]) 
+
+berger |> 
+  filter(paper_value == test[17]) 
+```
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+
+#### 99
+
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[18]) 
+
+berger |> 
+  filter(paper_value == test[18]) 
+```
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+
+#### 121;121
+
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[19]) 
+
+berger |> 
+  filter(paper_value == test[19]) 
+```
+
+
+
+
+### NEW Bloy et al.
+
+```{r}
+test <- disagree_only |> 
+  filter(author == "bloy") |>  
+  select(codebot_manuscript_content) |> 
+  pull()
+```
+
+#### 8
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[1]) 
+
+bloy |> 
+  filter(paper_value == test[1]) 
+```
+(-) CB logged the same code and manuscript content as me but rated the match status to be ungknown. Unfortunately it did not provide any explanation, thus I could not identify the cause.
+
+
+### NEW Carvalho et al.
+
+```{r}
+test <- disagree_only |> 
+  filter(author == "carvalho") |>  
+  select(codebot_manuscript_content) |> 
+  pull()
+```
+
+#### 8
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[1]) 
+
+carvalho |> 
+  filter(paper_value == test[1]) 
+```
+(-) While I did not identify a corresponding snippet, CB did and judged it to be a mismatch. It provides the following explanation: "The code applies additional exclusion criteria (Pretest.Catch > .60 and Gaze.Sample > .50) that are not described in the paper’s description of how fixation proportions and posttest scores were derived. While both sources focus on proportion of fixation and critical-item posttest scores, these unreported filters constitute extra data transformations/subsetting beyond what the paper specifies.". This, however, misses the point and is thus not in accordance with my coding criteria.
+
+#### 5
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[2]) 
+
+carvalho |> 
+  filter(paper_value == test[2]) 
+```
+(-) While I did not identify a corresponding snippet, CB did and judged it to be a mismatch. It provides the following explanation: "The paper describes only computing per-participant proportions of fixation time, whereas the code additionally restricts the analysis to cases with Gaze.Sample > .50, a data-filtering transformation not reported in the text.". This, however, misses the point and is thus not in accordance with my coding criteria.
+
+#### 5
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[3]) 
+
+carvalho |> 
+  filter(paper_value == test[3]) 
+```
+(+) Here, CB was correct since the variable retrieved from the df changes.
+
+
+
+
+### NEW Cha et al.
+
+```{r}
+test <- disagree_only |> 
+  filter(author == "cha") |>  
+  select(codebot_manuscript_content) |> 
+  pull()
+```
+
+#### 20;20
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[1]) 
+
+cha |> 
+  filter(paper_value == test[1]) 
+```
+(-) Both times, I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+
+
+
+### NEW Evans et al.
+
+```{r}
+test <- disagree_only |> 
+  filter(author == "evans") |>  
+  select(codebot_manuscript_content) |> 
+  pull()
+```
+
+#### 9
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[1]) 
+
+evans |> 
+  filter(paper_value == test[1]) 
+```
+(-) CB did not identify any code.
+
+#### 38
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[2]) 
+
+evans |> 
+  filter(paper_value == test[2]) 
+```
+(-) CB did not identify any code.
+
+
+### NEW Hsieh et al.
+
+```{r}
+test <- disagree_only |> 
+  filter(author == "hsieh") |>  
+  select(codebot_manuscript_content) |> 
+  pull()
+```
+
+#### 2
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[1]) 
+
+hsieh |> 
+  filter(paper_value == test[1]) 
+```
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is insufficient information about the code to determine whether the variables used in the implementation match those described in the paper for this analysis.". 
+
+### NEW Mancassola et al.
+
+```{r}
+test <- disagree_only |> 
+  filter(author == "mancassola") |>  
+  select(codebot_manuscript_content) |> 
+  pull()
+```
+
+#### 13
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[1]) 
+
+mancassola |> 
+  filter(paper_value == test[1]) 
+```
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the code implementation to determine whether the statistical test used matches the described Tukey post hoc t-test in the paper.". 
+
+#### 2
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[2]) 
+
+mancassola |> 
+  filter(paper_value == test[2]) 
+```
+(-) I rated 1. CB  did not log any code but rated 99 instead claiming "There is insufficient information about the code to determine whether the variables and their roles in the ANOVA match the description in the paper.". 
+
+
+#### 3
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[3]) 
+
+mancassola |> 
+  filter(paper_value == test[3]) 
+```
+(-) I rated 1. CB  did not log any code but rated 99 instead claiming "The paper specifies a Tukey post hoc t-test, but no corresponding code is provided to verify the statistical test used.". 
+
+#### 1
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[4]) 
+
+mancassola |> 
+  filter(paper_value == test[4]) 
+```
+(-) I rated 1. CB  did not log any code but rated 99 instead claiming "The paper specifies a Tukey post hoc t-test, but no corresponding code is provided to verify the statistical test used.". 
+
+
+
+
+### NEW Muenster et al.
+
+```{r}
+test <- disagree_only |> 
+  filter(author == "muenster") |>  
+  select(codebot_manuscript_content) |> 
+  pull()
+```
+
+#### 3
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[1]) 
+
+muenster |> 
+  filter(paper_value == test[1]) 
+```
+(-) I rated 1 because the alpha = 0.5 is the default in R for the t-test. CB rated this 99 even though it did identify the right code snippet.
+
+### NEW Nguyen et al.
+
+```{r}
+test <- disagree_only |> 
+  filter(author == "nguyen") |>  
+  select(codebot_manuscript_content) |> 
+  pull()
+```
+
+#### 81
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[1]) 
+
+nguyen |> 
+  filter(paper_value == test[1]) 
+```
+(-) I rated 99 because the variables are named similarly but not identical to what is claimed in the text. CB identified the same diilemma but rated 1.
+
+#### 68
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[2]) 
+
+nguyen |> 
+  filter(paper_value == test[2]) 
+```
+(-) I rated 1 assuming 0.5 is the default in the corrplot. CB rated 99 even though it did not identify any code.
+
+
+### NEW Yang et al.
+
+```{r}
+test <- disagree_only |> 
+  filter(author == "yang") |>  
+  select(codebot_manuscript_content) |> 
+  pull()
+```
+
+#### 1
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[1]) 
+
+yang |> 
+  filter(paper_value == test[1]) 
+```
+(-) I rated 0 because I did not find any code. CB also did not log any code but rated 99.
+
+#### 2
+```{r}
+disagree_only |> 
+  filter(codebot_manuscript_content == test[2]) 
+
+yang |> 
+  filter(paper_value == test[2]) 
+```
+(-) I rated 0 while having logged a code snippet. CB rated 99 even though it did not identify any code.
+
+# Session info
+```{r}
+devtools::session_info()
+```

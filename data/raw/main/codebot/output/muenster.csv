@@ -1,0 +1,1459 @@
+paper_id,analysis_id,brief_description,dimension,paper_value,code_value,match_status,explanation,paper_evidence,code_evidence
+muenster,1,"A three-way repeated-measures ANOVA on probe reaction times tested effects of response relation (response repetition vs. response change), distractor color relation (distractor color repetition vs. distractor color change), and background color (green vs. red). The ANOVA revealed significant main effects of response relation, distractor color relation, and background color, as well as significant two-way interactions for response relation × distractor color relation, response relation × background color, and distractor color relation × background color. Crucially, a significant three-way interaction among response relation, distractor color relation, and background color indicated that the magnitude of distractor–response binding (DRB) effects differed between red and green background conditions. This analysis served as the primary test of whether contextual background color modulated action–perception integration as indexed by RT-based DRB effects.",Model Specification,A 2 (response relation: repetition vs. change) × 2 (distractor color relation: repetition vs. change) × 2 (background color: green vs. red) ANOV A on probe RTs was conducted.,"## RT ANOVA ##
+
+AOV_RT <- ezANOVA(data = df_final, 
+                  dv = .(mean_RTo),
+                  wid = .(VP),
+                  within = .(RespRel, DistRelSim, back_color),
+                  detailed = TRUE, type = 3
+)
+",match,"The code implements a three-way within-subjects ANOVA on probe RTs with the same three factors described in the paper, matching the reported model specification.",,
+muenster,1,"A three-way repeated-measures ANOVA on probe reaction times tested effects of response relation (response repetition vs. response change), distractor color relation (distractor color repetition vs. distractor color change), and background color (green vs. red). The ANOVA revealed significant main effects of response relation, distractor color relation, and background color, as well as significant two-way interactions for response relation × distractor color relation, response relation × background color, and distractor color relation × background color. Crucially, a significant three-way interaction among response relation, distractor color relation, and background color indicated that the magnitude of distractor–response binding (DRB) effects differed between red and green background conditions. This analysis served as the primary test of whether contextual background color modulated action–perception integration as indexed by RT-based DRB effects.",Variable Specification,"Three within-participant factors were varied: response relation (response repetition vs. response change), distractor color relation (distractor color repetition vs. distractor color change), and background color (green vs. red). Probe reaction times (RTs) and probe error rates were measured for later analysis.
+
+A 2 (response relation: repetition vs. change) × 2 (distractor color relation: repetition vs. change) × 2 (background color: green vs. red) ANOV A on probe RTs was conducted.","RelVar <<- c(""VP"",""PPRel"",""RespRel"",""DistRelSim"",""back_color"",""resp_prime.corr"",""resp_prime.rt"",""resp_probe.corr"",""resp_probe.rt"") # All columns relevant to the standard ANOVA / t-test analysis
+FactVar <<- c(""VP"",""PPRel"",""RespRel"",""DistRelSim"",""back_color"") # All columns containing factorial data )
+
+## Creating Dataset for RT analysis ##
+
+df_final <- df_analysis %>%
+  group_by(VP,PPRel,RespRel,DistRelSim,back_color) %>%
+  summarise(mean_RTo = mean(resp_probe.rt),
+            n_left = length(resp_probe.rt), # Raw trial count left after all exclusions
+            n_left_Perc = (n_left / n_Cond)*100, # Percentage left after all exclusions 
+            n_lost = (100-n_left_Perc)) # Percentage lost due to exclusions
+
+## RT ANOVA ##
+
+AOV_RT <- ezANOVA(data = df_final, 
+                  dv = .(mean_RTo),
+                  wid = .(VP),
+                  within = .(RespRel, DistRelSim, back_color),
+                  detailed = TRUE, type = 3
+)
+
+tapply(df_final$mean_RTo, list(df_final$RespRel, df_final$DistRelSim, df_final$back_color), mean, na.rm=F) # Look at means",match,"The code defines probe reaction time as the dependent variable and uses response relation, distractor color relation, and background color as within-subject factors, matching the paper’s variable specification for the ANOVA. All relevant variables and their roles (DV and within-participant factors) are consistent between the paper and the code.",,
+muenster,1,"A three-way repeated-measures ANOVA on probe reaction times tested effects of response relation (response repetition vs. response change), distractor color relation (distractor color repetition vs. distractor color change), and background color (green vs. red). The ANOVA revealed significant main effects of response relation, distractor color relation, and background color, as well as significant two-way interactions for response relation × distractor color relation, response relation × background color, and distractor color relation × background color. Crucially, a significant three-way interaction among response relation, distractor color relation, and background color indicated that the magnitude of distractor–response binding (DRB) effects differed between red and green background conditions. This analysis served as the primary test of whether contextual background color modulated action–perception integration as indexed by RT-based DRB effects.",Transformation Specification,"From all participants, trials with missing responses (for either prime or probe) were excluded from all further analyses (1.7% of trials), as well as another 4.3% of trials with wrong responses in the prime. 4.1% of probe errors (with correct responses in the prime) were used for error rate analyses. For RT analyses, another 3.2% of trials with probe RT below 200 ms and more than 1.5 interquartile ranges above the third quartile of each subject’s RT distribution were excluded (cf. Tukey, 1977). In total, 86.7% of all trials remained for RT analyses.","# Convert RTs from Sec to ms #
+
+
+df$resp_probe.rt<-df$resp_probe.rt*1000
+df$resp_prime.rt<-df$resp_prime.rt*1000
+
+...
+
+# Selecting relevant variables #
+
+df_analysis<-select(df,RelVar) %>% # Selects a reduced dataframe containing the relevant columns specified above
+  mutate(VP = factor(VP)) # Makes the participant variable a factorial variable
+
+...
+
+# Data Filtering ####
+
+# In a first step relevant filtering is calculated (e.g., Tukey) and trials excluded are counted and excluded
+
+## Count & Exclude missing probe responses ##
+# Creates new dataframe that informs about trials excluded due to missing values
+# NOTE: In Psychopy a missing RT indicates that no resp_probense was given (i.e., final count indicates trial loss due to non-probe responses)
+
+df_NA <- df_analysis %>% 
+  mutate(is_NAo = ifelse(is.na(resp_probe.rt),1,0), # Calculates new variable informing whether a resp_probense was given (0) or a resp_probense is missing (1)
+         is_NAi = ifelse(is.na(resp_prime.rt),1,0)) %>% 
+  group_by(VP,PPRel,RespRel,DistRelSim,back_color) %>%
+  summarise(n_NAo = (mean(is_NAo))*100,
+            n_NAi = (mean(is_NAi))*100)
+
+df_analysis<-na.omit(df_analysis) # Removes all rows (i.e., trials) with missing probe responses in prime and / or probe
+Count_NA<-nrow(df_analysis) # Counts how many trials were lost 
+100 - (Count_NA / Count_Raw) * 100 # Percentage lost due to missing probe responses
+
+
+## Find Tukey Cut-Off Criterion ##
+
+# Define which Tukey cut-off criterion to use
+# NOTE: Only finds cut-off, exclusion is done later on #
+
+Limit <<- 1.5
+
+
+df_analysis <- df_analysis %>%
+  group_by(VP) %>%
+  mutate(lower_hinge = floor(fivenum(resp_probe.rt)[2]),
+         median = fivenum(resp_probe.rt)[3],
+         upper_hinge = ceiling(fivenum(resp_probe.rt)[4]),
+         IQR = upper_hinge - lower_hinge, 
+         cut_off = upper_hinge + Limit*IQR)
+
+...
+
+## Exclude Trials with Prime and / or Probe Errors ##
+
+df_analysis <- df_analysis %>%
+  filter(resp_prime.corr == 1, resp_probe.corr == 1) # Each trial with error (0) in prime and / or probe is excluded
+
+Count_Err<-nrow(df_analysis) # Counts length of dataframe after error exclusion
+
+
+## Count Loss due to Tukey Cut-Off ##
+# NOTE: Only counts, exclusion is done later on #
+
+df_Tukey <- df_analysis %>%
+  group_by(VP,PPRel,RespRel,DistRelSim,back_color) %>%
+  summarise(n = length(resp_probe.rt),
+            n_Upper = length(resp_probe.rt[resp_probe.rt > cut_off | resp_probe.rt < 200]), # Each trial above the cut-off and below 200ms is excluded
+            TukeyPerc = (n_Upper / n)*100)
+
+
+## Exclude Trials outside of Tukey Cut-Off ##
+
+df_analysis <- df_analysis %>%
+  filter(resp_probe.rt < cut_off) %>%
+  filter(resp_probe.rt > 200)
+
+Count_Tukey<-nrow(df_analysis) # Counts length of dataframe after cut-off exclusion
+
+
+(1-(Count_Tukey / Count_Raw))*100 # Total loss of trials (%) after all exlusions
+
+...
+
+## Creating Dataset for RT analysis ##
+
+df_final <- df_analysis %>%
+  group_by(VP,PPRel,RespRel,DistRelSim,back_color) %>%
+  summarise(mean_RTo = mean(resp_probe.rt),
+            n_left = length(resp_probe.rt), # Raw trial count left after all exclusions
+            n_left_Perc = (n_left / n_Cond)*100, # Percentage left after all exclusions 
+            n_lost = (100-n_left_Perc)) # Percentage lost due to exclusions",match,"The code applies the same trial-exclusion and RT-trimming rules described in the paper, including removal of missing responses, exclusion of incorrect primes and probe errors from RT analyses, and subject-wise Tukey-based upper trimming plus a 200 ms lower bound. Any minor ordering differences (e.g., computing the cut-off before error exclusion) are not specified in the paper and do not contradict the described transformation procedure.",,
+muenster,1,"A three-way repeated-measures ANOVA on probe reaction times tested effects of response relation (response repetition vs. response change), distractor color relation (distractor color repetition vs. distractor color change), and background color (green vs. red). The ANOVA revealed significant main effects of response relation, distractor color relation, and background color, as well as significant two-way interactions for response relation × distractor color relation, response relation × background color, and distractor color relation × background color. Crucially, a significant three-way interaction among response relation, distractor color relation, and background color indicated that the magnitude of distractor–response binding (DRB) effects differed between red and green background conditions. This analysis served as the primary test of whether contextual background color modulated action–perception integration as indexed by RT-based DRB effects.",Inference Specification,"Importantly, the three-way interaction between response relation, distractor color relation, and background color reached signiﬁcance as well: F(1, 62) = 8.98, p = .004, ηG2 , .01, ηp2 = .13. To further examine this difference in DRB effects caused by background color, we calculated post hoc t tests comparing the DRB effects in both background conditions. In the green background condition, signiﬁcant DRB effects could be observed: M = 18 ms, SD = 38 ms, two-tailed t(62) = 3.76, p , .001, d = 0.47, 95% conﬁdence interval (CI) [8 ms, 27 ms]. In the red background condition, the observed DRB effects were stronger: M = 35 ms, SD = 34 ms, two-tailed t(62) = 8.26, p , .001, d = 1.04, 95% CI [27 ms, 44 ms]. Crucially, this difference reached signiﬁcance (corresponding to the three-way interaction of the ANOV A): two-tailed t(62) = 3.00, p = .004, d = 0.38, 95% CI [6 ms, 29 ms].","## RT ANOVA ##
+
+AOV_RT <- ezANOVA(data = df_final, 
+                  dv = .(mean_RTo),
+                  wid = .(VP),
+                  within = .(RespRel, DistRelSim, back_color),
+                  detailed = TRUE, type = 3
+)
+
+tabelle(AOV_RT, 4) # This shows you your results
+
+...
+
+## RT DRB Effects ##
+
+table(df_binding_RT$VP, df_binding_RT$back_color) # Check if every VP has data for all relevant conditions
+
+
+# Make sure that all relevant independent variables are variables of type 'factor' #
+df_binding_RT$VP <- as.character(df_binding_RT$VP)
+df_binding_RT$VP <- as.factor(df_binding_RT$VP)
+df_binding_RT$back_color <- as.factor(df_binding_RT$back_color)
+
+
+## t-test for DRB effects agains 0 ##
+
+
+df_0<- data.frame(back_color = factor(), mean = numeric(), SD = numeric(), median = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), dz = numeric(), BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var in levels(df_binding_RT$back_color)) {
+  t<-t.test(df_binding_RT$binding[df_binding_RT$back_color == var])
+  dz <- d(df_binding_RT$binding[df_binding_RT$back_color == var],0)[4]
+  BF<-ttestBF(df_binding_RT$binding[df_binding_RT$back_color == var])
+  BF2<- as.data.frame(BF)
+  BF01<-1/BF2$bf
+  print(var)
+  back_color<-var
+  t.stat<-t$statistic
+  df<-t$parameter
+  p<-t$p.value
+  ConfInt1<-t$conf.int[1]
+  ConfInt2<-t$conf.int[2]
+  mean_val <- mean(df_binding_RT$binding[df_binding_RT$back_color == var])
+  median_val <- median(df_binding_RT$binding[df_binding_RT$back_color == var])
+  SD_val <- sd(df_binding_RT$binding[df_binding_RT$back_color == var])
+  df_interim<-data.frame(back_color = back_color, mean = mean_val, SD = SD_val, median = median_val, t.stat = t.stat, df = df, p = p, dz = dz, BF01 = BF01,ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+  df_0<-rbind(df_0, df_interim)
+}
+
+
+
+
+## T-test comparing the different conditions against each other ##
+
+
+
+df_t<- data.frame(back_color_1 = factor(),back_color_2 = factor(), mean_1 = numeric(), mean_2 = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), Sig = character(), 
+                  dz = numeric(),BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var1 in levels(df_binding_RT$back_color)) {
+  for (var2 in rev(levels(df_binding_RT$back_color))) {
+    if (var1 == var2){
+      next
+    }
+    t <- t.test(df_binding_RT$binding[df_binding_RT$back_color == var1],
+                df_binding_RT$binding[df_binding_RT$back_color == var2],
+                paired = T) # Change if between
+    BF<-ttestBF(df_binding_RT$binding[df_binding_RT$back_color == var1],
+                df_binding_RT$binding[df_binding_RT$back_color == var2],
+                paired = T) # change if between
+    BF2<- as.data.frame(BF)
+    BF01<-1/BF2$bf
+    back_color_1 <- var1
+    back_color_2 <- var2
+    t.stat<-t$statistic
+    df<-t$parameter
+    p<-t$p.value
+    ConfInt1<-t$conf.int[1]
+    ConfInt2<-t$conf.int[2]
+    mean_1 = mean(df_binding_RT$binding[df_binding_RT$back_color == var1])
+    mean_2 = mean(df_binding_RT$binding[df_binding_RT$back_color == var2])
+    Sig <- ifelse(p < 0.05, ""*"", ifelse(p > 0.05 & p < 0.10, ""+"", "" ""))
+    dz = t.stat / sqrt(df+1)
+    
+    df_interim<-data.frame(back_color_1 = back_color_1,back_color_2 = back_color_2, mean_1 = mean_1, mean_2 = mean_2, t.stat = t.stat, df = df, p = p, Sig = Sig, dz = dz,BF01 = BF01, ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+    df_t<-rbind(df_t, df_interim)
+    df_t<- na.omit(df_t)
+  }
+}
+
+
+post_hoc_t(""ms"")
+
+...
+
+## Bar Plots ##
+## Mean RT DRB effect ####
+
+
+# Create new data frame for plot # 
+df_BarBinRT <- summarySEwithin(data = df_binding_RT,
+                               measurevar = ""binding"", # put your dv here 
+                               withinvars = c(""back_color""), # put all within-participant variables here
+                               idvar = ""VP"", # put the id variable here
+                               na.rm = FALSE,
+                               conf.interval = .95)
+",match,"The code uses two-sided tests with 95% confidence intervals and an alpha criterion of .05, matching the paper’s reported two-tailed tests, 95% CIs, and significance decisions. No conflicting inference criteria (e.g., different alpha, one-tailed tests, or multiple-comparison corrections) are evident between the paper and code.",,
+muenster,2,"A three-way repeated-measures ANOVA on probe error rates examined the same within-subject factors: response relation (response repetition vs. response change), distractor color relation (distractor color repetition vs. distractor color change), and background color (green vs. red). The analysis yielded significant main effects of response relation and background color, as well as significant two-way interactions for response relation × distractor color relation, response relation × background color, and distractor color relation × background color. The three-way interaction among response relation, distractor color relation, and background color did not reach significance, although descriptively DRB effects appeared somewhat larger with red than with green backgrounds. This ANOVA tested whether the contextual modulation of DRB effects evident in RTs was also present in error rates.",Model Specification,"As for RTs, a 2 (response relation: repetition vs. change) × 2 (distractor color relation: repetition vs. change) × 2 (background color: green vs. red) ANOV A on probe error rates was conducted.","## Error ANOVA ##
+# NOTE: The data frame df_Pro_Err is used for this analysis as it contains the critical DV
+
+AOV_ERR<- ezANOVA(data = df_ProErr,
+                  dv = .(ErrRateo), # Put DV here
+                  wid = .(VP),
+                  within = .(RespRel, DistRelSim,back_color),
+                  detailed = TRUE, type = 3
+)
+
+tabelle(AOV_ERR, 4)
+",match,The code implements a three-way repeated-measures ANOVA on probe error rates with the same three within-subject factors described in the paper. This matches the model specification of the reported 2×2×2 ANOVA on probe error rates.,,
+muenster,2,"A three-way repeated-measures ANOVA on probe error rates examined the same within-subject factors: response relation (response repetition vs. response change), distractor color relation (distractor color repetition vs. distractor color change), and background color (green vs. red). The analysis yielded significant main effects of response relation and background color, as well as significant two-way interactions for response relation × distractor color relation, response relation × background color, and distractor color relation × background color. The three-way interaction among response relation, distractor color relation, and background color did not reach significance, although descriptively DRB effects appeared somewhat larger with red than with green backgrounds. This ANOVA tested whether the contextual modulation of DRB effects evident in RTs was also present in error rates.",Variable Specification,"As for RTs, a 2 (response relation: repetition vs. change) × 2 (distractor color relation: repetition vs. change) × 2 (background color: green vs. red) ANOV A on probe error rates was conducted.","## Count Loss Due to Probe Errors ##
+# NOTE: Only counts, exclusion is done later on #
+
+df_ProErr <- df_analysis  %>%
+  filter(resp_prime.corr == 1) %>%
+  group_by(VP,PPRel,RespRel,DistRelSim,back_color) %>%
+  summarise(n = length(resp_probe.corr),
+            n_ERRo = length(resp_probe.corr[resp_probe.corr == 0]),
+            ErrRateo = (n_ERRo / n)*100)
+...
+## Error ANOVA ##
+# NOTE: The data frame df_Pro_Err is used for this analysis as it contains the critical DV
+
+AOV_ERR<- ezANOVA(data = df_ProErr,
+                  dv = .(ErrRateo), # Put DV here
+                  wid = .(VP),
+                  within = .(RespRel, DistRelSim,back_color),
+                  detailed = TRUE, type = 3
+)
+",match,"The code specifies probe error rate as the dependent variable and uses response relation, distractor color relation, and background color as within-subject factors, matching the variables described for the ANOVA in the paper.",,
+muenster,2,"A three-way repeated-measures ANOVA on probe error rates examined the same within-subject factors: response relation (response repetition vs. response change), distractor color relation (distractor color repetition vs. distractor color change), and background color (green vs. red). The analysis yielded significant main effects of response relation and background color, as well as significant two-way interactions for response relation × distractor color relation, response relation × background color, and distractor color relation × background color. The three-way interaction among response relation, distractor color relation, and background color did not reach significance, although descriptively DRB effects appeared somewhat larger with red than with green backgrounds. This ANOVA tested whether the contextual modulation of DRB effects evident in RTs was also present in error rates.",Transformation Specification,"From all participants, trials with missing responses (for either prime or probe) were excluded from all further analyses (1.7% of trials), as well as another 4.3% of trials with wrong responses in the prime. 4.1% of probe errors (with correct responses in the prime) were used for error rate analyses.","# Remove Practice Trials #
+#  name of column that contains info about training / not training info #
+
+df <- data %>% filter(condition == ""experiment"")
+...
+# Setting all relevant variables #
+
+n_Total <<- 192 # Amount of total trials
+n_Cond <<- 24 # Amount of trials per condition
+
+RelVar <<- c(""VP"",""PPRel"",""RespRel"",""DistRelSim"",""back_color"",""resp_prime.corr"",""resp_prime.rt"",""resp_probe.corr"",""resp_probe.rt"") # All columns relevant to the standard ANOVA / t-test analysis
+FactVar <<- c(""VP"",""PPRel"",""RespRel"",""DistRelSim"",""back_color"") # All columns containing factorial data )
+
+# Selecting relevant variables #
+
+df_analysis<-select(df,RelVar) %>% # Selects a reduced dataframe containing the relevant columns specified above
+  mutate(VP = factor(VP)) # Makes the participant variable a factorial variable
+...
+## Count & Exclude missing probe responses ##
+# Creates new dataframe that informs about trials excluded due to missing values
+# NOTE: In Psychopy a missing RT indicates that no resp_probense was given (i.e., final count indicates trial loss due to non-probe responses)
+
+df_NA <- df_analysis %>% 
+  mutate(is_NAo = ifelse(is.na(resp_probe.rt),1,0), # Calculates new variable informing whether a resp_probense was given (0) or a resp_probense is missing (1)
+         is_NAi = ifelse(is.na(resp_prime.rt),1,0)) %>% 
+  group_by(VP,PPRel,RespRel,DistRelSim,back_color) %>%
+  summarise(n_NAo = (mean(is_NAo))*100,
+            n_NAi = (mean(is_NAi))*100)
+
+df_analysis<-na.omit(df_analysis) # Removes all rows (i.e., trials) with missing probe responses in prime and / or probe
+...
+## Count Loss Due to Prime Errors ##
+# NOTE: Only counts, exclusion is done later on #
+
+df_PriErr <- df_analysis  %>%
+  group_by(VP,PPRel,RespRel,DistRelSim,back_color) %>%
+  summarise(n = length(resp_prime.corr),
+            n_ERRi = length(resp_prime.corr[resp_prime.corr == 0]),
+            ErrRate = (n_ERRi / n)*100)
+
+## Count Loss Due to Probe Errors ##
+# NOTE: Only counts, exclusion is done later on #
+
+df_ProErr <- df_analysis  %>%
+  filter(resp_prime.corr == 1) %>%
+  group_by(VP,PPRel,RespRelSim,back_color) %>%
+  summarise(n = length(resp_probe.corr),
+            n_ERRo = length(resp_probe.corr[resp_probe.corr == 0]),
+            ErrRateo = (n_ERRo / n)*100)
+...
+# 16933 reported color blindness
+
+df_final <- df_final %>% filter(VP != ""16372"",  VP != ""16933"",  VP != ""17095"", VP != ""19999"", VP != ""20710"") # Remove participants due to Outlier analysis
+
+df_ProErr <- df_ProErr %>% filter(VP != ""16372"",  VP != ""16933"",  VP != ""17095"", VP != ""19999"", VP != ""20710"") # Remove the same participants as in the RT analysis
+...
+## Error ANOVA ##
+# NOTE: The data frame df_Pro_Err is used for this analysis as it contains the critical DV
+
+AOV_ERR<- ezANOVA(data = df_ProErr,
+                  dv = .(ErrRateo), # Put DV here
+                  wid = .(VP),
+                  within = .(RespRel, DistRelSim,back_color),
+                  detailed = TRUE, type = 3
+)
+",match,"The code applies the same trial-level exclusions and uses probe-error rates conditioned on correct primes as described in the paper. It excludes missing responses, removes prime-error trials from the probe-error analysis, and uses aggregated probe-error rates as the dependent variable in the ANOVA.",,
+muenster,2,"A three-way repeated-measures ANOVA on probe error rates examined the same within-subject factors: response relation (response repetition vs. response change), distractor color relation (distractor color repetition vs. distractor color change), and background color (green vs. red). The analysis yielded significant main effects of response relation and background color, as well as significant two-way interactions for response relation × distractor color relation, response relation × background color, and distractor color relation × background color. The three-way interaction among response relation, distractor color relation, and background color did not reach significance, although descriptively DRB effects appeared somewhat larger with red than with green backgrounds. This ANOVA tested whether the contextual modulation of DRB effects evident in RTs was also present in error rates.",Inference Specification,"With dz = 0.40 as a rather conservative estimation, we planned to run N = 59 participants, leading to a power of 1 − β = .85 (assuming an α = .05) (Gpower 3.1.9.7; Faul et al., 2007), to find a modulation of the basic DRB effect. ... The three-way interaction between response relation, distractor color relation, and background color did not reach significance: F(1, 62) = 2.95, p = .091, ηG2 < .01, ηp2 = .05.","## Error ANOVA ##
+# NOTE: The data frame df_Pro_Err is used for this analysis as it contains the critical DV
+
+AOV_ERR<- ezANOVA(data = df_ProErr,
+                  dv = .(ErrRateo), # Put DV here
+                  wid = .(VP),
+                  within = .(RespRel, DistRelSim,back_color),
+                  detailed = TRUE, type = 3
+)
+tabelle(AOV_ERR, 4)
+
+...
+
+## T-test comparing the different conditions against each other ##
+
+
+df_t<- data.frame(back_color_1 = factor(),back_color_2 = factor(), mean_1 = numeric(), mean_2 = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), Sig = character(), 
+                  dz = numeric(),BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var1 in levels(df_ProErr$back_color)) {
+  for (var2 in rev(levels(df_ProErr$back_color))) {
+    if (var1 == var2){
+      next
+    }
+    t <- t.test(df_ProErr$ErrRateo[df_ProErr$back_color == var1],
+                df_ProErr$ErrRateo[df_ProErr$back_color == var2],
+                paired = T) # Change if between
+    BF<-ttestBF(df_ProErr$ErrRateo[df_ProErr$back_color == var1],
+                df_ProErr$ErrRateo[df_ProErr$back_color == var2],
+                paired = T) # change if between
+    BF2<- as.data.frame(BF)
+    BF01<-1/BF2$bf
+    back_color_1 <- var1
+    back_color_2 <- var2
+    t.stat<-t$statistic
+    df<-t$parameter
+    p<-t$p.value
+    ConfInt1<-t$conf.int[1]
+    ConfInt2<-t$conf.int[2]
+    mean_1 = mean(df_ProErr$ErrRateo[df_ProErr$back_color == var1])
+    mean_2 = mean(df_ProErr$ErrRateo[df_ProErr$back_color == var2])
+    Sig <- ifelse(p < 0.05, ""*"", ifelse(p > 0.05 & p < 0.10, ""+"", "" ""))
+    dz = t.stat / sqrt(df+1)
+    
+    df_interim<-data.frame(back_color_1 = back_color_1,back_color_2 = back_color_2, mean_1 = mean_1, mean_2 = mean_2, t.stat = t.stat, df = df, p = p, Sig = Sig, dz = dz,BF01 = BF01, ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+    df_t<-rbind(df_t, df_interim)
+    df_t<- na.omit(df_t)
+  }
+}
+",match,"The paper specifies α = .05 as the inference criterion, and the code applies a significance threshold of p < .05 (with an additional non-decisive flag for .05 < p < .10), which is consistent with that specification. There is no indication in the code of any alternative alpha level that would conflict with the paper’s stated criterion.",,
+muenster,3,"A one-sample t-test on RT-based DRB effects in the green-background condition tested whether the DRB effect (computed as (RR-DC − RR-DR) − (RC-DC − RC-DR)) differed from zero. The test showed a significant positive DRB effect in green-background trials (M = 18 ms, SD = 38 ms), t(62) = 3.76, p < .001, d = 0.47, 95% CI [8 ms, 27 ms]. This established that distractor–response binding occurs even when the background context is green. The analysis served as one of the post hoc tests decomposing the significant three-way interaction from the RT ANOVA.",Model Specification,"In the green background condition, significant DRB effects could be observed: M = 18 ms, SD = 38 ms, two-tailed t(62) = 3.76, p < .001, d = 0.47, 95% confidence interval (CI) [8 ms, 27 ms].","## RT DRB Effects ##
+
+table(df_binding_RT$VP, df_binding_RT$back_color) # Check if every VP has data for all relevant conditions
+
+
+# Make sure that all relevant independent variables are variables of type 'factor' #
+df_binding_RT$VP <- as.character(df_binding_RT$VP)
+df_binding_RT$VP <- as.factor(df_binding_RT$VP)
+df_binding_RT$back_color <- as.factor(df_binding_RT$back_color)
+
+
+## t-test for DRB effects agains 0 ##
+
+
+df_0<- data.frame(back_color = factor(), mean = numeric(), SD = numeric(), median = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), dz = numeric(), BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var in levels(df_binding_RT$back_color)) {
+  t<-t.test(df_binding_RT$binding[df_binding_RT$back_color == var])
+  dz <- d(df_binding_RT$binding[df_binding_RT$back_color == var],0)[4]
+  BF<-ttestBF(df_binding_RT$binding[df_binding_RT$back_color == var])
+  BF2<- as.data.frame(BF)
+  BF01<-1/BF2$bf
+  print(var)
+  back_color<-var
+  t.stat<-t$statistic
+  df<-t$parameter
+  p<-t$p.value
+  ConfInt1<-t$conf.int[1]
+  ConfInt2<-t$conf.int[2]
+  mean_val <- mean(df_binding_RT$binding[df_binding_RT$back_color == var])
+  median_val <- median(df_binding_RT$binding[df_binding_RT$back_color == var])
+  SD_val <- sd(df_binding_RT$binding[df_binding_RT$back_color == var])
+  df_interim<-data.frame(back_color = back_color, mean = mean_val, SD = SD_val, median = median_val, t.stat = t.stat, df = df, p = p, dz = dz, BF01 = BF01,ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+  df_0<-rbind(df_0, df_interim)
+}
+",match,Both the paper and the code use a two-tailed one-sample t-test comparing DRB effects against zero within each background color condition (including green).,,
+muenster,3,"A one-sample t-test on RT-based DRB effects in the green-background condition tested whether the DRB effect (computed as (RR-DC − RR-DR) − (RC-DC − RC-DR)) differed from zero. The test showed a significant positive DRB effect in green-background trials (M = 18 ms, SD = 38 ms), t(62) = 3.76, p < .001, d = 0.47, 95% CI [8 ms, 27 ms]. This established that distractor–response binding occurs even when the background context is green. The analysis served as one of the post hoc tests decomposing the significant three-way interaction from the RT ANOVA.",Variable Specification,"The DRB effects for both RTs and error rates were calculated with this formula: (RR-DC-trials − RR-DR-trials) − (RC-DC-trials − RC-DR-trials), with RR/RC standing for response repetition/response change and DR/DC for distractor (color) repetition/change. This corresponds to the benefit of distractor color repetition in response repetition trials minus the cost of distractor color repetition in response change trials.
+...
+To further examine this difference in DRB effects caused by background color, we calculated post hoc t tests comparing the DRB effects in both background conditions. In the green background condition, significant DRB effects could be observed: M = 18 ms, SD = 38 ms, two-tailed t(62) = 3.76, p < .001, d = 0.47, 95% confidence interval (CI) [8 ms, 27 ms].","## Create Dataset for Binding Effect analysis ##
+# NOTE: There are two separate dataframes for DRB_RT and DRB_Error 
+
+# DRB RT dataset#
+
+df_binding_RT <- df_final %>%
+  ungroup() %>%
+  select(VP, PPRel,back_color, mean_RTo) %>% # Must contain ID column, all relevant factors you wish to build DRB effects for. NOTE: Only select the column containing the combined prime-probe relation (i.e., PPREL) not the separate columns (i.e., DistRelSim + RespRel)
+  pivot_wider(names_from = c(""PPRel"", ""back_color""), # Always put in PPREL here + any additional within-participant variable; if between only PPREL required
+              values_from = mean_RTo)%>% # Put variable containing your DV here
+  filter(VP != ""16372"",  VP != ""16933"",  VP != ""17095"", VP != ""19999"", VP != ""20710"") %>% # Exclude participants not having all conditions here
+  mutate(binding_red = ((RRDC_red-RRDR_red) - (RCDC_red-RCDR_red)), # Build formula for DRB effect in each condition; if between, only one formula required
+         binding_green = ((RRDC_green-RRDR_green) - (RCDC_green-RCDR_green))) %>%
+  select(VP, binding_red, binding_green)%>%
+  pivot_longer(cols = starts_with(""binding""),
+               names_to = c(""back_color""), # Put column name here that gives the rows is name, within only
+               names_pattern = ""_(.*)"",
+               values_to = ""binding"")
+...
+## RT DRB Effects ##
+
+table(df_binding_RT$VP, df_binding_RT$back_color) # Check if every VP has data for all relevant conditions
+
+
+# Make sure that all relevant independent variables are variables of type 'factor' #
+df_binding_RT$VP <- as.character(df_binding_RT$VP)
+df_binding_RT$VP <- as.factor(df_binding_RT$VP)
+df_binding_RT$back_color <- as.factor(df_binding_RT$back_color)
+
+
+## t-test for DRB effects agains 0 ##
+
+
+df_0<- data.frame(back_color = factor(), mean = numeric(), SD = numeric(), median = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), dz = numeric(), BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var in levels(df_binding_RT$back_color)) {
+  t<-t.test(df_binding_RT$binding[df_binding_RT$back_color == var])
+  dz <- d(df_binding_RT$binding[df_binding_RT$back_color == var],0)[4]
+  BF<-ttestBF(df_binding_RT$binding[df_binding_RT$back_color == var])
+  BF2<- as.data.frame(BF)
+  BF01<-1/BF2$bf
+  print(var)
+  back_color<-var
+  t.stat<-t$statistic
+  df<-t$parameter
+  p<-t$p.value
+  ConfInt1<-t$conf.int[1]
+  ConfInt2<-t$conf.int[2]
+  mean_val <- mean(df_binding_RT$binding[df_binding_RT$back_color == var])
+  median_val <- median(df_binding_RT$binding[df_binding_RT$back_color == var])
+  SD_val <- sd(df_binding_RT$binding[df_binding_RT$back_color == var])
+  df_interim<-data.frame(back_color = back_color, mean = mean_val, SD = SD_val, median = median_val, t.stat = t.stat, df = df, p = p, dz = dz, BF01 = BF01,ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+  df_0<-rbind(df_0, df_interim)
+}",match,"The code uses the same DRB RT effect variable and decomposition by background color as described in the paper, and then performs a one-sample t-test of the green-background DRB effect against zero. No discrepant or additional variables are introduced in the implementation for this analysis.",,
+muenster,3,"A one-sample t-test on RT-based DRB effects in the green-background condition tested whether the DRB effect (computed as (RR-DC − RR-DR) − (RC-DC − RC-DR)) differed from zero. The test showed a significant positive DRB effect in green-background trials (M = 18 ms, SD = 38 ms), t(62) = 3.76, p < .001, d = 0.47, 95% CI [8 ms, 27 ms]. This established that distractor–response binding occurs even when the background context is green. The analysis served as one of the post hoc tests decomposing the significant three-way interaction from the RT ANOVA.",Transformation Specification,"The DRB effects for both RTs and error rates were calculated with this formula: (RR-DC-trials − RR-DR-trials) − (RC-DC-trials − RC-DR-trials), with RR/RC standing for response repetition/response change and DR/DC for distractor (color) repetition/change. From all participants, trials with missing responses (for either prime or probe) were excluded from all further analyses (1.7% of trials), as well as another 4.3% of trials with wrong responses in the prime. 4.1% of probe errors (with correct responses in the prime) were used for error rate analyses. For RT analyses, another 3.2% of trials with probe RT below 200 ms and more than 1.5 interquartile ranges above the third quartile of each subject’s RT distribution were excluded (cf. Tukey, 1977). In total, 86.7% of all trials remained for RT analyses. Note that participants who were heavy outliers were excluded after the data ﬁltering process.","# Convert RTs from Sec to ms #
+
+
+df$resp_probe.rt<-df$resp_probe.rt*1000
+df$resp_prime.rt<-df$resp_prime.rt*1000
+
+...
+
+RelVar <<- c(""VP"",""PPRel"",""RespRel"",""DistRelSim"",""back_color"",""resp_prime.corr"",""resp_prime.rt"",""resp_probe.corr"",""resp_probe.rt"") # All columns relevant to the standard ANOVA / t-test analysis
+...
+
+df_analysis<-select(df,RelVar) %>% # Selects a reduced dataframe containing the relevant columns specified above
+  mutate(VP = factor(VP)) # Makes the participant variable a factorial variable
+...
+
+## Count & Exclude missing probe responses ##
+...
+
+df_analysis<-na.omit(df_analysis) # Removes all rows (i.e., trials) with missing probe responses in prime and / or probe
+...
+
+Limit <<- 1.5
+
+
+df_analysis <- df_analysis %>%
+  group_by(VP) %>%
+  mutate(lower_hinge = floor(fivenum(resp_probe.rt)[2]),
+         median = fivenum(resp_probe.rt)[3],
+         upper_hinge = ceiling(fivenum(resp_probe.rt)[4]),
+         IQR = upper_hinge - lower_hinge, 
+         cut_off = upper_hinge + Limit*IQR)
+...
+
+## Exclude Trials with Prime and / or Probe Errors ##
+
+df_analysis <- df_analysis %>%
+  filter(resp_prime.corr == 1, resp_probe.corr == 1) # Each trial with error (0) in prime and / or probe is excluded
+...
+
+## Exclude Trials outside of Tukey Cut-Off ##
+
+df_analysis <- df_analysis %>%
+  filter(resp_probe.rt < cut_off) %>%
+  filter(resp_probe.rt > 200)
+...
+
+## Creating Dataset for RT analysis ##
+
+df_final <- df_analysis %>%
+  group_by(VP,PPRel,RespRel,DistRelSim,back_color) %>%
+  summarise(mean_RTo = mean(resp_probe.rt),
+            n_left = length(resp_probe.rt), # Raw trial count left after all exclusions
+            n_left_Perc = (n_left / n_Cond)*100, # Percentage left after all exclusions 
+            n_lost = (100-n_left_Perc)) # Percentage lost due to exclusions
+...
+
+## Create Dataset for Binding Effect analysis ##
+# NOTE: There are two separate dataframes for DRB_RT and DRB_Error 
+
+# DRB RT dataset#
+
+df_binding_RT <- df_final %>%
+  ungroup() %>%
+  select(VP, PPRel,back_color, mean_RTo) %>% # Must contain ID column, all relevant factors you wish to build DRB effects for. NOTE: Only select the column containing the combined prime-probe relation (i.e., PPREL) not the separate columns (i.e., DistRelSim + RespRel)
+  pivot_wider(names_from = c(""PPRel"", ""back_color""), # Always put in PPREL here + any additional within-participant variable; if between only PPREL required
+              values_from = mean_RTo)%>% # Put variable containing your DV here
+  filter(VP != ""16372"",  VP != ""16933"",  VP != ""17095"", VP != ""19999"", VP != ""20710"") %>% # Exclude participants not having all conditions here
+  mutate(binding_red = ((RRDC_red-RRDR_red) - (RCDC_red-RCDR_red)), # Build formula for DRB effect in each condition; if between, only one formula required
+         binding_green = ((RRDC_green-RRDR_green) - (RCDC_green-RCDR_green))) %>%
+  select(VP, binding_red, binding_green)%>%
+  pivot_longer(cols = starts_with(""binding""),
+               names_to = c(""back_color""), # Put column name here that gives the rows is name, within only
+               names_pattern = ""_(.*)"",
+               values_to = ""binding"")
+...
+
+# 16933 reported color blindness
+
+df_final <- df_final %>% filter(VP != ""16372"",  VP != ""16933"",  VP != ""17095"", VP != ""19999"", VP != ""20710"") # Remove participants due to Outlier analysis
+...
+
+df_binding_RT <- df_binding_RT %>% filter(VP != ""16372"",  VP != ""16933"",  VP != ""17095"", VP != ""19999"", VP != ""20710"")
+...
+
+## RT DRB Effects ##
+
+table(df_binding_RT$VP, df_binding_RT$back_color) # Check if every VP has data for all relevant conditions
+
+
+# Make sure that all relevant independent variables are variables of type 'factor' #
+df_binding_RT$VP <- as.character(df_binding_RT$VP)
+df_binding_RT$VP <- as.factor(df_binding_RT$VP)
+df_binding_RT$back_color <- as.factor(df_binding_RT$back_color)
+
+
+## t-test for DRB effects agains 0 ##
+
+
+df_0<- data.frame(back_color = factor(), mean = numeric(), SD = numeric(), median = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), dz = numeric(), BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var in levels(df_binding_RT$back_color)) {
+  t<-t.test(df_binding_RT$binding[df_binding_RT$back_color == var])
+  dz <- d(df_binding_RT$binding[df_binding_RT$back_color == var],0)[4]
+  BF<-ttestBF(df_binding_RT$binding[df_binding_RT$back_color == var])
+  BF2<- as.data.frame(BF)
+  BF01<-1/BF2$bf
+  print(var)
+  back_color<-var
+  t.stat<-t$statistic
+  df<-t$parameter
+  p<-t$p.value
+  ConfInt1<-t$conf.int[1]
+  ConfInt2<-t$conf.int[2]
+  mean_val <- mean(df_binding_RT$binding[df_binding_RT$back_color == var])
+  median_val <- median(df_binding_RT$binding[df_binding_RT$back_color == var])
+  SD_val <- sd(df_binding_RT$binding[df_binding_RT$back_color == var])
+  df_interim<-data.frame(back_color = back_color, mean = mean_val, SD = SD_val, median = median_val, t.stat = t.stat, df = df, p = p, dz = dz, BF01 = BF01,ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+  df_0<-rbind(df_0, df_interim)
+}
+",match,"The code applies the same trial-level exclusions, outlier trimming, and DRB-effect computation described in the paper before running the t-test on green-background RT-based DRB effects. All specified data transformations (missing/error exclusion, Tukey outlier rule, RT threshold, and DRB formula) match the textual description.",,
+muenster,3,"A one-sample t-test on RT-based DRB effects in the green-background condition tested whether the DRB effect (computed as (RR-DC − RR-DR) − (RC-DC − RC-DR)) differed from zero. The test showed a significant positive DRB effect in green-background trials (M = 18 ms, SD = 38 ms), t(62) = 3.76, p < .001, d = 0.47, 95% CI [8 ms, 27 ms]. This established that distractor–response binding occurs even when the background context is green. The analysis served as one of the post hoc tests decomposing the significant three-way interaction from the RT ANOVA.",Inference Specification,"To further examine this difference in DRB effects caused by background color, we calculated post hoc t tests comparing the DRB effects in both background conditions. In the green background condition, signiﬁcant DRB effects could be observed: M = 18 ms, SD = 38 ms, two-tailed t(62) = 3.76, p , .001, d = 0.47, 95% conﬁdence interval (CI) [8 ms, 27 ms].","df_binding_RT <- df_final %>%
+  ungroup() %>%
+  select(VP, PPRel,back_color, mean_RTo) %>% # Must contain ID column, all relevant factors you wish to build DRB effects for. NOTE: Only select the column containing the combined prime-probe relation (i.e., PPREL) not the separate columns (i.e., DistRelSim + RespRel)
+  pivot_wider(names_from = c(""PPRel"", ""back_color""), # Always put in PPREL here + any additional within-participant variable; if between only PPREL required
+              values_from = mean_RTo)%>% # Put variable containing your DV here
+  filter(VP != ""16372"",  VP != ""16933"",  VP != ""17095"", VP != ""19999"", VP != ""20710"") %>% # Exclude participants not having all conditions here
+  mutate(binding_red = ((RRDC_red-RRDR_red) - (RCDC_red-RCDR_red)), # Build formula for DRB effect in each condition; if between, only one formula required
+         binding_green = ((RRDC_green-RRDR_green) - (RCDC_green-RCDR_green))) %>%
+  select(VP, binding_red, binding_green)%>%
+  pivot_longer(cols = starts_with(""binding""),
+               names_to = c(""back_color""), # Put column name here that gives the rows is name, within only
+               names_pattern = ""_(.*)"",
+               values_to = ""binding"")
+...
+## RT DRB Effects ##
+
+table(df_binding_RT$VP, df_binding_RT$back_color) # Check if every VP has data for all relevant conditions
+
+
+# Make sure that all relevant independent variables are variables of type 'factor' #
+df_binding_RT$VP <- as.character(df_binding_RT$VP)
+df_binding_RT$VP <- as.factor(df_binding_RT$VP)
+df_binding_RT$back_color <- as.factor(df_binding_RT$back_color)
+
+
+## t-test for DRB effects agains 0 ##
+
+
+df_0<- data.frame(back_color = factor(), mean = numeric(), SD = numeric(), median = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), dz = numeric(), BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var in levels(df_binding_RT$back_color)) {
+  t<-t.test(df_binding_RT$binding[df_binding_RT$back_color == var])
+  dz <- d(df_binding_RT$binding[df_binding_RT$back_color == var],0)[4]
+  BF<-ttestBF(df_binding_RT$binding[df_binding_RT$back_color == var])
+  BF2<- as.data.frame(BF)
+  BF01<-1/BF2$bf
+  print(var)
+  back_color<-var
+  t.stat<-t$statistic
+  df<-t$parameter
+  p<-t$p.value
+  ConfInt1<-t$conf.int[1]
+  ConfInt2<-t$conf.int[2]
+  mean_val <- mean(df_binding_RT$binding[df_binding_RT$back_color == var])
+  median_val <- median(df_binding_RT$binding[df_binding_RT$back_color == var])
+  SD_val <- sd(df_binding_RT$binding[df_binding_RT$back_color == var])
+  df_interim<-data.frame(back_color = back_color, mean = mean_val, SD = SD_val, median = median_val, t.stat = t.stat, df = df, p = p, dz = dz, BF01 = BF01,ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+  df_0<-rbind(df_0, df_interim)
+}
+...
+post_hoc_t(""ms"")
+...
+post_hoc_t <- function(measure_unit) {
+  u = measure_unit
+  rounded_means <- round(df_0$mean,2)
+  rounded_SDs <- round(df_0$SD,2)
+  rounded_ts <- round(df_0$t,2)
+  rounded_t <- round(df_t$t,2)
+  rounded_ds <- round(df_0$dz,2)
+  rounded_d <- round(df_t$dz,2)
+  rounded_ps <- round(df_0$p,3)
+  rounded_p <- round(df_t$p,3)
+  
+  if (df_0$p[1] < 0.001) {p_value1 = '< 0.001'} else {p_value1 = rounded_ps[1]}
+  if (df_0$p[2] < 0.001) {p_value2 = '< 0.001'} else {p_value2 = rounded_ps[2]}
+  if (df_t$p[1] < 0.001) {p_value = '< 0.001'} else {p_value = rounded_p[2]}
+  
+  writeLines(paste(""Statistics for the 2 factor Stages"",df_0[1,1],""and"",df_0[2,1],""\n"",
+                   ""\n"",
+                   ""factor Stage"",df_0[1,1], ""           :"",""M ="",rounded_means[1],u, "", SD ="", rounded_SDs[1],u,""\n"",
+                   ""against zero t-test for"",df_0[1,1],"": t"", ""("",df_0$df[1],"")"", ""="", rounded_ts[1],"", p ="", p_value1,"", dz ="",rounded_ds[1],""\n"",
+                   ""____"",""\n"",
+                   ""factor Stage"",df_0[2,1],""           :"",""M ="",rounded_means[2],u, "", SD ="", rounded_SDs[2],u,""\n"",
+                   ""against zero t-test for"",df_0[2,1], "": t"", ""("",df_0$df[2],"")"", ""="", rounded_ts[2], "", p ="", p_value2,"", dz ="",rounded_ds[2],""\n"",
+                   ""____"",""\n"",
+                   ""factor Stage"",df_0[1,1],""vs."",df_0[2,1],""    : t"",""("",df_t$df[1],"")"",""="", rounded_t[1],"", p ="", p_value,"", d ="",rounded_d[1]))
+}
+...
+## T-test comparing the different conditions against each other ##
+
+
+df_t<- data.frame(back_color_1 = factor(),back_color_2 = factor(), mean_1 = numeric(), mean_2 = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), Sig = character(), 
+                  dz = numeric(),BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var1 in levels(df_binding_RT$back_color)) {
+  for (var2 in rev(levels(df_binding_RT$back_color))) {
+    if (var1 == var2){
+      next
+    }
+    t <- t.test(df_binding_RT$binding[df_binding_RT$back_color == var1],
+                df_binding_RT$binding[df_binding_RT$back_color == var2],
+                paired = T) # Change if between
+    BF<-ttestBF(df_binding_RT$binding[df_binding_RT$back_color == var1],
+                df_binding_RT$binding[df_binding_RT$back_color == var2],
+                paired = T) # change if between
+    BF2<- as.data.frame(BF)
+    BF01<-1/BF2$bf
+    back_color_1 <- var1
+    back_color_2 <- var2
+    t.stat<-t$statistic
+    df<-t$parameter
+    p<-t$p.value
+    ConfInt1<-t$conf.int[1]
+    ConfInt2<-t$conf.int[2]
+    mean_1 = mean(df_binding_RT$binding[df_binding_RT$back_color == var1])
+    mean_2 = mean(df_binding_RT$binding[df_binding_RT$back_color == var2])
+    Sig <- ifelse(p < 0.05, ""*"", ifelse(p > 0.05 & p < 0.10, ""+"", "" ""))
+    dz = t.stat / sqrt(df+1)
+    
+    df_interim<-data.frame(back_color_1 = back_color_1,back_color_2 = back_color_2, mean_1 = mean_1, mean_2 = mean_2, t.stat = t.stat, df = df, p = p, Sig = Sig, dz = dz,BF01 = BF01, ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+    df_t<-rbind(df_t, df_interim)
+    df_t<- na.omit(df_t)
+  }
+}
+",match,"The code uses a standard two-sided one-sample t-test against zero with a 95% confidence interval, matching the paper’s description of a two-tailed test with a 95% CI for the DRB effect in the green-background condition. No conflicting inference criteria (e.g., different alpha, one-tailed test) are evident in the code.",,
+muenster,4,"A one-sample t-test on RT-based DRB effects in the red-background condition assessed whether the DRB effect (same composite contrast of RR/RC × DR/DC) was significantly different from zero. The test revealed a robust positive DRB effect for red-background trials (M = 35 ms, SD = 34 ms), t(62) = 8.26, p < .001, d = 1.04, 95% CI [27 ms, 44 ms]. This confirmed strong distractor–response binding when the background context was a red hue. As with the green condition, this post hoc test decomposed the three-way interaction from the RT ANOVA.",Model Specification,"To further examine this difference in DRB effects caused by background color, we calculated post hoc t tests comparing the DRB effects in both background conditions. ... In the red background condition, the observed DRB effects were stronger: M = 35 ms, SD = 34 ms, two-tailed t(62) = 8.26, p < .001, d = 1.04, 95% CI [27 ms, 44 ms].","## RT DRB Effects ##
+
+table(df_binding_RT$VP, df_binding_RT$back_color) # Check if every VP has data for all relevant conditions
+
+
+# Make sure that all relevant independent variables are variables of type 'factor' #
+df_binding_RT$VP <- as.character(df_binding_RT$VP)
+df_binding_RT$VP <- as.factor(df_binding_RT$VP)
+df_binding_RT$back_color <- as.factor(df_binding_RT$back_color)
+
+
+## t-test for DRB effects agains 0 ##
+
+
+df_0<- data.frame(back_color = factor(), mean = numeric(), SD = numeric(), median = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), dz = numeric(), BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var in levels(df_binding_RT$back_color)) {
+  t<-t.test(df_binding_RT$binding[df_binding_RT$back_color == var])
+  dz <- d(df_binding_RT$binding[df_binding_RT$back_color == var],0)[4]
+  BF<-ttestBF(df_binding_RT$binding[df_binding_RT$back_color == var])
+  BF2<- as.data.frame(BF)
+  BF01<-1/BF2$bf
+  print(var)
+  back_color<-var
+  t.stat<-t$statistic
+  df<-t$parameter
+  p<-t$p.value
+  ConfInt1<-t$conf.int[1]
+  ConfInt2<-t$conf.int[2]
+  mean_val <- mean(df_binding_RT$binding[df_binding_RT$back_color == var])
+  median_val <- median(df_binding_RT$binding[df_binding_RT$back_color == var])
+  SD_val <- sd(df_binding_RT$binding[df_binding_RT$back_color == var])
+  df_interim<-data.frame(back_color = back_color, mean = mean_val, SD = SD_val, median = median_val, t.stat = t.stat, df = df, p = p, dz = dz, BF01 = BF01,ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+  df_0<-rbind(df_0, df_interim)
+}
+",match,"The paper reports a two-tailed one-sample t-test of DRB effects against zero within each background-color condition, and the code implements exactly this model using R’s default two-sided one-sample t.test with mu = 0 for each back_color level. Thus, the statistical test type in the code matches the model specification described in the paper.",,
+muenster,4,"A one-sample t-test on RT-based DRB effects in the red-background condition assessed whether the DRB effect (same composite contrast of RR/RC × DR/DC) was significantly different from zero. The test revealed a robust positive DRB effect for red-background trials (M = 35 ms, SD = 34 ms), t(62) = 8.26, p < .001, d = 1.04, 95% CI [27 ms, 44 ms]. This confirmed strong distractor–response binding when the background context was a red hue. As with the green condition, this post hoc test decomposed the three-way interaction from the RT ANOVA.",Variable Specification,"The DRB effects for both RTs and error rates were calculated with this formula: (RR-DC-trials − RR-DR-trials) − (RC-DC-trials − RC-DR-trials), with RR/RC standing for response repetition/response change and DR/DC for distractor (color) repetition/change. This corresponds to the benefit of distractor color repetition in response repetition trials minus the cost of distractor color repetition in response change trials.
+...
+In the green background condition, significant DRB effects could be observed: M = 18 ms, SD = 38 ms, two-tailed t(62) = 3.76, p < .001, d = 0.47, 95% confidence interval (CI) [8 ms, 27 ms]. In the red background condition, the observed DRB effects were stronger: M = 35 ms, SD = 34 ms, two-tailed t(62) = 8.26, p < .001, d = 1.04, 95% CI [27 ms, 44 ms].
+...
+The DRB effect for response and distractor stimuli was then used as a dependent variable to compare red and green background conditions.","# Create Dataset for Binding Effect analysis ##
+# NOTE: There are two separate dataframes for DRB_RT and DRB_Error 
+
+# DRB RT dataset#
+
+df_binding_RT <- df_final %>%
+  ungroup() %>%
+  select(VP, PPRel,back_color, mean_RTo) %>% # Must contain ID column, all relevant factors you wish to build DRB effects for. NOTE: Only select the column containing the combined prime-probe relation (i.e., PPREL) not the separate columns (i.e., DistRelSim + RespRel)
+  pivot_wider(names_from = c(""PPRel"", ""back_color""), # Always put in PPREL here + any additional within-participant variable; if between only PPREL required
+              values_from = mean_RTo)%>% # Put variable containing your DV here
+  filter(VP != ""16372"",  VP != ""16933"",  VP != ""17095"", VP != ""19999"", VP != ""20710"") %>% # Exclude participants not having all conditions here
+  mutate(binding_red = ((RRDC_red-RRDR_red) - (RCDC_red-RCDR_red)), # Build formula for DRB effect in each condition; if between, only one formula required
+         binding_green = ((RRDC_green-RRDR_green) - (RCDC_green-RCDR_green))) %>%
+  select(VP, binding_red, binding_green)%>%
+  pivot_longer(cols = starts_with(""binding""),
+               names_to = c(""back_color""), # Put column name here that gives the rows is name, within only
+               names_pattern = ""_(.*)"",
+               values_to = ""binding"")
+
+## RT DRB Effects ##
+
+table(df_binding_RT$VP, df_binding_RT$back_color) # Check if every VP has data for all relevant conditions
+
+
+# Make sure that all relevant independent variables are variables of type 'factor' #
+df_binding_RT$VP <- as.character(df_binding_RT$VP)
+df_binding_RT$VP <- as.factor(df_binding_RT$VP)
+df_binding_RT$back_color <- as.factor(df_binding_RT$back_color)
+
+
+## t-test for DRB effects agains 0 ##
+
+
+df_0<- data.frame(back_color = factor(), mean = numeric(), SD = numeric(), median = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), dz = numeric(), BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var in levels(df_binding_RT$back_color)) {
+  t<-t.test(df_binding_RT$binding[df_binding_RT$back_color == var])
+  dz <- d(df_binding_RT$binding[df_binding_RT$back_color == var],0)[4]
+  BF<-ttestBF(df_binding_RT$binding[df_binding_RT$back_color == var])
+  BF2<- as.data.frame(BF)
+  BF01<-1/BF2$bf
+  print(var)
+  back_color<-var
+  t.stat<-t$statistic
+  df<-t$parameter
+  p<-t$p.value
+  ConfInt1<-t$conf.int[1]
+  ConfInt2<-t$conf.int[2]
+  mean_val <- mean(df_binding_RT$binding[df_binding_RT$back_color == var])
+  median_val <- median(df_binding_RT$binding[df_binding_RT$back_color == var])
+  SD_val <- sd(df_binding_RT$binding[df_binding_RT$back_color == var])
+  df_interim<-data.frame(back_color = back_color, mean = mean_val, SD = SD_val, median = median_val, t.stat = t.stat, df = df, p = p, dz = dz, BF01 = BF01,ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+  df_0<-rbind(df_0, df_interim)
+}
+",match,"The code computes the RT-based DRB effect using the same RR/RC × DR/DC composite contrast described in the paper and then uses this DRB effect as the dependent variable in a one-sample t-test against zero separately for each background color (including red). The variables’ roles (DRB RT as outcome, background color as the condition used to subset data for separate tests) align with the paper’s variable specification for this analysis.",,
+muenster,4,"A one-sample t-test on RT-based DRB effects in the red-background condition assessed whether the DRB effect (same composite contrast of RR/RC × DR/DC) was significantly different from zero. The test revealed a robust positive DRB effect for red-background trials (M = 35 ms, SD = 34 ms), t(62) = 8.26, p < .001, d = 1.04, 95% CI [27 ms, 44 ms]. This confirmed strong distractor–response binding when the background context was a red hue. As with the green condition, this post hoc test decomposed the three-way interaction from the RT ANOVA.",Transformation Specification,"Data processing and analysis were performed with R ( R Core
+Team, 2023; R Version 4.3.1) using a mixed-effects analysis of var-
+iance (ANOV A) with Type III sums of squares (“ezAnova” function
+of “ez”; Lawrence, 2016 ). The DRB effects for both RTs and
+error rates were calculated with this formula: (RR-DC-trials −
+RR-DR-trials) − (RC-DC-trials − RC-DR-trials), with RR/RC
+standing for response repetition/response change and DR/DC for
+distractor (color) repetition/change. This corresponds to the bene ﬁt
+of distractor color repetition in response repetition trials minus the
+cost of distractor color repetition in response change trials.
+2 DRB
+effects were compared with post hoc t tests.
+
+From all participants, trials with missing responses (for either
+prime or probe) were excluded from all further analyses (1.7% of tri-
+als), as well as another 4.3% of trials with wrong responses in the
+prime. 4.1% of probe errors (with correct responses in the prime)
+were used for error rate analyses. For RT analyses, another 3.2%
+of trials with probe RT below 200 ms and more than 1.5 interquartile
+ranges above the third quartile of each subject’s RT distribution were
+excluded (cf. Tukey, 1977). In total, 86.7% of all trials remained for
+RT analyses. Note that participants who were heavy outliers were
+excluded after the data ﬁltering process.","# Convert RTs from Sec to ms #
+
+
+df$resp_probe.rt<-df$resp_probe.rt*1000
+df$resp_prime.rt<-df$resp_prime.rt*1000
+
+...
+
+# Setting all relevant variables #
+
+n_Total <<- 192 # Amount of total trials
+n_Cond <<- 24 # Amount of trials per condition
+
+RelVar <<- c(""VP"",""PPRel"",""RespRel"",""DistRelSim"",""back_color"",""resp_prime.corr"",""resp_prime.rt"",""resp_probe.corr"",""resp_probe.rt"") # All columns relevant to the standard ANOVA / t-test analysis
+FactVar <<- c(""VP"",""PPRel"",""RespRel"",""DistRelSim"",""back_color"") # All columns containing factorial data )
+
+# Selecting relevant variables #
+
+df_analysis<-select(df,RelVar) %>% # Selects a reduced dataframe containing the relevant columns specified above
+  mutate(VP = factor(VP)) # Makes the participant variable a factorial variable
+
+...
+
+## Count & Exclude missing probe responses ##
+# Creates new dataframe that informs about trials excluded due to missing values
+# NOTE: In Psychopy a missing RT indicates that no resp_probense was given (i.e., final count indicates trial loss due to non-probe responses)
+
+df_NA <- df_analysis %>% 
+  mutate(is_NAo = ifelse(is.na(resp_probe.rt),1,0), # Calculates new variable informing whether a resp_probense was given (0) or a resp_probense is missing (1)
+         is_NAi = ifelse(is.na(resp_prime.rt),1,0)) %>% 
+  group_by(VP,PPRel,RespRel,DistRelSim,back_color) %>%
+  summarise(n_NAo = (mean(is_NAo))*100,
+            n_NAi = (mean(is_NAi))*100)
+
+
+df_analysis<-na.omit(df_analysis) # Removes all rows (i.e., trials) with missing probe responses in prime and / or probe
+
+...
+
+## Find Tukey Cut-Off Criterion ##
+
+# Define which Tukey cut-off criterion to use
+# NOTE: Only finds cut-off, exclusion is done later on #
+
+Limit <<- 1.5
+
+
+df_analysis <- df_analysis %>%
+  group_by(VP) %>%
+  mutate(lower_hinge = floor(fivenum(resp_probe.rt)[2]),
+         median = fivenum(resp_probe.rt)[3],
+         upper_hinge = ceiling(fivenum(resp_probe.rt)[4]),
+         IQR = upper_hinge - lower_hinge, 
+         cut_off = upper_hinge + Limit*IQR)
+
+...
+
+## Exclude Trials with Prime and / or Probe Errors ##
+
+df_analysis <- df_analysis %>%
+  filter(resp_prime.corr == 1, resp_probe.corr == 1) # Each trial with error (0) in prime and / or probe is excluded
+
+...
+
+## Count Loss due to Tukey Cut-Off ##
+# NOTE: Only counts, exclusion is done later on #
+
+df_Tukey <- df_analysis %>%
+  group_by(VP,PPRel,RespRel,DistRelSim,back_color) %>%
+  summarise(n = length(resp_probe.rt),
+            n_Upper = length(resp_probe.rt[resp_probe.rt > cut_off | resp_probe.rt < 200]), # Each trial above the cut-off and below 200ms is excluded
+            TukeyPerc = (n_Upper / n)*100)
+
+
+## Exclude Trials outside of Tukey Cut-Off ##
+
+df_analysis <- df_analysis %>%
+  filter(resp_probe.rt < cut_off) %>%
+  filter(resp_probe.rt > 200)
+
+...
+
+## Creating Dataset for RT analysis ##
+
+df_final <- df_analysis %>%
+  group_by(VP,PPRel,RespRel,DistRelSim,back_color) %>%
+  summarise(mean_RTo = mean(resp_probe.rt),
+            n_left = length(resp_probe.rt), # Raw trial count left after all exclusions
+            n_left_Perc = (n_left / n_Cond)*100, # Percentage left after all exclusions 
+            n_lost = (100-n_left_Perc)) # Percentage lost due to exclusions
+
+...
+
+## Create Dataset for Binding Effect analysis ##
+# NOTE: There are two separate dataframes for DRB_RT and DRB_Error 
+
+# DRB RT dataset#
+
+df_binding_RT <- df_final %>%
+  ungroup() %>%
+  select(VP, PPRel,back_color, mean_RTo) %>% # Must contain ID column, all relevant factors you wish to build DRB effects for. NOTE: Only select the column containing the combined prime-probe relation (i.e., PPREL) not the separate columns (i.e., DistRelSim + RespRel)
+  pivot_wider(names_from = c(""PPRel"", ""back_color""), # Always put in PPREL here + any additional within-participant variable; if between only PPREL required
+              values_from = mean_RTo)%>% # Put variable containing your DV here
+  filter(VP != ""16372"",  VP != ""16933"",  VP != ""17095"", VP != ""19999"", VP != ""20710"") %>% # Exclude participants not having all conditions here
+  mutate(binding_red = ((RRDC_red-RRDR_red) - (RCDC_red-RCDR_red)), # Build formula for DRB effect in each condition; if between, only one formula required
+         binding_green = ((RRDC_green-RRDR_green) - (RCDC_green-RCDR_green))) %>%
+  select(VP, binding_red, binding_green)%>%
+  pivot_longer(cols = starts_with(""binding""),
+               names_to = c(""back_color""), # Put column name here that gives the rows is name, within only
+               names_pattern = ""_(.*)"",
+               values_to = ""binding"")",match,"The code applies the same RT trimming, error/missing-response exclusions, aggregation, and DRB-effect computation described in the paper prior to conducting the t-test on red-background DRB RT effects. All key transformations (unit conversion, per-subject Tukey outlier trimming, trial/participant exclusions, and construction of the RR/RC × DR/DC contrast) are implemented consistently with the text.",,
+muenster,4,"A one-sample t-test on RT-based DRB effects in the red-background condition assessed whether the DRB effect (same composite contrast of RR/RC × DR/DC) was significantly different from zero. The test revealed a robust positive DRB effect for red-background trials (M = 35 ms, SD = 34 ms), t(62) = 8.26, p < .001, d = 1.04, 95% CI [27 ms, 44 ms]. This confirmed strong distractor–response binding when the background context was a red hue. As with the green condition, this post hoc test decomposed the three-way interaction from the RT ANOVA.",Inference Specification,"With dz = 0.40 as a rather conservative estimation, we planned to run N = 59 participants, leading to a power of 1 − β = .85 (assuming an α = .05) (Gpower 3.1.9.7; Faul et al., 2007), to find a modulation of the basic DRB effect. ... In the red background condition, the observed DRB effects were stronger: M = 35 ms, SD = 34 ms, two-tailed t(62) = 8.26, p < .001, d = 1.04, 95% confidence interval (CI) [27 ms, 44 ms].","## RT DRB Effects ##
+
+table(df_binding_RT$VP, df_binding_RT$back_color) # Check if every VP has data for all relevant conditions
+
+
+# Make sure that all relevant independent variables are variables of type 'factor' #
+df_binding_RT$VP <- as.character(df_binding_RT$VP)
+df_binding_RT$VP <- as.factor(df_binding_RT$VP)
+df_binding_RT$back_color <- as.factor(df_binding_RT$back_color)
+
+
+## t-test for DRB effects agains 0 ##
+
+
+df_0<- data.frame(back_color = factor(), mean = numeric(), SD = numeric(), median = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), dz = numeric(), BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var in levels(df_binding_RT$back_color)) {
+  t<-t.test(df_binding_RT$binding[df_binding_RT$back_color == var])
+  dz <- d(df_binding_RT$binding[df_binding_RT$back_color == var],0)[4]
+  BF<-ttestBF(df_binding_RT$binding[df_binding_RT$back_color == var])
+  BF2<- as.data.frame(BF)
+  BF01<-1/BF2$bf
+  print(var)
+  back_color<-var
+  t.stat<-t$statistic
+  df<-t$parameter
+  p<-t$p.value
+  ConfInt1<-t$conf.int[1]
+  ConfInt2<-t$conf.int[2]
+  mean_val <- mean(df_binding_RT$binding[df_binding_RT$back_color == var])
+  median_val <- median(df_binding_RT$binding[df_binding_RT$back_color == var])
+  SD_val <- sd(df_binding_RT$binding[df_binding_RT$back_color == var])
+  df_interim<-data.frame(back_color = back_color, mean = mean_val, SD = SD_val, median = median_val, t.stat = t.stat, df = df, p = p, dz = dz, BF01 = BF01,ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+  df_0<-rbind(df_0, df_interim)
+}
+
+
+## T-test comparing the different conditions against each other ##
+
+
+
+df_t<- data.frame(back_color_1 = factor(),back_color_2 = factor(), mean_1 = numeric(), mean_2 = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), Sig = character(), 
+                  dz = numeric(),BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var1 in levels(df_binding_RT$back_color)) {
+  for (var2 in rev(levels(df_binding_RT$back_color))) {
+    if (var1 == var2){
+      next
+    }
+    t <- t.test(df_binding_RT$binding[df_binding_RT$back_color == var1],
+                df_binding_RT$binding[df_binding_RT$back_color == var2],
+                paired = T) # Change if between
+    BF<-ttestBF(df_binding_RT$binding[df_binding_RT$back_color == var1],
+                df_binding_RT$binding[df_binding_RT$back_color == var2],
+                paired = T) # change if between
+    BF2<- as.data.frame(BF)
+    BF01<-1/BF2$bf
+    back_color_1 <- var1
+    back_color_2 <- var2
+    t.stat<-t$statistic
+    df<-t$parameter
+    p<-t$p.value
+    ConfInt1<-t$conf.int[1]
+    ConfInt2<-t$conf.int[2]
+    mean_1 = mean(df_binding_RT$binding[df_binding_RT$back_color == var1])
+    mean_2 = mean(df_binding_RT$binding[df_binding_RT$back_color == var2])
+    Sig <- ifelse(p < 0.05, ""*"", ifelse(p > 0.05 & p < 0.10, ""+"", "" ""))
+    dz = t.stat / sqrt(df+1)
+    
+    df_interim<-data.frame(back_color_1 = back_color_1,back_color_2 = back_color_2, mean_1 = mean_1, mean_2 = mean_2, t.stat = t.stat, df = df, p = p, Sig = Sig, dz = dz,BF01 = BF01, ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+    df_t<-rbind(df_t, df_interim)
+    df_t<- na.omit(df_t)
+  }
+}
+
+
+post_hoc_t(""ms"")
+
+...
+
+## Mean RT DRB effect ####
+
+
+# Create new data frame for plot # 
+df_BarBinRT <- summarySEwithin(data = df_binding_RT,
+                               measurevar = ""binding"", # put your dv here 
+                               withinvars = c(""back_color""), # put all within-participant variables here
+                               idvar = ""VP"", # put the id variable here
+                               na.rm = FALSE,
+                               conf.interval = .95)
+
+...
+
+Sig <- ifelse(p < 0.05, ""*"", ifelse(p > 0.05 & p < 0.10, ""+"", "" ""))
+
+...
+
+if (df_0$p[1] < 0.001) {p_value1 = '< 0.001'} else {p_value1 = rounded_ps[1]}
+if (df_0$p[2] < 0.001) {p_value2 = '< 0.001'} else {p_value2 = rounded_ps[2]}
+if (df_t$p[1] < 0.001) {p_value = '< 0.001'} else {p_value = rounded_p[2]}
+",match,"The code uses a two-sided one-sample t-test against zero with 95% confidence intervals and an alpha threshold of .05, which aligns with the paper’s reported inferential framework. Additional elements in the code (e.g., Bayes factors, marking p < .10 as '+') do not contradict the paper’s stated inference criteria.",,
+muenster,5,"A paired-samples t-test compared RT-based DRB effect magnitudes between red- and green-background conditions to directly test contextual modulation of binding strength. The test showed that DRB effects were significantly larger with a red background (M = 35 ms) than with a green background (M = 18 ms), t(62) = 3.00, p = .004, d = 0.38, 95% CI [6 ms, 29 ms]. This analysis corresponded to and confirmed the significant three-way interaction from the RT ANOVA, demonstrating that background color context modulates distractor–response binding.",Model Specification,"To further examine this difference in DRB effects caused by background color, we calculated post hoc t tests comparing the DRB effects in both background conditions. ... Crucially, this difference reached significance (corresponding to the three-way interaction of the ANOVA): two-tailed t(62) = 3.00, p = .004, d = 0.38, 95% CI [6 ms, 29 ms].","## RT DRB Effects ##
+
+table(df_binding_RT$VP, df_binding_RT$back_color) # Check if every VP has data for all relevant conditions
+
+
+# Make sure that all relevant independent variables are variables of type 'factor' #
+df_binding_RT$VP <- as.character(df_binding_RT$VP)
+df_binding_RT$VP <- as.factor(df_binding_RT$VP)
+df_binding_RT$back_color <- as.factor(df_binding_RT$back_color)
+
+
+## t-test for DRB effects agains 0 ##
+
+
+df_0<- data.frame(back_color = factor(), mean = numeric(), SD = numeric(), median = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), dz = numeric(), BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var in levels(df_binding_RT$back_color)) {
+  t<-t.test(df_binding_RT$binding[df_binding_RT$back_color == var])
+  dz <- d(df_binding_RT$binding[df_binding_RT$back_color == var],0)[4]
+  BF<-ttestBF(df_binding_RT$binding[df_binding_RT$back_color == var])
+  BF2<- as.data.frame(BF)
+  BF01<-1/BF2$bf
+  print(var)
+  back_color<-var
+  t.stat<-t$statistic
+  df<-t$parameter
+  p<-t$p.value
+  ConfInt1<-t$conf.int[1]
+  ConfInt2<-t$conf.int[2]
+  mean_val <- mean(df_binding_RT$binding[df_binding_RT$back_color == var])
+  median_val <- median(df_binding_RT$binding[df_binding_RT$back_color == var])
+  SD_val <- sd(df_binding_RT$binding[df_binding_RT$back_color == var])
+  df_interim<-data.frame(back_color = back_color, mean = mean_val, SD = SD_val, median = median_val, t.stat = t.stat, df = df, p = p, dz = dz, BF01 = BF01,ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+  df_0<-rbind(df_0, df_interim)
+}
+
+
+
+
+## T-test comparing the different conditions against each other ##
+
+
+
+df_t<- data.frame(back_color_1 = factor(),back_color_2 = factor(), mean_1 = numeric(), mean_2 = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), Sig = character(), 
+                  dz = numeric(),BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var1 in levels(df_binding_RT$back_color)) {
+  for (var2 in rev(levels(df_binding_RT$back_color))) {
+    if (var1 == var2){
+      next
+    }
+    t <- t.test(df_binding_RT$binding[df_binding_RT$back_color == var1],
+                df_binding_RT$binding[df_binding_RT$back_color == var2],
+                paired = T) # Change if between
+    BF<-ttestBF(df_binding_RT$binding[df_binding_RT$back_color == var1],
+                df_binding_RT$binding[df_binding_RT$back_color == var2],
+                paired = T) # change if between
+    BF2<- as.data.frame(BF)
+    BF01<-1/BF2$bf
+    back_color_1 <- var1
+    back_color_2 <- var2
+    t.stat<-t$statistic
+    df<-t$parameter
+    p<-t$p.value
+    ConfInt1<-t$conf.int[1]
+    ConfInt2<-t$conf.int[2]
+    mean_1 = mean(df_binding_RT$binding[df_binding_RT$back_color == var1])
+    mean_2 = mean(df_binding_RT$binding[df_binding_RT$back_color == var2])
+    Sig <- ifelse(p < 0.05, ""*"", ifelse(p > 0.05 & p < 0.10, ""+"", "" ""))
+    dz = t.stat / sqrt(df+1)
+    
+    df_interim<-data.frame(back_color_1 = back_color_1,back_color_2 = back_color_2, mean_1 = mean_1, mean_2 = mean_2, t.stat = t.stat, df = df, p = p, Sig = Sig, dz = dz,BF01 = BF01, ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+    df_t<-rbind(df_t, df_interim)
+    df_t<- na.omit(df_t)
+  }
+}
+
+
+post_hoc_t(""ms"")",match,"The paper describes a two-tailed paired t-test comparing DRB effects between background-color conditions, and the code implements a paired t-test between binding scores for different background colors. Thus, the model specification in the code aligns with the description in the paper.",,
+muenster,5,"A paired-samples t-test compared RT-based DRB effect magnitudes between red- and green-background conditions to directly test contextual modulation of binding strength. The test showed that DRB effects were significantly larger with a red background (M = 35 ms) than with a green background (M = 18 ms), t(62) = 3.00, p = .004, d = 0.38, 95% CI [6 ms, 29 ms]. This analysis corresponded to and confirmed the significant three-way interaction from the RT ANOVA, demonstrating that background color context modulates distractor–response binding.",Variable Specification,"To further examine this difference in DRB effects caused by background color, we calculated post hoc t tests comparing the DRB effects in both background conditions. In the green background condition, significant DRB effects could be observed: M = 18 ms, SD = 38 ms, two-tailed t(62) = 3.76, p < .001, d = 0.47, 95% confidence interval (CI) [8 ms, 27 ms]. In the red background condition, the observed DRB effects were stronger: M = 35 ms, SD = 34 ms, two-tailed t(62) = 8.26, p < .001, d = 1.04, 95% CI [27 ms, 44 ms]. Crucially, this difference reached significance (corresponding to the three-way interaction of the ANOVA): two-tailed t(62) = 3.00, p = .004, d = 0.38, 95% CI [6 ms, 29 ms].","## Create Dataset for Binding Effect analysis ##
+# NOTE: There are two separate dataframes for DRB_RT and DRB_Error 
+
+# DRB RT dataset#
+
+df_binding_RT <- df_final %>%
+  ungroup() %>%
+  select(VP, PPRel,back_color, mean_RTo) %>% # Must contain ID column, all relevant factors you wish to build DRB effects for. NOTE: Only select the column containing the combined prime-probe relation (i.e., PPREL) not the separate columns (i.e., DistRelSim + RespRel)
+  pivot_wider(names_from = c(""PPRel"", ""back_color""), # Always put in PPREL here + any additional within-participant variable; if between only PPREL required
+              values_from = mean_RTo)%>% # Put variable containing your DV here
+  filter(VP != ""16372"",  VP != ""16933"",  VP != ""17095"", VP != ""19999"", VP != ""20710"") %>% # Exclude participants not having all conditions here
+  mutate(binding_red = ((RRDC_red-RRDR_red) - (RCDC_red-RCDR_red)), # Build formula for DRB effect in each condition; if between, only one formula required
+         binding_green = ((RRDC_green-RRDR_green) - (RCDC_green-RCDR_green))) %>%
+  select(VP, binding_red, binding_green)%>%
+  pivot_longer(cols = starts_with(""binding""),
+               names_to = c(""back_color""), # Put column name here that gives the rows is name, within only
+               names_pattern = ""_(.*)"",
+               values_to = ""binding"")
+
+## RT DRB Effects ##
+
+table(df_binding_RT$VP, df_binding_RT$back_color) # Check if every VP has data for all relevant conditions
+
+
+# Make sure that all relevant independent variables are variables of type 'factor' #
+df_binding_RT$VP <- as.character(df_binding_RT$VP)
+df_binding_RT$VP <- as.factor(df_binding_RT$VP)
+df_binding_RT$back_color <- as.factor(df_binding_RT$back_color)
+
+
+## t-test for DRB effects agains 0 ##
+
+
+df_0<- data.frame(back_color = factor(), mean = numeric(), SD = numeric(), median = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), dz = numeric(), BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var in levels(df_binding_RT$back_color)) {
+  t<-t.test(df_binding_RT$binding[df_binding_RT$back_color == var])
+  dz <- d(df_binding_RT$binding[df_binding_RT$back_color == var],0)[4]
+  BF<-ttestBF(df_binding_RT$binding[df_binding_RT$back_color == var])
+  BF2<- as.data.frame(BF)
+  BF01<-1/BF2$bf
+  print(var)
+  back_color<-var
+  t.stat<-t$statistic
+  df<-t$parameter
+  p<-t$p.value
+  ConfInt1<-t$conf.int[1]
+  ConfInt2<-t$conf.int[2]
+  mean_val <- mean(df_binding_RT$binding[df_binding_RT$back_color == var])
+  median_val <- median(df_binding_RT$binding[df_binding_RT$back_color == var])
+  SD_val <- sd(df_binding_RT$binding[df_binding_RT$back_color == var])
+  df_interim<-data.frame(back_color = back_color, mean = mean_val, SD = SD_val, median = median_val, t.stat = t.stat, df = df, p = p, dz = dz, BF01 = BF01,ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+  df_0<-rbind(df_0, df_interim)
+}
+
+
+
+
+## T-test comparing the different conditions against each other ##
+
+
+
+df_t<- data.frame(back_color_1 = factor(),back_color_2 = factor(), mean_1 = numeric(), mean_2 = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), Sig = character(), 
+                  dz = numeric(),BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var1 in levels(df_binding_RT$back_color)) {
+  for (var2 in rev(levels(df_binding_RT$back_color))) {
+    if (var1 == var2){
+      next
+    }
+    t <- t.test(df_binding_RT$binding[df_binding_RT$back_color == var1],
+                df_binding_RT$binding[df_binding_RT$back_color == var2],
+                paired = T) # Change if between
+    BF<-ttestBF(df_binding_RT$binding[df_binding_RT$back_color == var1],
+                df_binding_RT$binding[df_binding_RT$back_color == var2],
+                paired = T) # change if between
+    BF2<- as.data.frame(BF)
+    BF01<-1/BF2$bf
+    back_color_1 <- var1
+    back_color_2 <- var2
+    t.stat<-t$statistic
+    df<-t$parameter
+    p<-t$p.value
+    ConfInt1<-t$conf.int[1]
+    ConfInt2<-t$conf.int[2]
+    mean_1 = mean(df_binding_RT$binding[df_binding_RT$back_color == var1])
+    mean_2 = mean(df_binding_RT$binding[df_binding_RT$back_color == var2])
+    Sig <- ifelse(p < 0.05, ""*"", ifelse(p > 0.05 & p < 0.10, ""+"", "" ""))
+    dz = t.stat / sqrt(df+1)
+    
+    df_interim<-data.frame(back_color_1 = back_color_1,back_color_2 = back_color_2, mean_1 = mean_1, mean_2 = mean_2, t.stat = t.stat, df = df, p = p, Sig = Sig, dz = dz,BF01 = BF01, ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+    df_t<-rbind(df_t, df_interim)
+    df_t<- na.omit(df_t)
+  }
+}
+
+
+post_hoc_t(""ms"")",match,"The paper specifies a comparison of DRB effect magnitudes (RT-based binding scores) between red and green background conditions within participants, and the code implements a paired t-test on per-participant DRB effect scores for red vs. green backgrounds. Thus, the outcome and predictor variables in the code align with the variable specification described in the paper.",,
+muenster,5,"A paired-samples t-test compared RT-based DRB effect magnitudes between red- and green-background conditions to directly test contextual modulation of binding strength. The test showed that DRB effects were significantly larger with a red background (M = 35 ms) than with a green background (M = 18 ms), t(62) = 3.00, p = .004, d = 0.38, 95% CI [6 ms, 29 ms]. This analysis corresponded to and confirmed the significant three-way interaction from the RT ANOVA, demonstrating that background color context modulates distractor–response binding.",Transformation Specification,"The DRB effects for both RTs and error rates were calculated with this formula: (RR-DC-trials − RR-DR-trials) − (RC-DC-trials − RC-DR-trials), with RR/RC standing for response repetition/response change and DR/DC for distractor (color) repetition/change. This corresponds to the benefit of distractor color repetition in response repetition trials minus the cost of distractor color repetition in response change trials. 2 DRB effects were compared with post hoc t tests.
+
+From all participants, trials with missing responses (for either prime or probe) were excluded from all further analyses (1.7% of trials), as well as another 4.3% of trials with wrong responses in the prime. 4.1% of probe errors (with correct responses in the prime) were used for error rate analyses. For RT analyses, another 3.2% of trials with probe RT below 200 ms and more than 1.5 interquartile ranges above the third quartile of each subject’s RT distribution were excluded (cf. Tukey, 1977). In total, 86.7% of all trials remained for RT analyses. Note that participants who were heavy outliers were excluded after the data filtering process.","# Convert RTs from Sec to ms #
+
+
+df$resp_probe.rt<-df$resp_probe.rt*1000
+df$resp_prime.rt<-df$resp_prime.rt*1000
+
+...
+
+# Setting all relevant variables #
+
+n_Total <<- 192 # Amount of total trials
+n_Cond <<- 24 # Amount of trials per condition
+
+RelVar <<- c(""VP"",""PPRel"",""RespRel"",""DistRelSim"",""back_color"",""resp_prime.corr"",""resp_prime.rt"",""resp_probe.corr"",""resp_probe.rt"") # All columns relevant to the standard ANOVA / t-test analysis
+FactVar <<- c(""VP"",""PPRel"",""RespRel"",""DistRelSim"",""back_color"") # All columns containing factorial data )
+
+# Selecting relevant variables #
+
+df_analysis<-select(df,RelVar) %>% # Selects a reduced dataframe containing the relevant columns specified above
+  mutate(VP = factor(VP)) # Makes the participant variable a factorial variable
+
+...
+
+## Count & Exclude missing probe responses ##
+# Creates new dataframe that informs about trials excluded due to missing values
+# NOTE: In Psychopy a missing RT indicates that no resp_probense was given (i.e., final count indicates trial loss due to non-probe responses)
+
+df_NA <- df_analysis %>% 
+  mutate(is_NAo = ifelse(is.na(resp_probe.rt),1,0), # Calculates new variable informing whether a resp_probense was given (0) or a resp_probense is missing (1)
+         is_NAi = ifelse(is.na(resp_prime.rt),1,0)) %>% 
+  group_by(VP,PPRel,RespRel,DistRelSim,back_color) %>%
+  summarise(n_NAo = (mean(is_NAo))*100,
+            n_NAi = (mean(is_NAi))*100)
+
+df_analysis<-na.omit(df_analysis) # Removes all rows (i.e., trials) with missing probe responses in prime and / or probe
+
+...
+
+## Find Tukey Cut-Off Criterion ##
+
+# Define which Tukey cut-off criterion to use
+# NOTE: Only finds cut-off, exclusion is done later on #
+
+Limit <<- 1.5
+
+
+df_analysis <- df_analysis %>%
+  group_by(VP) %>%
+  mutate(lower_hinge = floor(fivenum(resp_probe.rt)[2]),
+         median = fivenum(resp_probe.rt)[3],
+         upper_hinge = ceiling(fivenum(resp_probe.rt)[4]),
+         IQR = upper_hinge - lower_hinge, 
+         cut_off = upper_hinge + Limit*IQR)
+
+...
+
+## Exclude Trials with Prime and / or Probe Errors ##
+
+df_analysis <- df_analysis %>%
+  filter(resp_prime.corr == 1, resp_probe.corr == 1) # Each trial with error (0) in prime and / or probe is excluded
+
+...
+
+## Count Loss due to Tukey Cut-Off ##
+# NOTE: Only counts, exclusion is done later on #
+
+df_Tukey <- df_analysis %>%
+  group_by(VP,PPRel,RespRel,DistRelSim,back_color) %>%
+  summarise(n = length(resp_probe.rt),
+            n_Upper = length(resp_probe.rt[resp_probe.rt > cut_off | resp_probe.rt < 200]), # Each trial above the cut-off and below 200ms is excluded
+            TukeyPerc = (n_Upper / n)*100)
+
+
+## Exclude Trials outside of Tukey Cut-Off ##
+
+df_analysis <- df_analysis %>%
+  filter(resp_probe.rt < cut_off) %>%
+  filter(resp_probe.rt > 200)
+
+...
+
+## Creating Dataset for RT analysis ##
+
+df_final <- df_analysis %>%
+  group_by(VP,PPRel,RespRel,DistRelSim,back_color) %>%
+  summarise(mean_RTo = mean(resp_probe.rt),
+            n_left = length(resp_probe.rt), # Raw trial count left after all exclusions
+            n_left_Perc = (n_left / n_Cond)*100, # Percentage left after all exclusions 
+            n_lost = (100-n_left_Perc)) # Percentage lost due to exclusions
+
+...
+
+## Create Dataset for Binding Effect analysis ##
+# NOTE: There are two separate dataframes for DRB_RT and DRB_Error 
+
+# DRB RT dataset#
+
+df_binding_RT <- df_final %>%
+  ungroup() %>%
+  select(VP, PPRel,back_color, mean_RTo) %>% # Must contain ID column, all relevant factors you wish to build DRB effects for. NOTE: Only select the column containing the combined prime-probe relation (i.e., PPREL) not the separate columns (i.e., DistRelSim + RespRel)
+  pivot_wider(names_from = c(""PPRel"", ""back_color""), # Always put in PPREL here + any additional within-participant variable; if between only PPREL required
+              values_from = mean_RTo)%>% # Put variable containing your DV here
+  filter(VP != ""16372"",  VP != ""16933"",  VP != ""17095"", VP != ""19999"", VP != ""20710"") %>% # Exclude participants not having all conditions here
+  mutate(binding_red = ((RRDC_red-RRDR_red) - (RCDC_red-RCDR_red)), # Build formula for DRB effect in each condition; if between, only one formula required
+         binding_green = ((RRDC_green-RRDR_green) - (RCDC_green-RCDR_green))) %>%
+  select(VP, binding_red, binding_green)%>%
+  pivot_longer(cols = starts_with(""binding""),
+               names_to = c(""back_color""), # Put column name here that gives the rows is name, within only
+               names_pattern = ""_(.*)"",
+               values_to = ""binding"")
+
+...
+
+# 16933 reported color blindness
+
+df_final <- df_final %>% filter(VP != ""16372"",  VP != ""16933"",  VP != ""17095"", VP != ""19999"", VP != ""20710"") # Remove participants due to Outlier analysis
+
+...
+
+df_binding_RT <- df_binding_RT %>% filter(VP != ""16372"",  VP != ""16933"",  VP != ""17095"", VP != ""19999"", VP != ""20710"")
+
+...
+
+## RT DRB Effects ##
+
+table(df_binding_RT$VP, df_binding_RT$back_color) # Check if every VP has data for all relevant conditions
+
+
+# Make sure that all relevant independent variables are variables of type 'factor' #
+df_binding_RT$VP <- as.character(df_binding_RT$VP)
+df_binding_RT$VP <- as.factor(df_binding_RT$VP)
+df_binding_RT$back_color <- as.factor(df_binding_RT$back_color)
+",match,"The code applies the same data filtering and DRB-effect computation described in the paper before conducting the red vs. green DRB comparison. RTs are cleaned using the specified missing-response, error, and Tukey-based trimming rules, and DRB scores are computed with the exact formula reported in the manuscript for each background color.",,
+muenster,5,"A paired-samples t-test compared RT-based DRB effect magnitudes between red- and green-background conditions to directly test contextual modulation of binding strength. The test showed that DRB effects were significantly larger with a red background (M = 35 ms) than with a green background (M = 18 ms), t(62) = 3.00, p = .004, d = 0.38, 95% CI [6 ms, 29 ms]. This analysis corresponded to and confirmed the significant three-way interaction from the RT ANOVA, demonstrating that background color context modulates distractor–response binding.",Inference Specification,"Crucially, this difference reached signiﬁcance (corresponding to the three-way interaction of the ANOV A): two-tailed t(62) = 3.00, p = .004, d = 0.38, 95% CI [6 ms, 29 ms].","## RT DRB Effects ##
+
+table(df_binding_RT$VP, df_binding_RT$back_color) # Check if every VP has data for all relevant conditions
+
+
+# Make sure that all relevant independent variables are variables of type 'factor' #
+df_binding_RT$VP <- as.character(df_binding_RT$VP)
+df_binding_RT$VP <- as.factor(df_binding_RT$VP)
+df_binding_RT$back_color <- as.factor(df_binding_RT$back_color)
+
+
+## t-test for DRB effects agains 0 ##
+
+
+df_0<- data.frame(back_color = factor(), mean = numeric(), SD = numeric(), median = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), dz = numeric(), BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var in levels(df_binding_RT$back_color)) {
+  t<-t.test(df_binding_RT$binding[df_binding_RT$back_color == var])
+  dz <- d(df_binding_RT$binding[df_binding_RT$back_color == var],0)[4]
+  BF<-ttestBF(df_binding_RT$binding[df_binding_RT$back_color == var])
+  BF2<- as.data.frame(BF)
+  BF01<-1/BF2$bf
+  print(var)
+  back_color<-var
+  t.stat<-t$statistic
+  df<-t$parameter
+  p<-t$p.value
+  ConfInt1<-t$conf.int[1]
+  ConfInt2<-t$conf.int[2]
+  mean_val <- mean(df_binding_RT$binding[df_binding_RT$back_color == var])
+  median_val <- median(df_binding_RT$binding[df_binding_RT$back_color == var])
+  SD_val <- sd(df_binding_RT$binding[df_binding_RT$back_color == var])
+  df_interim<-data.frame(back_color = back_color, mean = mean_val, SD = SD_val, median = median_val, t.stat = t.stat, df = df, p = p, dz = dz, BF01 = BF01,ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+  df_0<-rbind(df_0, df_interim)
+}
+
+
+
+
+## T-test comparing the different conditions against each other ##
+
+
+
+df_t<- data.frame(back_color_1 = factor(),back_color_2 = factor(), mean_1 = numeric(), mean_2 = numeric(), t.stat = numeric(), df = numeric(), p = numeric(), Sig = character(), 
+                  dz = numeric(),BF01 = numeric(), ConfInt1 = numeric(), ConfInt2 = numeric())
+
+
+for (var1 in levels(df_binding_RT$back_color)) {
+  for (var2 in rev(levels(df_binding_RT$back_color))) {
+    if (var1 == var2){
+      next
+    }
+    t <- t.test(df_binding_RT$binding[df_binding_RT$back_color == var1],
+                df_binding_RT$binding[df_binding_RT$back_color == var2],
+                paired = T) # Change if between
+    BF<-ttestBF(df_binding_RT$binding[df_binding_RT$back_color == var1],
+                df_binding_RT$binding[df_binding_RT$back_color == var2],
+                paired = T) # change if between
+    BF2<- as.data.frame(BF)
+    BF01<-1/BF2$bf
+    back_color_1 <- var1
+    back_color_2 <- var2
+    t.stat<-t$statistic
+    df<-t$parameter
+    p<-t$p.value
+    ConfInt1<-t$conf.int[1]
+    ConfInt2<-t$conf.int[2]
+    mean_1 = mean(df_binding_RT$binding[df_binding_RT$back_color == var1])
+    mean_2 = mean(df_binding_RT$binding[df_binding_RT$back_color == var2])
+    Sig <- ifelse(p < 0.05, ""*"", ifelse(p > 0.05 & p < 0.10, ""+"", "" ""))
+    dz = t.stat / sqrt(df+1)
+    
+    df_interim<-data.frame(back_color_1 = back_color_1,back_color_2 = back_color_2, mean_1 = mean_1, mean_2 = mean_2, t.stat = t.stat, df = df, p = p, Sig = Sig, dz = dz,BF01 = BF01, ConfInt1 = ConfInt1, ConfInt2 = ConfInt2)
+    df_t<-rbind(df_t, df_interim)
+    df_t<- na.omit(df_t)
+  }
+}
+
+
+post_hoc_t(""ms"")
+
+
+## Mean RT DRB effect ####
+
+
+# Create new data frame for plot # 
+df_BarBinRT <- summarySEwithin(data = df_binding_RT,
+                               measurevar = ""binding"", # put your dv here 
+                               withinvars = c(""back_color""), # put all within-participant variables here
+                               idvar = ""VP"", # put the id variable here
+                               na.rm = FALSE,
+                               conf.interval = .95)
+",unknown,,,

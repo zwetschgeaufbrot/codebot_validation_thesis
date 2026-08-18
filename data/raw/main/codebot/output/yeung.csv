@@ -1,0 +1,3351 @@
+paper_id,analysis_id,brief_description,dimension,paper_value,code_value,match_status,explanation,paper_evidence,code_evidence
+yeung,1,"In Study 1, the authors computed a zero-order Pearson correlation between trait object imagery (OSIQ Object subscale) and PTSD symptom severity (IES-R total score) among trauma-exposed adults (n = 806, with correlation n likely 792 after excluding missing gender). The correlation was positive (r = .15, p < .001), indicating that higher object imagery was associated with more PTSD symptoms.",Model Specification,"Zero-order correlations with PTSD symptoms were r = .15 for OSIQ-O and r  = −.16 for OSIQ-S (ps < .001), which were significantly different from each other (p  < .001).","df_master_cor <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen),
+    !is.na(gender_flup_clean),
+    !(gender_flup_clean == ""Other/Prefer not to answer""),
+    ### only among those with demo data
+    recorded_data_demo == ""DEM"",
+    ### only among those with self-reported trauma exposure
+    str_detect(trauma, ""Yes""),
+    ) %>% 
+  select(ies_recent_total, osiq_o, osiq_s)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_o)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_s)
+",match,"The paper reports zero-order correlations between PTSD symptoms and OSIQ subscales, and the code computes Pearson correlations using cor.test on these variables. This aligns with the described model specification.",,
+yeung,1,"In Study 1, the authors computed a zero-order Pearson correlation between trait object imagery (OSIQ Object subscale) and PTSD symptom severity (IES-R total score) among trauma-exposed adults (n = 806, with correlation n likely 792 after excluding missing gender). The correlation was positive (r = .15, p < .001), indicating that higher object imagery was associated with more PTSD symptoms.",Variable Specification,"Zero-order correlations with PTSD symptoms were r = .15 for OSIQ-O and r = −.16 for OSIQ-S (ps < .001), which were significantly different from each other (p < .001). The relationship between imagery abilities and trauma outcome was assessed using a linear regression with object (OSIQ Object [OSIQ-O] subscale) and spatial imagery (OSIQ Spatial [OSIQ-S] subscale) as mean-centered predictors and PTSD symptoms (IES-R) as the outcome.","```{r ies osiq correlations}
+#| warning: false
+
+df_master_cor <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen),
+    !is.na(gender_flup_clean),
+    !(gender_flup_clean == ""Other/Prefer not to answer""),
+    ### only among those with demo data
+    recorded_data_demo == ""DEM"",
+    ### only among those with self-reported trauma exposure
+    str_detect(trauma, ""Yes""),
+    ) %>% 
+  select(ies_recent_total, osiq_o, osiq_s)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_o)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_s)
+
+df_master_cor %>% 
+  as.data.frame() %>% 
+  cocor::cocor(~ies_recent_total + osiq_o | ies_recent_total + osiq_s, data = .)
+```",match,"The code computes zero-order correlations between the OSIQ Object and Spatial subscales and IES-R total PTSD symptoms, matching the variables and roles described in the paper for this analysis.",,
+yeung,1,"In Study 1, the authors computed a zero-order Pearson correlation between trait object imagery (OSIQ Object subscale) and PTSD symptom severity (IES-R total score) among trauma-exposed adults (n = 806, with correlation n likely 792 after excluding missing gender). The correlation was positive (r = .15, p < .001), indicating that higher object imagery was associated with more PTSD symptoms.",Transformation Specification,"“Total scores reflecting object and spatial imagery are calculated by averaging the raw scores of all the items in each domain.”
+
+“The relationship between imagery abilities and trauma outcome was assessed using a linear regression with object (OSIQ Object [OSIQ-O] subscale) and spatial imagery (OSIQ Spatial [OSIQ-S] subscale) as mean-centered predictors and PTSD symptoms (IES-R) as the outcome.”
+
+“Two items on the OSIQ-O were conceptually similar to PTSD-related intrusions (i.e., ‘Sometimes my images are so vivid and persistent that it is difficult to ignore them,’ ‘My visual images are in my head all the time. They are just right there’). Likewise, one item on the IES-R was conceptually similar to trait object imagery (i.e., ‘Pictures about it popped into my mind’). To ensure that any associations were not simply due to overlap between items on scales, we reran the same regression after recalculating OSIQ-O and IES-R scores without these three items.”","df_master_cor <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen),
+    !is.na(gender_flup_clean),
+    !(gender_flup_clean == ""Other/Prefer not to answer""),
+    ### only among those with demo data
+    recorded_data_demo == ""DEM"",
+    ### only among those with self-reported trauma exposure
+    str_detect(trauma, ""Yes""),
+    ) %>% 
+  select(ies_recent_total, osiq_o, osiq_s)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_o)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_s)
+
+df_master_cor %>% 
+  as.data.frame() %>% 
+  cocor::cocor(~ies_recent_total + osiq_o | ies_recent_total + osiq_s, data = .)",unknown,"The code operates on precomputed scale variables (e.g., osiq_o, ies_recent_total), so it is not possible to verify from the provided snippet whether item scores were averaged or otherwise transformed as described in the paper. No item-level computations or item-exclusion recalculations are shown for this correlation analysis.",,
+yeung,1,"In Study 1, the authors computed a zero-order Pearson correlation between trait object imagery (OSIQ Object subscale) and PTSD symptom severity (IES-R total score) among trauma-exposed adults (n = 806, with correlation n likely 792 after excluding missing gender). The correlation was positive (r = .15, p < .001), indicating that higher object imagery was associated with more PTSD symptoms.",Inference Specification,"Zero-order correlations with PTSD symptoms were r = .15 for OSIQ-O and r  = −.16 for OSIQ-S (p s < .001), which were significantly different from each other (p  < .001).","df_master_cor <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen),
+    !is.na(gender_flup_clean),
+    !(gender_flup_clean == ""Other/Prefer not to answer""),
+    ### only among those with demo data
+    recorded_data_demo == ""DEM"",
+    ### only among those with self-reported trauma exposure
+    str_detect(trauma, ""Yes""),
+    ) %>% 
+  select(ies_recent_total, osiq_o, osiq_s)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_o)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_s)
+
+df_master_cor %>% 
+  as.data.frame() %>% 
+  cocor::cocor(~ies_recent_total + osiq_o | ies_recent_total + osiq_s, data = .)
+",match,"The paper reports p-values for each correlation and for the test of difference between correlations, and the code implements standard null-hypothesis significance tests for each correlation and their difference using default settings. This aligns with the implied inference approach in the paper (p-value based significance testing, with results reported as p < .001).",,
+yeung,2,"In Study 1, a zero-order Pearson correlation was calculated between trait spatial imagery (OSIQ Spatial subscale) and PTSD symptom severity (IES-R total score) in trauma-exposed adults. The correlation was negative (r = −.16, p < .001), suggesting that higher spatial imagery was associated with fewer PTSD symptoms.",Model Specification,"Zero-order correlations with PTSD symptoms were r = .15 for OSIQ-O and r  = −.16 for OSIQ-S (p s < .001), which were significantly different from each other (p  < .001).","df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_s)",match,"The paper describes computing a zero-order correlation between PTSD symptoms and OSIQ-S, and the code implements a Pearson correlation test between these same variables, which matches the stated model specification.",,
+yeung,2,"In Study 1, a zero-order Pearson correlation was calculated between trait spatial imagery (OSIQ Spatial subscale) and PTSD symptom severity (IES-R total score) in trauma-exposed adults. The correlation was negative (r = −.16, p < .001), suggesting that higher spatial imagery was associated with fewer PTSD symptoms.",Variable Specification,"Zero-order correlations with PTSD symptoms were r = .15 for OSIQ-O and r  = −.16 for OSIQ-S (p s < .001), which were significantly different from each other (p  < .001).","df_master_cor <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen),
+    !is.na(gender_flup_clean),
+    !(gender_flup_clean == ""Other/Prefer not to answer""),
+    ### only among those with demo data
+    recorded_data_demo == ""DEM"",
+    ### only among those with self-reported trauma exposure
+    str_detect(trauma, ""Yes""),
+    ) %>% 
+  select(ies_recent_total, osiq_o, osiq_s)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_o)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_s)
+
+df_master_cor %>% 
+  as.data.frame() %>% 
+  cocor::cocor(~ies_recent_total + osiq_o | ies_recent_total + osiq_s, data = .)
+",match,"The code computes zero-order correlations between PTSD symptoms (ies_recent_total) and both OSIQ-O and OSIQ-S, matching the paper’s description of correlating PTSD symptoms with OSIQ-S (spatial imagery).",,
+yeung,2,"In Study 1, a zero-order Pearson correlation was calculated between trait spatial imagery (OSIQ Spatial subscale) and PTSD symptom severity (IES-R total score) in trauma-exposed adults. The correlation was negative (r = −.16, p < .001), suggesting that higher spatial imagery was associated with fewer PTSD symptoms.",Transformation Specification,"Total scores reflecting object and spatial imagery are calculated by averaging the raw scores of all the items in each domain.
+
+The relationship between imagery abilities and trauma outcome was assessed using a linear regression with object (OSIQ Object [OSIQ-O] subscale) and spatial imagery (OSIQ Spatial [OSIQ-S] subscale) as mean-centered predictors and PTSD symptoms (IES-R) as the outcome.
+
+Zero-order correlations with PTSD symptoms were r = .15 for OSIQ-O and r  = −.16 for OSIQ-S (ps < .001), which were significantly different from each other (p  < .001).","### Center numeric predictors in later regression models
+
+df_master <-
+  df_master %>% 
+  mutate(
+    ### osiq_o
+    osiq_o_cen = scale(osiq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osiq_s
+    osiq_s_cen = scale(osiq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    phq_total_cen = scale(phq_total, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_flup_cen = scale(age_flup, scale = FALSE),
+    ### pte_exposure_count
+    pte_exposure_count_cen = scale(pte_exposure_count, scale = FALSE),
+    ### grammatical reasoning
+    final_score_raw_gr_cen = scale(final_score_raw_gr, scale = FALSE),
+    ### odd-one-out
+    final_score_raw_oo_cen = scale(final_score_raw_oo, scale = FALSE),
+    ### paired associates
+    avg_score_raw_pa_cen = scale(avg_score_raw_pa, scale = FALSE),
+    ### mental rotation
+    final_score_raw_ro_cen = scale(final_score_raw_ro, scale = FALSE),
+    ### education
+    edu_flup_cen = scale(edu_flup, scale = FALSE),
+    )
+
+### Zero-order correlations between OSIQ-O / OSIQ-S and IES-R total (trauma-exposed adults)
+
+df_master_cor <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen),
+    !is.na(gender_flup_clean),
+    !(gender_flup_clean == ""Other/Prefer not to answer""),
+    ### only among those with demo data
+    recorded_data_demo == ""DEM"",
+    ### only among those with self-reported trauma exposure
+    str_detect(trauma, ""Yes""),
+    ) %>% 
+  select(ies_recent_total, osiq_o, osiq_s)",unknown,"The paper specifies that OSIQ subscale scores are computed as averages of item scores, but the provided code only shows centering existing OSIQ variables and using them (uncentered) in the correlation without revealing how those variables were derived. Therefore, it is not possible to determine from the snippet whether the item-averaging transformation matches the paper’s description.",,
+yeung,2,"In Study 1, a zero-order Pearson correlation was calculated between trait spatial imagery (OSIQ Spatial subscale) and PTSD symptom severity (IES-R total score) in trauma-exposed adults. The correlation was negative (r = −.16, p < .001), suggesting that higher spatial imagery was associated with fewer PTSD symptoms.",Inference Specification,"Zero-order correlations with PTSD symptoms were r = .15 for OSIQ-O and r  = −.16 for OSIQ-S (p s < .001), which were significantly different from each other (p  < .001).","df_master %>% 
+  filter(
+    !is.na(gender_flup_clean),
+    !(gender_flup_clean == ""Other/Prefer not to answer""),
+    ### only among those with demo data
+    recorded_data_demo == ""DEM"",
+    ### only among those with self-reported trauma exposure
+    str_detect(trauma, ""Yes""),
+    ) %>% 
+  select(
+    phq_9, osiq_o, osiq_s, 
+    ies_recent_total, # ies_recent_int, ies_recent_avd, ies_recent_hyp,
+    final_score_raw_gr, final_score_raw_oo, final_score_raw_ro, avg_score_raw_pa,
+    # sam_epi_zscore_demo, sam_sem_zscore_demo, sam_spa_zscore_demo, sam_fut_zscore_demo, 
+    ) %>% 
+  rename(
+    cbs_gr = final_score_raw_gr,
+    cbs_oo = final_score_raw_oo,
+    cbs_ro = final_score_raw_ro,
+    cbs_pa = avg_score_raw_pa,
+  ) %>%
+  # nrow()
+  rstatix::cor_mat() %>% 
+  rstatix::cor_mark_significant()
+
+...
+
+df_master_cor <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen),
+    !is.na(gender_flup_clean),
+    !(gender_flup_clean == ""Other/Prefer not to answer""),
+    ### only among those with demo data
+    recorded_data_demo == ""DEM"",
+    ### only among those with self-reported trauma exposure
+    str_detect(trauma, ""Yes""),
+    ) %>% 
+  select(ies_recent_total, osiq_o, osiq_s)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_o)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_s)
+
+df_master_cor %>% 
+  as.data.frame() %>% 
+  cocor::cocor(~ies_recent_total + osiq_o | ies_recent_total + osiq_s, data = .)",match,"The paper reports two‑sided p‑values (ps < .001, p < .001) to assess significance of the correlations and their difference, and the code uses standard cor.test and cocor calls with default (two‑sided) settings to obtain these p‑values without specifying any alternative inference criteria. There is no indication of any alpha or sidedness discrepancy between the paper’s described inference and the implemented tests.",,
+yeung,3,"The authors formally compared the two dependent correlations from Study 1—OSIQ Object vs. IES-R (r = .15) and OSIQ Spatial vs. IES-R (r = −.16)—using the R package cocor. The difference between these correlations was statistically significant (p < .001), indicating that the associations of object and spatial imagery with PTSD symptoms differed in magnitude and direction.",Model Specification,"Analyses were conducted in R (Version 4.2.2), including stats  for linear regressions and correlations (R Core Team, 2022), cocor for testing significant differences among correlations (Diedenhofen & Musch, 2015), and rstatix for correlation matrices (Kassambara, 2023).","df_master_cor <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen),
+    !is.na(gender_flup_clean),
+    !(gender_flup_clean == ""Other/Prefer not to answer""),
+    ### only among those with demo data
+    recorded_data_demo == ""DEM"",
+    ### only among those with self-reported trauma exposure
+    str_detect(trauma, ""Yes""),
+    ) %>% 
+  select(ies_recent_total, osiq_o, osiq_s)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_o)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_s)
+
+df_master_cor %>% 
+  as.data.frame() %>% 
+  cocor::cocor(~ies_recent_total + osiq_o | ies_recent_total + osiq_s, data = .)",match,"The paper specifies using cocor to test the difference between two dependent correlations, and the code implements this exactly with cocor on the two correlations involving ies_recent_total, osiq_o, and osiq_s.",,
+yeung,3,"The authors formally compared the two dependent correlations from Study 1—OSIQ Object vs. IES-R (r = .15) and OSIQ Spatial vs. IES-R (r = −.16)—using the R package cocor. The difference between these correlations was statistically significant (p < .001), indicating that the associations of object and spatial imagery with PTSD symptoms differed in magnitude and direction.",Variable Specification,"Zero-order correlations with PTSD symptoms were r = .15 for OSIQ-O and r = −.16 for OSIQ-S (ps < .001), which were significantly different from each other (p < .001).","df_master_cor <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen),
+    !is.na(gender_flup_clean),
+    !(gender_flup_clean == ""Other/Prefer not to answer""),
+    ### only among those with demo data
+    recorded_data_demo == ""DEM"",
+    ### only among those with self-reported trauma exposure
+    str_detect(trauma, ""Yes""),
+    ) %>% 
+  select(ies_recent_total, osiq_o, osiq_s)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_o)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_s)
+
+df_master_cor %>% 
+  as.data.frame() %>% 
+  cocor::cocor(~ies_recent_total + osiq_o | ies_recent_total + osiq_s, data = .)",match,"The code uses the IES-R total score as the PTSD symptom variable and the OSIQ Object and Spatial scales as the two imagery variables, matching the variables described for the zero-order correlations and cocor comparison in the paper. For a correlational comparison, the designation of these variables (predictor/outcome) is symmetric, so the specification aligns with the description.",,
+yeung,3,"The authors formally compared the two dependent correlations from Study 1—OSIQ Object vs. IES-R (r = .15) and OSIQ Spatial vs. IES-R (r = −.16)—using the R package cocor. The difference between these correlations was statistically significant (p < .001), indicating that the associations of object and spatial imagery with PTSD symptoms differed in magnitude and direction.",Transformation Specification,"Total scores reflecting object and spatial imagery are calculated by averaging the raw scores of all the items in each domain.
+
+Two items on the OSIQ-O were conceptually similar to PTSD-related intrusions (i.e., “Sometimes my images are so vivid and persistent that it is difficult to ignore them,” “My visual images are in my head all the time. They are just right there”). Likewise, one item on the IES-R was conceptually similar to trait object imagery (i.e., “Pictures about it popped into my mind”). To ensure that any associations were not simply due to overlap between items on scales, we reran the same regression after recalculating OSIQ-O and IES-R scores without these three items.
+
+Continuous predictors (PHQ-9, OSIQ-O, OSIQ-S) were mean-centered.","### OSIQ: drop potentially overlapping items and compute modified mean scores
+osiq_drop_items <- c(""osiq_o_22"", ""osiq_o_28"")
+
+df_master <-
+  df_master %>%
+  ### calculate OSIQ-O & OSIQ-S difference score (+ve = more O, -ve = more S)
+  mutate(osiq_diff_o_s = osiq_o - osiq_s) %>%
+  ### calculate OSIQ-O without items 22 and 28
+  mutate(
+    osiq_o_drop = rowMeans(
+      select(
+        ### mean of all OSIQ-O items, without the items labelled in `osiq_drop_items`
+        ### (raw responses are the variables ending in digits; luckily, 27r is spatial so it can be ignored)
+        ., starts_with(""osiq_o_"") & matches('\\d{1}$') & !matches(osiq_drop_items)
+        )
+      )
+    ) 
+
+### IES-R: drop potentially overlapping items and recompute scores
+ies_drop_items <- c(""ies_recent_9"", ""ies_remote_9"")
+
+### identify items in the regular ies-r intrusions subscale
+ies_int <- c(""_1"", ""_2"", ""_3"", ""_6"", ""_9"", ""_14"", ""_16"", ""_20"")
+
+df_master <-
+  df_master %>%
+  ### calculate ies-r recent without item 9
+  mutate(
+    ### total sum score
+    ies_recent_total_drop = rowSums(
+      select(
+        ., starts_with(""ies_recent_"") & matches('\\d{1}$') & !matches(ies_drop_items) & !contains(""cutoff"")
+        )
+      ),
+    ### int domain mean score
+    ies_recent_int_drop = rowMeans(
+      select(
+        ., starts_with(""ies_recent_"") & matches('\\d{1}$') & !matches(ies_drop_items) & ends_with(ies_int)
+        )
+      )
+    ) %>% 
+  ### calculate ies-r remote without item 9
+  mutate(
+    ### total sum score
+    ies_remote_total_drop = rowSums(
+      select(
+        ., starts_with(""ies_remote_"") & matches('\\d{1}$') & !matches(ies_drop_items) & !contains(""cutoff"")
+        )
+      ),
+    ### int domain mean score
+    ies_remote_int_drop = rowMeans(
+      select(
+        ., starts_with(""ies_remote_"") & matches('\\d{1}$') & !matches(ies_drop_items) & ends_with(ies_int)
+        )
+      )
+    )
+
+### Center numeric predictors used in later models
+### (centered versions are also used to define the filtered sample for the correlation comparison)
+df_master <-
+  df_master %>% 
+  mutate(
+    ### osiq_o
+    osiq_o_cen = scale(osiq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osiq_s
+    osiq_s_cen = scale(osiq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    phq_total_cen = scale(phq_total, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_flup_cen = scale(age_flup, scale = FALSE),
+    ### pte_exposure_count
+    pte_exposure_count_cen = scale(pte_exposure_count, scale = FALSE),
+    ### grammatical reasoning
+    final_score_raw_gr_cen = scale(final_score_raw_gr, scale = FALSE),
+    ### odd-one-out
+    final_score_raw_oo_cen = scale(final_score_raw_oo, scale = FALSE),
+    ### paired associates
+    avg_score_raw_pa_cen = scale(avg_score_raw_pa, scale = FALSE),
+    ### mental rotation
+    final_score_raw_ro_cen = scale(final_score_raw_ro, scale = FALSE),
+    ### education
+    edu_flup_cen = scale(edu_flup, scale = FALSE),
+    )
+
+### Define the analysis dataset for comparing the two dependent correlations
+### (subsetting / filtering transformation before running cor.test and cocor)
+df_master_cor <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen),
+    !is.na(gender_flup_clean),
+    !(gender_flup_clean == ""Other/Prefer not to answer""),
+    ### only among those with demo data
+    recorded_data_demo == ""DEM"",
+    ### only among those with self-reported trauma exposure
+    str_detect(trauma, ""Yes""),
+    ) %>% 
+  select(ies_recent_total, osiq_o, osiq_s)
+
+### Correlations and dependent-correlation comparison
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_o)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_s)
+
+df_master_cor %>% 
+  as.data.frame() %>% 
+  cocor::cocor(~ies_recent_total + osiq_o | ies_recent_total + osiq_s, data = .)",match,"The code implements the described transformations: scale scores are formed by averaging item responses, overlapping items are dropped and scores recomputed, and continuous predictors are mean-centered prior to analysis. These transformations are consistent with the paper’s description and are in place before the correlation comparison using cocor.",,
+yeung,3,"The authors formally compared the two dependent correlations from Study 1—OSIQ Object vs. IES-R (r = .15) and OSIQ Spatial vs. IES-R (r = −.16)—using the R package cocor. The difference between these correlations was statistically significant (p < .001), indicating that the associations of object and spatial imagery with PTSD symptoms differed in magnitude and direction.",Inference Specification,"Zero-order correlations with PTSD symptoms were r = .15 for OSIQ-O and r = −.16 for OSIQ-S (ps < .001), which were significantly different from each other (p < .001).","df_master_cor <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen),
+    !is.na(gender_flup_clean),
+    !(gender_flup_clean == ""Other/Prefer not to answer""),
+    ### only among those with demo data
+    recorded_data_demo == ""DEM"",
+    ### only among those with self-reported trauma exposure
+    str_detect(trauma, ""Yes""),
+    ) %>% 
+  select(ies_recent_total, osiq_o, osiq_s)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_o)
+
+df_master_cor %$% 
+  cor.test(.$ies_recent_total, .$osiq_s)
+
+df_master_cor %>% 
+  as.data.frame() %>% 
+  cocor::cocor(~ies_recent_total + osiq_o | ies_recent_total + osiq_s, data = .)",match,"The paper reports a significance test comparing two dependent correlations using cocor with p < .001, and the code implements this comparison with cocor on the same pair of correlations, relying on default p-value-based inference. No conflicting inference criteria (e.g., alternative alpha levels) are specified in either source.",,
+yeung,4,"In Study 1, a multiple linear regression was run with PTSD symptoms (IES-R total) as the dependent variable and mean-centered depression symptoms (PHQ-9), gender (men vs. women), trait object imagery (OSIQ-O), trait spatial imagery (OSIQ-S), and the OSIQ-O × gender and OSIQ-S × gender interaction terms as predictors (n = 792). Object imagery showed a significant positive association (B = 4.05, β = 0.18, p = .004), spatial imagery showed a significant negative association (B = −3.21, β = −0.13, p = .04), PHQ-9 was strongly positive (B = 1.07, β = 0.36, p < .001), and the model explained 18% of the variance in PTSD symptoms (R² = .18).",Model Specification,The relationship between imagery abilities and trauma outcome was assessed using a linear regression with object (OSIQ Object [OSIQ-O] subscale) and spatial imagery (OSIQ Spatial [OSIQ-S] subscale) as mean-centered predictors and PTSD symptoms (IES-R) as the outcome.,"### null model
+mod_null <-
+  df_master_mod %>% 
+  lm(ies_recent_total ~ 1,
+     data = .)
+
+### full model
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ phq_total_cen + gender_flup_clean +
+       osiq_o_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean,
+     data = .)
+
+### regression table
+tab_model(
+  mod_ies_phq_osivq_gender,
+  show.std = TRUE, show.se = TRUE, 
+  p.style = ""numeric_stars""
+  )",match,"The paper describes using a linear regression, and the code implements this using R's lm() function, consistent with that model specification.",,
+yeung,4,"In Study 1, a multiple linear regression was run with PTSD symptoms (IES-R total) as the dependent variable and mean-centered depression symptoms (PHQ-9), gender (men vs. women), trait object imagery (OSIQ-O), trait spatial imagery (OSIQ-S), and the OSIQ-O × gender and OSIQ-S × gender interaction terms as predictors (n = 792). Object imagery showed a significant positive association (B = 4.05, β = 0.18, p = .004), spatial imagery showed a significant negative association (B = −3.21, β = −0.13, p = .04), PHQ-9 was strongly positive (B = 1.07, β = 0.36, p < .001), and the model explained 18% of the variance in PTSD symptoms (R² = .18).",Variable Specification,"Data analysis. The relationship between imagery abilities and trauma outcome was assessed using a linear regression with object (OSIQ Object [OSIQ-O] subscale) and spatial imagery (OSIQ Spatial [OSIQ-S] subscale) as mean-centered predictors and PTSD symptoms (IES-R) as the outcome. We controlled for depression symptoms (PHQ-9; mean-centered) and gender because of their well-known associations with both imagery (Holmes et al., 2016; Ji et al., 2019) and PTSD symptoms (Olff et al., 2007). We included interaction terms with gender to assess the degree to which gender moderates the relationship between imagery and PTSD symptoms (n = 792 because 14 participants declined to indicate gender).","### subset with ies-r, phq, osiq, and gender (men or women) data
+df_master_mod <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen),
+    !gender_flup_clean == ""Other/Prefer not to answer"",
+    )
+
+### null model
+mod_null <-
+  df_master_mod %>% 
+  lm(ies_recent_total ~ 1,
+     data = .)
+
+### full model
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ phq_total_cen + gender_flup_clean +
+       osiq_o_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean,
+     data = .)",match,"The code uses PTSD symptoms (IES-R total) as the outcome and includes mean-centered depression (PHQ-9), gender, trait object imagery, trait spatial imagery, and their interactions with gender as predictors, consistent with the paper description.",,
+yeung,4,"In Study 1, a multiple linear regression was run with PTSD symptoms (IES-R total) as the dependent variable and mean-centered depression symptoms (PHQ-9), gender (men vs. women), trait object imagery (OSIQ-O), trait spatial imagery (OSIQ-S), and the OSIQ-O × gender and OSIQ-S × gender interaction terms as predictors (n = 792). Object imagery showed a significant positive association (B = 4.05, β = 0.18, p = .004), spatial imagery showed a significant negative association (B = −3.21, β = −0.13, p = .04), PHQ-9 was strongly positive (B = 1.07, β = 0.36, p < .001), and the model explained 18% of the variance in PTSD symptoms (R² = .18).",Transformation Specification,"The relationship between imagery abilities and trauma outcome was assessed using a linear regression with object (OSIQ Object [OSIQ-O] subscale) and spatial imagery (OSIQ Spatial [OSIQ-S] subscale) as mean-centered predictors and PTSD symptoms (IES-R) as the outcome. ... We controlled for depression symptoms (PHQ-9; mean-centered) and gender because of their well-known associations with both imagery (Holmes et al., 2016; Ji et al., 2019) and PTSD symptoms (Olff et al., 2007). ... Note: Outcome is Impact of Event Scale–Revised score. R2 = .18, n = 792. Continuous predictors (PHQ-9, OSIQ-O, OSIQ-S) were mean-centered.","### center numeric predictors in later regression models
+df_master <-
+  df_master %>% 
+  mutate(
+    ### osiq_o
+    osiq_o_cen = scale(osiq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osiq_s
+    osiq_s_cen = scale(osiq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    phq_total_cen = scale(phq_total, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_flup_cen = scale(age_flup, scale = FALSE),
+    ### pte_exposure_count
+    pte_exposure_count_cen = scale(pte_exposure_count, scale = FALSE),
+    ### grammatical reasoning
+    final_score_raw_gr_cen = scale(final_score_raw_gr, scale = FALSE),
+    ### odd-one-out
+    final_score_raw_oo_cen = scale(final_score_raw_oo, scale = FALSE),
+    ### paired associates
+    avg_score_raw_pa_cen = scale(avg_score_raw_pa, scale = FALSE),
+    ### mental rotation
+    final_score_raw_ro_cen = scale(final_score_raw_ro, scale = FALSE),
+    ### education
+    edu_flup_cen = scale(edu_flup, scale = FALSE),
+    )",match,"The paper states that PHQ-9, OSIQ-O, and OSIQ-S were mean-centered, and the code implements this by subtracting the mean (without scaling by the standard deviation) for the corresponding variables. Thus, the transformation of continuous predictors matches the description in the paper.",,
+yeung,4,"In Study 1, a multiple linear regression was run with PTSD symptoms (IES-R total) as the dependent variable and mean-centered depression symptoms (PHQ-9), gender (men vs. women), trait object imagery (OSIQ-O), trait spatial imagery (OSIQ-S), and the OSIQ-O × gender and OSIQ-S × gender interaction terms as predictors (n = 792). Object imagery showed a significant positive association (B = 4.05, β = 0.18, p = .004), spatial imagery showed a significant negative association (B = −3.21, β = −0.13, p = .04), PHQ-9 was strongly positive (B = 1.07, β = 0.36, p < .001), and the model explained 18% of the variance in PTSD symptoms (R² = .18).",Inference Specification,"Table 1.  Regression Results for Imagery Versus Symptoms 
+of Posttraumatic Stress Disorder in Trauma-Exposed Adults
+...
+Note: Outcome is Impact of Event Scale–Revised score. R2 = .18, 
+n = 792. Continuous predictors (PHQ-9, OSIQ-O, OSIQ-S) were mean-
+centered. PHQ-9 = Patient Health Questionnaire–9; OSIQ-O = Object-
+Spatial Imagery Questionnaire Object subscale; OSIQ-S = Object-Spatial 
+Imagery Questionnaire Spatial subscale.
+...
+*p < .05. **p < .01. ***p < .001.","### full model
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ phq_total_cen + gender_flup_clean +
+       osiq_o_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean,
+     data = .)
+
+### regression table
+tab_model(
+  mod_ies_phq_osivq_gender,
+  show.std = TRUE, show.se = TRUE, 
+  p.style = ""numeric_stars""
+  )
+
+### check against null model
+anova(mod_null, mod_ies_phq_osivq_gender, test = ""Chisq"")
+
+### overall model F stats and p value
+summary(mod_ies_phq_osivq_gender)",match,"Both the paper and the code use conventional p-value thresholds with star notation (p < .05, p < .01, p < .001) for inference, indicating aligned inference criteria. There is no evidence of alternative alpha levels or nonstandard decision rules in the code that would conflict with the paper’s description.",,
+yeung,6,"In Study 1, a multiple linear regression tested whether objective cognitive performance predicted PTSD symptoms (IES-R) in trauma-exposed adults, with Grammatical Reasoning, Odd One Out, Rotations, and Paired Associates scores entered simultaneously along with gender and years of education as predictors (n = 518). Controlling for gender and education, only Grammatical Reasoning was significantly and negatively associated with PTSD symptoms (B = −0.42, β = −0.11, p = .02), whereas the other CBS tasks were non-significant, and the overall model accounted for 4% of the variance (R² = .04).",Model Specification,"In a separate model, we next entered performance on the CBS tests as predictors of IES-R scores, controlling for gender (because of its relationship to performance on certain cognitive tests, particularly those involving spatial processes; Levine et al., 2016) and years of education (to account for domain-general processes, e.g., general intelligence). … Predictors were entered simultaneously for all analyses. Analyses were conducted in R (Version 4.2.2), including stats for linear regressions and correlations (R Core Team, 2022)…","### null model
+mod_null <-
+  df_master_mod %>% 
+  lm(ies_recent_total ~ 1,
+     data = .)
+
+### full model
+mod_ies_demog_cbs_gr <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ gender_flup_clean + edu_flup_cen + 
+       final_score_raw_gr_cen + final_score_raw_oo_cen + final_score_raw_ro_cen + avg_score_raw_pa_cen,
+     data = .)",match,"The code implements a multiple linear regression predicting IES-R scores from gender, education, and the four CBS task scores entered simultaneously, consistent with the paper’s description.",,
+yeung,6,"In Study 1, a multiple linear regression tested whether objective cognitive performance predicted PTSD symptoms (IES-R) in trauma-exposed adults, with Grammatical Reasoning, Odd One Out, Rotations, and Paired Associates scores entered simultaneously along with gender and years of education as predictors (n = 518). Controlling for gender and education, only Grammatical Reasoning was significantly and negatively associated with PTSD symptoms (B = −0.42, β = −0.11, p = .02), whereas the other CBS tasks were non-significant, and the overall model accounted for 4% of the variance (R² = .04).",Variable Specification,"In a separate model, we next entered performance on the CBS tests as predictors of IES-R scores, controlling for gender (because of its relationship to performance on certain cognitive tests, particularly those involving spatial processes; Levine et al., 2016) and years of education (to account for domain-general processes, e.g., general intelligence). … Note: Outcome is Impact of Event Scale–Revised score. R2 = .04, n = 518. Continuous predictors (years of education, Grammatical Reasoning, Odd One Out, Rotations, Paired Associates) were mean-centered.","df_master_mod <-
+  df_master %>%
+  filter(
+    !is.na(ies_recent_total), !is.na(gender_flup_clean), !is.na(edu_flup_cen), 
+    !is.na(final_score_raw_gr_cen), !is.na(final_score_raw_oo_cen), 
+    !is.na(final_score_raw_ro_cen), !is.na(avg_score_raw_pa_cen),
+    !gender_flup_clean == ""Other/Prefer not to answer"",
+    ) 
+
+### null model
+mod_null <-
+  df_master_mod %>% 
+  lm(ies_recent_total ~ 1,
+     data = .)
+
+### full model
+mod_ies_demog_cbs_gr <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ gender_flup_clean + edu_flup_cen + 
+       final_score_raw_gr_cen + final_score_raw_oo_cen + final_score_raw_ro_cen + avg_score_raw_pa_cen,
+     data = .) 
+",match,"The code uses IES-R scores as the outcome and includes gender, years of education, and the four centered CBS task scores as simultaneous predictors, matching the paper’s variable roles and specification. Any additional sample filtering does not change the designation of variables within the model.",,
+yeung,6,"In Study 1, a multiple linear regression tested whether objective cognitive performance predicted PTSD symptoms (IES-R) in trauma-exposed adults, with Grammatical Reasoning, Odd One Out, Rotations, and Paired Associates scores entered simultaneously along with gender and years of education as predictors (n = 518). Controlling for gender and education, only Grammatical Reasoning was significantly and negatively associated with PTSD symptoms (B = −0.42, β = −0.11, p = .02), whereas the other CBS tasks were non-significant, and the overall model accounted for 4% of the variance (R² = .04).",Transformation Specification,"The relationship between imagery abili-
+ties and trauma outcome was assessed using a linear 
+regression with object (OSIQ Object [OSIQ-O] subscale) 
+and spatial imagery (OSIQ Spatial [OSIQ-S] subscale) as 
+mean-centered predictors and PTSD symptoms (IES-R) as 
+the outcome.
+...
+Note: Outcome is Impact of Event Scale–Revised score. R2 = .04, 
+n = 518. Continuous predictors (years of education, Grammatical 
+Reasoning, Odd One Out, Rotations, Paired Associates) were mean-
+centered.","### Center Variables
+
+```{r center variables}
+### center numeric predictors in later regression models
+df_master <-
+  df_master %>% 
+  mutate(
+    ### osiq_o
+    osiq_o_cen = scale(osiq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osiq_s
+    osiq_s_cen = scale(osiq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    phq_total_cen = scale(phq_total, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_flup_cen = scale(age_flup, scale = FALSE),
+    ### pte_exposure_count
+    pte_exposure_count_cen = scale(pte_exposure_count, scale = FALSE),
+    ### grammatical reasoning
+    final_score_raw_gr_cen = scale(final_score_raw_gr, scale = FALSE),
+    ### odd-one-out
+    final_score_raw_oo_cen = scale(final_score_raw_oo, scale = FALSE),
+    ### paired associates
+    avg_score_raw_pa_cen = scale(avg_score_raw_pa, scale = FALSE),
+    ### mental rotation
+    final_score_raw_ro_cen = scale(final_score_raw_ro, scale = FALSE),
+    ### education
+    edu_flup_cen = scale(edu_flup, scale = FALSE),
+    )
+```",match,"The paper states that continuous predictors including education and the four CBS task scores were mean-centered, and the code implements this by centering these variables using scale(..., scale = FALSE).",,
+yeung,6,"In Study 1, a multiple linear regression tested whether objective cognitive performance predicted PTSD symptoms (IES-R) in trauma-exposed adults, with Grammatical Reasoning, Odd One Out, Rotations, and Paired Associates scores entered simultaneously along with gender and years of education as predictors (n = 518). Controlling for gender and education, only Grammatical Reasoning was significantly and negatively associated with PTSD symptoms (B = −0.42, β = −0.11, p = .02), whereas the other CBS tasks were non-significant, and the overall model accounted for 4% of the variance (R² = .04).",Inference Specification,"Table 2.  Regression Results for Cambridge Brain Sciences 
+Task Performance Versus Symptoms of Posttraumatic Stress 
+Disorder in Trauma-Exposed Adults
+...
+Note: Outcome is Impact of Event Scale–Revised score. R2 = .04, 
+n = 518. Continuous predictors (years of education, Grammatical 
+Reasoning, Odd One Out, Rotations, Paired Associates) were mean-
+centered.
+...
+*p < .05. ** p < .01.","tab_model(
+  mod_ies_demog_cbs_gr,
+  show.std = TRUE, show.se = TRUE, 
+  p.style = ""numeric_stars""
+  )
+
+anova(mod_null, mod_ies_demog_cbs_gr, test = ""Chisq"")
+
+summary(mod_ies_demog_cbs_gr)",match,"Both the paper and the code use standard p-value–based inference with significance stars at conventional thresholds (e.g., p < .05, p < .01), and there is no indication of any alternative or conflicting inference criterion in the code.",,
+yeung,7,"The authors ran a combined regression in Study 1 with PTSD symptoms (IES-R) as the outcome and mean-centered PHQ-9, gender, years of education, Grammatical Reasoning, OSIQ-O, OSIQ-S, and the two imagery × gender interaction terms as predictors (n = 545). In this model, Grammatical Reasoning remained significantly negatively related to PTSD symptoms (B = −0.33, β = −0.09, p = .03), OSIQ-O retained a significant positive association (B = 3.87, β = 0.18, p = .02), while the negative association of OSIQ-S was attenuated and became non-significant (B = −1.14, β = −0.05, p = .5), with R² = .19.",Model Specification,"“The relationship between imagery abilities and trauma outcome was assessed using a linear regression with object (OSIQ Object [OSIQ-O] subscale) and spatial imagery (OSIQ Spatial [OSIQ-S] subscale) as mean-centered predictors and PTSD symptoms (IES-R) as the outcome.”
+
+“In a separate model, we next entered performance on the CBS tests as predictors of IES-R scores, controlling for gender … Significant predictors from this analysis were then combined with the OSIQ as described above. Predictors were entered simultaneously for all analyses.”
+
+“Analyses were conducted in R (Version 4.2.2), including stats for linear regressions and correlations (R Core Team, 2022)….”","### subset with ies-r, phq, osiq, gender (men or women), CBS, and education data
+df_master_mod <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen), !is.na(final_score_raw_gr_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen), !is.na(edu_flup_cen),
+    !gender_flup_clean == ""Other/Prefer not to answer"",
+    )
+
+### null model
+mod_null <-
+  df_master_mod %>% 
+  lm(ies_recent_total ~ 1,
+     data = .)
+
+### full model
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ phq_total_cen + gender_flup_clean + 
+       edu_flup_cen + 
+       final_score_raw_gr_cen + 
+       osiq_o_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean,
+     data = .)
+
+### check against null model
+anova(mod_null, mod_ies_phq_osivq_gender, test = ""Chisq"")
+
+### overall model F stats and p value
+summary(mod_ies_phq_osivq_gender)",match,"The paper describes using linear regression with IES-R as the outcome and multiple predictors entered simultaneously, and the code implements this via lm() with the specified predictors. This aligns with the stated model specification for the combined regression.",,
+yeung,7,"The authors ran a combined regression in Study 1 with PTSD symptoms (IES-R) as the outcome and mean-centered PHQ-9, gender, years of education, Grammatical Reasoning, OSIQ-O, OSIQ-S, and the two imagery × gender interaction terms as predictors (n = 545). In this model, Grammatical Reasoning remained significantly negatively related to PTSD symptoms (B = −0.33, β = −0.09, p = .03), OSIQ-O retained a significant positive association (B = 3.87, β = 0.18, p = .02), while the negative association of OSIQ-S was attenuated and became non-significant (B = −1.14, β = −0.05, p = .5), with R² = .19.",Variable Specification,"The relationship between imagery abili-
+ties and trauma outcome was assessed using a linear 
+regression with object (OSIQ Object [OSIQ-O] subscale) 
+and spatial imagery (OSIQ Spatial [OSIQ-S] subscale) as 
+mean-centered predictors and PTSD symptoms (IES-R) as 
+the outcome. We controlled for depression symptoms 
+(PHQ-9; mean-centered) and gender because of their 
+well-known associations with both imagery (Holmes et al., 
+2016; Ji et al., 2019) and PTSD symptoms (Olff et al., 
+2007). We included interaction terms with gender to assess 
+the degree to which gender moderates the relationship 
+between imagery and PTSD symptoms (n = 792 because 
+14 participants declined to indicate gender).
+
+In a separate model, we next entered performance 
+on the CBS tests as predictors of IES-R scores, control-
+ling for gender (because of its relationship to perfor-
+mance on certain cognitive tests, particularly those 
+involving spatial processes; Levine et al., 2016) and 
+years of education (to account for domain-general pro-
+cesses, e.g., general intelligence). Significant predictors 
+from this analysis were then combined with the OSIQ 
+as described above. Predictors were entered simultane-
+ously for all analyses.
+
+Note: Outcome is Impact of Event Scale–Revised score. R2 = .19, 
+n = 545. Continuous predictors (PHQ-9, years of education, 
+Grammatical Reasoning, OSIQ-O, OSIQ-S) were mean-centered.","### subset with ies-r, phq, osiq, gender (men or women), CBS, and education data
+df_master_mod <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen), !is.na(final_score_raw_gr_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen), !is.na(edu_flup_cen),
+    !gender_flup_clean == ""Other/Prefer not to answer"",
+    )
+
+### null model
+mod_null <-
+  df_master_mod %>% 
+  lm(ies_recent_total ~ 1,
+     data = .)
+
+### full model
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ phq_total_cen + gender_flup_clean + 
+       edu_flup_cen + 
+       final_score_raw_gr_cen + 
+       osiq_o_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean,
+     data = .)
+",match,The regression in the code uses the same outcome and the same set and roles of predictors and interactions as described in the paper for the combined model.,,
+yeung,7,"The authors ran a combined regression in Study 1 with PTSD symptoms (IES-R) as the outcome and mean-centered PHQ-9, gender, years of education, Grammatical Reasoning, OSIQ-O, OSIQ-S, and the two imagery × gender interaction terms as predictors (n = 545). In this model, Grammatical Reasoning remained significantly negatively related to PTSD symptoms (B = −0.33, β = −0.09, p = .03), OSIQ-O retained a significant positive association (B = 3.87, β = 0.18, p = .02), while the negative association of OSIQ-S was attenuated and became non-significant (B = −1.14, β = −0.05, p = .5), with R² = .19.",Transformation Specification,"The relationship between imagery abili-
+ties and trauma outcome was assessed using a linear 
+regression with object (OSIQ Object [OSIQ-O] subscale) 
+and spatial imagery (OSIQ Spatial [OSIQ-S] subscale) as 
+mean-centered predictors and PTSD symptoms (IES-R) as 
+the outcome.
+
+Continuous predictors (PHQ-9, OSIQ-O, OSIQ-S) were mean-
+centered.
+
+Continuous predictors (PHQ-9, years of education, 
+Grammatical Reasoning, OSIQ-O, OSIQ-S) were mean-centered.
+
+To 
+ensure that any associations were not simply due to 
+overlap between items on scales, we reran the same 
+regression after recalculating OSIQ-O and IES-R scores 
+without these three items.","### OSIQ transformations (drop overlapping items and compute mean scores)
+osiq_drop_items <- c(""osiq_o_22"", ""osiq_o_28"")
+
+
+df_master <-
+  df_master %>%
+  ### calculate OSIQ-O & OSIQ-S difference score (+ve = more O, -ve = more S)
+  mutate(osiq_diff_o_s = osiq_o - osiq_s) %>%
+  ### calculate OSIQ-O without items 22 and 28
+  mutate(
+    osiq_o_drop = rowMeans(
+      select(
+        ### mean of all OSIQ-O items, without the items labelled in `osiq_drop_items`
+        ### (raw responses are the variables ending in digits; luckily, 27r is spatial so it can be ignored)
+        ., starts_with(""osiq_o_"") & matches(""\\d{1}$"") & !matches(osiq_drop_items)
+        )
+      )
+    )
+
+### IES-R transformations (drop overlapping item and recompute scores)
+ies_drop_items <- c(""ies_recent_9"", ""ies_remote_9"")
+
+### identify items in the regular ies-r intrusions subscale
+ies_int <- c(""_1"", ""_2"", ""_3"", ""_6"", ""_9"", ""_14"", ""_16"", ""_20"")
+
+
+df_master <-
+  df_master %>%
+  ### calculate ies-r recent without item 9
+  mutate(
+    ### total sum score
+    ies_recent_total_drop = rowSums(
+      select(
+        ., starts_with(""ies_recent_"") & matches(""\\d{1}$"") & !matches(ies_drop_items) & !contains(""cutoff"")
+        )
+      ),
+    ### int domain mean score
+    ies_recent_int_drop = rowMeans(
+      select(
+        ., starts_with(""ies_recent_"") & matches(""\\d{1}$"") & !matches(ies_drop_items) & ends_with(ies_int)
+        )
+      )
+    )
+
+### Centering transformations for predictors used in the combined regression
+### center numeric predictors in later regression models
+df_master <-
+  df_master %>% 
+  mutate(
+    ### osiq_o
+    osiq_o_cen = scale(osiq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osiq_s
+    osiq_s_cen = scale(osiq_s, scale = FALSE),
+    ### phq_total
+    phq_total_cen = scale(phq_total, scale = FALSE),
+    ### grammatical reasoning
+    final_score_raw_gr_cen = scale(final_score_raw_gr, scale = FALSE),
+    ### education
+    edu_flup_cen = scale(edu_flup, scale = FALSE),
+    )
+
+### Combined regression using mean-centered predictors (Grammatical Reasoning model)
+### subset with ies-r, phq, osiq, gender (men or women), CBS, and education data
+df_master_mod <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen), !is.na(final_score_raw_gr_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen), !is.na(edu_flup_cen),
+    !gender_flup_clean == ""Other/Prefer not to answer"",
+    )
+
+### full model
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ phq_total_cen + gender_flup_clean + 
+       edu_flup_cen + 
+       final_score_raw_gr_cen + 
+       osiq_o_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean,
+     data = .)
+
+### Rerun of regression using transformed (item-dropped) OSIQ-O and IES-R scores
+### subset with ies-r, phq, osiq, and gender (men or women) data
+df_master_mod <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total_drop), !is.na(phq_total_cen),
+    !is.na(osiq_o_drop_cen), !is.na(osiq_s_cen),
+    !gender_flup_clean == ""Other/Prefer not to answer"",
+    )
+
+### full model
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total_drop ~ phq_total_cen + gender_flup_clean +
+       osiq_o_drop_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean,
+     data = .)",match,"The code mean-centers all specified continuous predictors and recomputes OSIQ-O and IES-R scores after dropping the overlapping items, consistent with the paper’s transformation description for this analysis. Any differences in which predictors are included in the second regression concern model specification rather than the described transformations.",,
+yeung,7,"The authors ran a combined regression in Study 1 with PTSD symptoms (IES-R) as the outcome and mean-centered PHQ-9, gender, years of education, Grammatical Reasoning, OSIQ-O, OSIQ-S, and the two imagery × gender interaction terms as predictors (n = 545). In this model, Grammatical Reasoning remained significantly negatively related to PTSD symptoms (B = −0.33, β = −0.09, p = .03), OSIQ-O retained a significant positive association (B = 3.87, β = 0.18, p = .02), while the negative association of OSIQ-S was attenuated and became non-significant (B = −1.14, β = −0.05, p = .5), with R² = .19.",Inference Specification,"The relationship between Grammatical Reasoning 
+and PTSD symptoms also held when adding it to the 
+original model with the OSIQ measures. The OSIQ-O’s 
+relationship to IES-R was relatively unaffected (ßs = 
+0.18 vs. 0.18) by adding Grammatical Reasoning, 
+whereas the OSIQ-S’s contribution was noticeably 
+reduced and no longer statistically significant (ßs = 
+−0.10 vs. − 0.05; Table 3).
+...
+Note: Outcome is Impact of Event Scale–Revised score. R2 = .19, 
+n = 545. Continuous predictors (PHQ-9, years of education, 
+Grammatical Reasoning, OSIQ-O, OSIQ-S) were mean-centered. PHQ-
+9 = Patient Health Questionnaire–9; OSIQ-O = Object-Spatial Imagery 
+Questionnaire Object subscale; OSIQ-S = Object-Spatial Imagery 
+Questionnaire Spatial subscale.
+...
+*p < .05. ***p < .001.","### null model
+mod_null <-
+  df_master_mod %>% 
+  lm(ies_recent_total ~ 1,
+     data = .)
+
+### full model
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ phq_total_cen + gender_flup_clean + 
+       edu_flup_cen + 
+       final_score_raw_gr_cen + 
+       osiq_o_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean,
+     data = .)
+
+### regression table
+tab_model(
+  mod_ies_phq_osivq_gender,
+  show.std = TRUE, show.se = TRUE, 
+  p.style = ""numeric_stars""
+  )
+
+### check against null model
+anova(mod_null, mod_ies_phq_osivq_gender, test = ""Chisq"")
+
+### overall model F stats and p value
+summary(mod_ies_phq_osivq_gender)
+
+### variance inflation factors
+car::vif(mod_ies_phq_osivq_gender) %>%
+  kable(col.names = ""VIF"") %>%
+  kableExtra::kable_styling(bootstrap_options = c(""striped"", ""hover"", ""condensed""), full_width = F)",match,"The paper uses conventional NHST thresholds with *p < .05 and ***p < .001, and the code uses standard p-value stars and model comparison outputs consistent with this inference approach. No alternative alpha or non-standard inference rule is specified in either source.",,
+yeung,8,"In Study 1, additional multiple regression models examined whether adding age and the number of different potentially traumatic events (PTE variety) as mean-centered covariates altered the relationship between trait imagery (OSIQ-O and OSIQ-S) and PTSD symptoms (IES-R), while retaining PHQ-9, gender, and imagery × gender terms. The authors report that inclusion of age and PTE variety did not change the significance or direction of the object and spatial imagery effects, suggesting that these associations were not driven by age or cumulative trauma exposure.",Model Specification,The relationship between imagery abilities and trauma outcome was assessed using a linear regression with object (OSIQ Object [OSIQ-O] subscale) and spatial imagery (OSIQ Spatial [OSIQ-S] subscale) as mean-centered predictors and PTSD symptoms (IES-R) as the outcome. Results were not affected by inclusion of age or number of different PTEs experienced (both mean-centered) as predictors (see the Supplemental Material).,"### subset with ies-r, phq, osiq, gender (men or women), and age data
+df_master_mod <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen), !is.na(age_flup_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen),
+    !gender_flup_clean == ""Other/Prefer not to answer"",
+    )
+
+### null model
+mod_null <-
+  df_master_mod %>% 
+  lm(ies_recent_total ~ 1,
+     data = .)
+
+### full model
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ phq_total_cen + gender_flup_clean + age_flup_cen +
+       osiq_o_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean,
+     data = .)
+...
+### subset with ies-r, phq, osiq, and gender (men or women) data
+df_master_mod <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen), !is.na(pte_exposure_count_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen),
+    !gender_flup_clean == ""Other/Prefer not to answer"",
+    )
+
+### null model
+mod_null <-
+  df_master_mod %>% 
+  lm(ies_recent_total ~ 1,
+     data = .)
+
+### full model
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ phq_total_cen + gender_flup_clean + pte_exposure_count_cen +
+       osiq_o_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean,
+     data = .)",match,"The paper describes using linear regression models to predict PTSD symptoms (IES-R) from imagery variables, adding age and PTE variety as additional predictors, and the code implements these analyses with linear models using lm().",,
+yeung,8,"In Study 1, additional multiple regression models examined whether adding age and the number of different potentially traumatic events (PTE variety) as mean-centered covariates altered the relationship between trait imagery (OSIQ-O and OSIQ-S) and PTSD symptoms (IES-R), while retaining PHQ-9, gender, and imagery × gender terms. The authors report that inclusion of age and PTE variety did not change the significance or direction of the object and spatial imagery effects, suggesting that these associations were not driven by age or cumulative trauma exposure.",Variable Specification,"The relationship between imagery abilities and trauma outcome was assessed using a linear regression with object (OSIQ Object [OSIQ-O] subscale) and spatial imagery (OSIQ Spatial [OSIQ-S] subscale) as mean-centered predictors and PTSD symptoms (IES-R) as the outcome. We controlled for depression symptoms (PHQ-9; mean-centered) and gender because of their well-known associations with both imagery (Holmes et al., 2016; Ji et al., 2019) and PTSD symptoms (Olff et al., 2007). We included interaction terms with gender to assess the degree to which gender moderates the relationship between imagery and PTSD symptoms (n = 792 because 14 participants declined to indicate gender). ... Results were not affected by inclusion of age or number of different PTEs experienced (both mean-centered) as predictors (see the Supplemental Material).","df_master <-
+  df_master %>% 
+  mutate(
+    ### osiq_o
+    osiq_o_cen = scale(osiq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osiq_s
+    osiq_s_cen = scale(osiq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    phq_total_cen = scale(phq_total, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_flup_cen = scale(age_flup, scale = FALSE),
+    ### pte_exposure_count
+    pte_exposure_count_cen = scale(pte_exposure_count, scale = FALSE),
+    ### grammatical reasoning
+    final_score_raw_gr_cen = scale(final_score_raw_gr, scale = FALSE),
+    ### odd-one-out
+    final_score_raw_oo_cen = scale(final_score_raw_oo, scale = FALSE),
+    ### paired associates
+    avg_score_raw_pa_cen = scale(avg_score_raw_pa, scale = FALSE),
+    ### mental rotation
+    final_score_raw_ro_cen = scale(final_score_raw_ro, scale = FALSE),
+    ### education
+    edu_flup_cen = scale(edu_flup, scale = FALSE),
+    )
+
+### subset with ies-r, phq, osiq, gender (men or women), and age data
+df_master_mod <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen), !is.na(age_flup_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen),
+    !gender_flup_clean == ""Other/Prefer not to answer"",
+    )
+
+### full model (adding age as covariate)
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ phq_total_cen + gender_flup_clean + age_flup_cen +
+       osiq_o_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean,
+     data = .)
+
+### subset with ies-r, phq, osiq, and gender (men or women) data
+df_master_mod <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen), !is.na(pte_exposure_count_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen),
+    !gender_flup_clean == ""Other/Prefer not to answer"",
+    )
+
+### full model (adding PTE variety as covariate)
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ phq_total_cen + gender_flup_clean + pte_exposure_count_cen +
+       osiq_o_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean,
+     data = .)",match,"The code uses IES-R as the outcome and includes mean-centered object and spatial imagery, PHQ-9, gender, and imagery×gender terms, then adds mean-centered age and PTE count as additional covariates, matching the variable roles described in the paper. Thus, the variable specification in the implementation aligns with the study description.",,
+yeung,8,"In Study 1, additional multiple regression models examined whether adding age and the number of different potentially traumatic events (PTE variety) as mean-centered covariates altered the relationship between trait imagery (OSIQ-O and OSIQ-S) and PTSD symptoms (IES-R), while retaining PHQ-9, gender, and imagery × gender terms. The authors report that inclusion of age and PTE variety did not change the significance or direction of the object and spatial imagery effects, suggesting that these associations were not driven by age or cumulative trauma exposure.",Transformation Specification,"The relationship between imagery abilities and trauma outcome was assessed using a linear regression with object (OSIQ Object [OSIQ-O] subscale) and spatial imagery (OSIQ Spatial [OSIQ-S] subscale) as mean-centered predictors and PTSD symptoms (IES-R) as the outcome.
+...
+Results were not affected by inclusion of age or number of different PTEs experienced (both mean-centered) as predictors (see the Supplemental Material).","### identify items that measured exposure to potentially traumatic events
+pte_exposure_items <- 
+  c(""war_1"", ""accident_1"", ""disaster_1"", ""illness_1"",
+    ""abuse_1"", ""abuse_4"", ""assault_1"", ""injury_1"",
+    ""death_sigother"", ""death_injury_other"")
+  
+df_master <-
+  df_master %>% 
+  mutate(
+    ### calculate binary exposure to at least one PTE
+    pte_exposure = case_when(
+      if_any(.cols = all_of(pte_exposure_items), ~. == ""Yes"") == TRUE ~ ""exposed"",
+      if_all(.cols = all_of(pte_exposure_items), ~. == ""No"") == TRUE ~ ""nonexposed""
+      )
+    ) %>%
+  mutate(
+    ### calculate ""variety"" score of exposure PTEs (sum # of different event types)
+    ### common index of trauma exposure severity
+    pte_exposure_count = rowSums(
+      across(
+        .cols = all_of(pte_exposure_items), 
+        ~ . == ""Yes""
+        )
+      )
+    ) %>% 
+  mutate(
+    ### create numeric version of binary trauma self-report item
+    trauma_numeric = case_when(
+      trauma == ""Yes - I have experienced traumatic events"" ~ 1,
+      trauma == ""No - I have not experiened traumatic events"" ~ 0
+      )
+    ) %>% 
+  mutate(
+    ### create numeric version of binary sexual assault self-report item
+    sexual_assault = case_when(
+      assault_1 == ""Yes"" ~ 1,
+      assault_1 == ""No"" ~ 0
+      )
+    )
+...
+### center numeric predictors in later regression models
+df_master <-
+  df_master %>% 
+  mutate(
+    ### osiq_o
+    osiq_o_cen = scale(osiq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osiq_s
+    osiq_s_cen = scale(osiq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    phq_total_cen = scale(phq_total, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_flup_cen = scale(age_flup, scale = FALSE),
+    ### pte_exposure_count
+    pte_exposure_count_cen = scale(pte_exposure_count, scale = FALSE),
+    ### grammatical reasoning
+    final_score_raw_gr_cen = scale(final_score_raw_gr, scale = FALSE),
+    ### odd-one-out
+    final_score_raw_oo_cen = scale(final_score_raw_oo, scale = FALSE),
+    ### paired associates
+    avg_score_raw_pa_cen = scale(avg_score_raw_pa, scale = FALSE),
+    ### mental rotation
+    final_score_raw_ro_cen = scale(final_score_raw_ro, scale = FALSE),
+    ### education
+    edu_flup_cen = scale(edu_flup, scale = FALSE),
+    )",match,"The code mean-centers age and PTE variety, as well as the imagery variables, consistent with the paper’s description of using mean-centered predictors and covariates in the regression models. The PTE variety score is computed as a count of different event types and then mean-centered, aligning with the described transformation of the 'number of different PTEs'.",,
+yeung,8,"In Study 1, additional multiple regression models examined whether adding age and the number of different potentially traumatic events (PTE variety) as mean-centered covariates altered the relationship between trait imagery (OSIQ-O and OSIQ-S) and PTSD symptoms (IES-R), while retaining PHQ-9, gender, and imagery × gender terms. The authors report that inclusion of age and PTE variety did not change the significance or direction of the object and spatial imagery effects, suggesting that these associations were not driven by age or cumulative trauma exposure.",Inference Specification,Results were not affected by inclusion of age or number of different PTEs experienced (both mean-centered) as predictors (see the Supplemental Material).,"### full model
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ phq_total_cen + gender_flup_clean + age_flup_cen +
+       osiq_o_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean,
+     data = .)
+
+### regression table
+tab_model(
+  mod_ies_phq_osivq_gender,
+  show.std = TRUE, show.se = TRUE, 
+  p.style = ""numeric_stars""
+  )
+...
+### check against null model
+anova(mod_null, mod_ies_phq_osivq_gender, test = ""Chisq"")
+
+### overall model F stats and p value
+summary(mod_ies_phq_osivq_gender)
+...
+### full model
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ phq_total_cen + gender_flup_clean + pte_exposure_count_cen +
+       osiq_o_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean,
+     data = .)
+
+### regression table
+tab_model(
+  mod_ies_phq_osivq_gender,
+  show.std = TRUE, show.se = TRUE, 
+  p.style = ""numeric_stars""
+  )
+...
+### check against null model
+anova(mod_null, mod_ies_phq_osivq_gender, test = ""Chisq"")
+
+### overall model F stats and p value
+summary(mod_ies_phq_osivq_gender)",unknown,"The paper excerpt does not state any explicit inference criteria (e.g., alpha level or decision rule), and the code only shows default significance testing without a clearly specified threshold to compare against the paper.",,
+yeung,9,"Study 1 also investigated whether adding a verbal-cognitive style measure (OSIVQ verbal subscale) to the imagery–PTSD regression model affected results. In regressions with IES-R as the outcome and predictors including PHQ-9, gender, OSIQ-O, OSIQ-S, OSIVQ verbal, and associated interaction terms, higher verbal style was related to fewer PTSD symptoms only in some gender-specific models, and inclusion of the verbal measure had negligible impact on the object and spatial imagery coefficients.",Model Specification,"The relationship between imagery abilities and trauma outcome was assessed using a linear regression with object (OSIQ Object [OSIQ-O] subscale) and spatial imagery (OSIQ Spatial [OSIQ-S] subscale) as mean-centered predictors and PTSD symptoms (IES-R) as the outcome. ... Furthermore, its inclusion in regression models had negligible effects on our other findings, suggesting that the visual and spatial-schematic domains may be particularly relevant to PTSD symptoms (see the Supplemental Material).","### subset with ies-r, phq, osivq, and gender (men or women) data
+df_master_mod <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen), !is.na(osivq_v_cen), 
+    !gender_flup_clean == ""Other/Prefer not to answer"",
+    ) 
+
+### null model
+mod_null <-
+  df_master_mod %>% 
+  lm(ies_recent_total ~ 1,
+     data = .)
+
+### full model
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ phq_total_cen + gender_flup_clean +
+       osiq_o_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean + osivq_v_cen*gender_flup_clean, 
+     data = .)
+
+### regression table
+tab_model(
+  mod_ies_phq_osivq_gender,
+  show.std = TRUE, show.se = TRUE,
+  p.style = ""numeric_stars""
+  )",match,"The paper describes using linear regression with IES-R as the outcome and predictors including PHQ-9, gender, object imagery, spatial imagery, and OSIVQ verbal (with interactions), which is what the code implements. The code fits a linear model with IES-R as the dependent variable and includes PHQ, gender, centered OSIQ-O, OSIQ-S, and OSIVQ verbal with their interactions with gender, matching the described model specification.",,
+yeung,9,"Study 1 also investigated whether adding a verbal-cognitive style measure (OSIVQ verbal subscale) to the imagery–PTSD regression model affected results. In regressions with IES-R as the outcome and predictors including PHQ-9, gender, OSIQ-O, OSIQ-S, OSIVQ verbal, and associated interaction terms, higher verbal style was related to fewer PTSD symptoms only in some gender-specific models, and inclusion of the verbal measure had negligible impact on the object and spatial imagery coefficients.",Variable Specification,"“The verbal scale of the OSIVQ (Blazhenkova & Kozhevnikov, 2009) has been proposed as a measure of verbal-semantic processes, which are also thought to be protective against intrusions (Holmes & Bourne, 2008). Although we administered this verbal scale in both studies, it was not consistently related to PTSD symptoms: Although higher verbal-cognitive style was related to fewer symptoms in Study 1, this effect was restricted to men and did not replicate in Study 2. Furthermore, its inclusion in regression models had negligible effects on our other findings, suggesting that the visual and spatial-schematic domains may be particularly relevant to PTSD symptoms (see the Supplemental Material).”","### subset with ies-r, phq, osivq, and gender (men or women) data
+df_master_mod <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen), !is.na(osivq_v_cen), 
+    !gender_flup_clean == ""Other/Prefer not to answer"",
+    ) 
+
+### null model
+mod_null <-
+  df_master_mod %>% 
+  lm(ies_recent_total ~ 1,
+     data = .)
+
+### full model
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ phq_total_cen + gender_flup_clean +
+       osiq_o_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean + osivq_v_cen*gender_flup_clean, 
+     data = .)
+",match,"The code uses IES-R as the outcome and includes PHQ-9, gender, object imagery, spatial imagery, and OSIVQ verbal (all with gender interactions) as predictors, matching the variable roles described in the paper.",,
+yeung,9,"Study 1 also investigated whether adding a verbal-cognitive style measure (OSIVQ verbal subscale) to the imagery–PTSD regression model affected results. In regressions with IES-R as the outcome and predictors including PHQ-9, gender, OSIQ-O, OSIQ-S, OSIVQ verbal, and associated interaction terms, higher verbal style was related to fewer PTSD symptoms only in some gender-specific models, and inclusion of the verbal measure had negligible impact on the object and spatial imagery coefficients.",Transformation Specification,"The relationship between imagery abilities and trauma outcome was assessed using a linear regression with object (OSIQ Object [OSIQ-O] subscale) and spatial imagery (OSIQ Spatial [OSIQ-S] subscale) as mean-centered predictors and PTSD symptoms (IES-R) as the outcome. ... Total scores reflecting object and spatial imagery are calculated by averaging the raw scores of all the items in each domain. ... Two items on the OSIQ-O were conceptually similar to PTSD-related intrusions (i.e., “Sometimes my images are so vivid and persistent that it is difficult to ignore them,” “My visual images are in my head all the time. They are just right there”). Likewise, one item on the IES-R was conceptually similar to trait object imagery (i.e., “Pictures about it popped into my mind”). To ensure that any associations were not simply due to overlap between items on scales, we reran the same regression after recalculating OSIQ-O and IES-R scores without these three items.","### OSIQ: drop potentially overlapping items and compute modified mean score
+osiq_drop_items <- c(""osiq_o_22"", ""osiq_o_28"")
+
+df_master <-
+  df_master %>%
+  ### calculate OSIQ-O & OSIQ-S difference score (+ve = more O, -ve = more S)
+  mutate(osiq_diff_o_s = osiq_o - osiq_s) %>%
+  ### calculate OSIQ-O without items 22 and 28
+  mutate(
+    osiq_o_drop = rowMeans(
+      select(
+        ### mean of all OSIQ-O items, without the items labelled in `osiq_drop_items`
+        ### (raw responses are the variables ending in digits; luckily, 27r is spatial so it can be ignored)
+        ., starts_with(""osiq_o_"") & matches('\\d{1}$') & !matches(osiq_drop_items)
+        )
+      )
+    ) 
+
+### IES-R: drop potentially overlapping item and recompute scores
+ies_drop_items <- c(""ies_recent_9"", ""ies_remote_9"")
+
+ies_int <- c(""_1"", ""_2"", ""_3"", ""_6"", ""_9"", ""_14"", ""_16"", ""_20"")
+
+df_master <-
+  df_master %>%
+  ### calculate ies-r recent without item 9
+  mutate(
+    ### total sum score
+    ies_recent_total_drop = rowSums(
+      select(
+        ., starts_with(""ies_recent_"") & matches('\\d{1}$') & !matches(ies_drop_items) & !contains(""cutoff"")
+        )
+      ),
+    ### int domain mean score
+    ies_recent_int_drop = rowMeans(
+      select(
+        ., starts_with(""ies_recent_"") & matches('\\d{1}$') & !matches(ies_drop_items) & ends_with(ies_int)
+        )
+      )
+    ) %>% 
+  ### calculate ies-r remote without item 9
+  mutate(
+    ### total sum score
+    ies_remote_total_drop = rowSums(
+      select(
+        ., starts_with(""ies_remote_"") & matches('\\d{1}$') & !matches(ies_drop_items) & !contains(""cutoff"")
+        )
+      ),
+    ### int domain mean score
+    ies_remote_int_drop = rowMeans(
+      select(
+        ., starts_with(""ies_remote_"") & matches('\\d{1}$') & !matches(ies_drop_items) & ends_with(ies_int)
+        )
+      )
+    )
+
+### Center variables (including imagery and verbal style) for regression models
+df_master <-
+  df_master %>% 
+  mutate(
+    ### osiq_o
+    osiq_o_cen = scale(osiq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osiq_s
+    osiq_s_cen = scale(osiq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    phq_total_cen = scale(phq_total, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_flup_cen = scale(age_flup, scale = FALSE),
+    ### pte_exposure_count
+    pte_exposure_count_cen = scale(pte_exposure_count, scale = FALSE),
+    ### grammatical reasoning
+    final_score_raw_gr_cen = scale(final_score_raw_gr, scale = FALSE),
+    ### odd-one-out
+    final_score_raw_oo_cen = scale(final_score_raw_oo, scale = FALSE),
+    ### paired associates
+    avg_score_raw_pa_cen = scale(avg_score_raw_pa, scale = FALSE),
+    ### mental rotation
+    final_score_raw_ro_cen = scale(final_score_raw_ro, scale = FALSE),
+    ### education
+    edu_flup_cen = scale(edu_flup, scale = FALSE),
+    )
+
+### Regression with verbal style added: uses mean-centered predictors
+df_master_mod <-
+  df_master %>% 
+  filter(
+    !is.na(ies_recent_total), !is.na(phq_total_cen),
+    !is.na(osiq_o_cen), !is.na(osiq_s_cen), !is.na(osivq_v_cen), 
+    !gender_flup_clean == ""Other/Prefer not to answer"",
+    ) 
+
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ phq_total_cen + gender_flup_clean +
+       osiq_o_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean + osivq_v_cen*gender_flup_clean, 
+     data = .)
+",match,"The code applies the same transformations described in the paper: computing OSIQ subscale scores as means, recomputing OSIQ-O and IES-R scores with overlapping items removed, and mean-centering predictors before regression. These modified and centered variables are then used in the regression models that include verbal style and gender interactions, consistent with the described analysis.",,
+yeung,9,"Study 1 also investigated whether adding a verbal-cognitive style measure (OSIVQ verbal subscale) to the imagery–PTSD regression model affected results. In regressions with IES-R as the outcome and predictors including PHQ-9, gender, OSIQ-O, OSIQ-S, OSIVQ verbal, and associated interaction terms, higher verbal style was related to fewer PTSD symptoms only in some gender-specific models, and inclusion of the verbal measure had negligible impact on the object and spatial imagery coefficients.",Inference Specification,"The verbal scale of the OSIVQ (Blazhenkova & Kozhevnikov, 2009) has been proposed as a measure of verbal-semantic processes, which are also thought to be protective against intrusions (Holmes & Bourne, 2008). Although we administered this verbal scale in both studies, it was not consistently related to PTSD symptoms: Although higher verbal-cognitive style was related to fewer symptoms in Study 1, this effect was restricted to men and did not replicate in Study 2. Furthermore, its inclusion in regression models had negligible effects on our other findings, suggesting that the visual and spatial-schematic domains may be particularly relevant to PTSD symptoms (see the Supplemental Material).","### full model
+mod_ies_phq_osivq_gender <- 
+  df_master_mod %>% 
+  lm(ies_recent_total ~ phq_total_cen + gender_flup_clean +
+       osiq_o_cen*gender_flup_clean + osiq_s_cen*gender_flup_clean + osivq_v_cen*gender_flup_clean, 
+     data = .)
+
+### regression table
+tab_model(
+  mod_ies_phq_osivq_gender,
+  show.std = TRUE, show.se = TRUE,
+  p.style = ""numeric_stars""
+  )
+
+### simple slopes
+emtrends(mod_ies_phq_osivq_gender, ~ gender_flup_clean, var = ""osivq_v_cen"", infer = c(TRUE , TRUE)) %>% 
+  kable(table.attr = ""style = \""color: black;\"""", caption = ""simple slopes for OSIVQ-V × gender"") %>% 
+  kable_styling(c(""striped"", ""hover"", ""condensed"")) %>%
+  scroll_box(width = ""100%"")
+
+### check against null model
+anova(mod_null, mod_ies_phq_osivq_gender, test = ""Chisq"")
+
+### overall model F stats and p value
+summary(mod_ies_phq_osivq_gender)",unknown,"The paper excerpt does not specify any explicit inference criteria (e.g., alpha level or CI rules), so it is not possible to determine whether the code’s inference settings align with the paper’s specifications.",,
+yeung,10,"In Study 1, zero-order Pearson correlations between PTSD symptoms (IES-R) and each of the four Cambridge Brain Sciences (CBS) task scores—Grammatical Reasoning, Odd One Out, Rotations, and Paired Associates—were computed to characterize bivariate associations prior to regression. These correlations, reported in the Supplemental Material, showed that only Grammatical Reasoning had a notable negative association with PTSD symptoms, consistent with its unique predictive value in multivariate models.",Model Specification,"Considering the objective cognitive measures, we found that controlling for gender and education, performance on the Grammatical Reasoning test was uniquely related to PTSD symptoms. Higher scores corresponded with fewer symptoms, suggesting that objectively assessed abstract-reasoning capacities are protective. This relationship held when Grammatical Reasoning was included in a model with other CBS tasks that are more explicitly focused on visuospatial cognition (Odd One Out, Rotations, Paired Associates; Table 2), suggesting specificity to the abstract-reasoning domain (for zero-order correlations, see the Supplemental Material).
+
+Analyses were conducted in R (Version 4.2.2), including stats  for linear regressions and correlations (R Core Team, 2022), cocor for testing significant differences among correlations (Diedenhofen & Musch, 2015), and rstatix for correlation matrices (Kassambara, 2023).","df_master %>% 
+  filter(
+    !is.na(gender_flup_clean),
+    !(gender_flup_clean == ""Other/Prefer not to answer""),
+    ### only among those with demo data
+    recorded_data_demo == ""DEM"",
+    ### only among those with self-reported trauma exposure
+    str_detect(trauma, ""Yes""),
+    ) %>% 
+  select(
+    phq_9, osiq_o, osiq_s, 
+    ies_recent_total, # ies_recent_int, ies_recent_avd, ies_recent_hyp,
+    final_score_raw_gr, final_score_raw_oo, final_score_raw_ro, avg_score_raw_pa,
+    # sam_epi_zscore_demo, sam_sem_zscore_demo, sam_spa_zscore_demo, sam_fut_zscore_demo, 
+    ) %>% 
+  rename(
+    cbs_gr = final_score_raw_gr,
+    cbs_oo = final_score_raw_oo,
+    cbs_ro = final_score_raw_ro,
+    cbs_pa = avg_score_raw_pa,
+  ) %>%
+  # nrow()
+  rstatix::cor_mat() %>% 
+  rstatix::cor_mark_significant()",match,"The paper describes computing zero-order correlations and the code uses a correlation matrix function (rstatix::cor_mat) on PTSD symptoms and CBS task scores, consistent with Pearson correlation analysis. Although additional variables are included, the statistical test type (zero-order correlations) matches the described model specification.",,
+yeung,10,"In Study 1, zero-order Pearson correlations between PTSD symptoms (IES-R) and each of the four Cambridge Brain Sciences (CBS) task scores—Grammatical Reasoning, Odd One Out, Rotations, and Paired Associates—were computed to characterize bivariate associations prior to regression. These correlations, reported in the Supplemental Material, showed that only Grammatical Reasoning had a notable negative association with PTSD symptoms, consistent with its unique predictive value in multivariate models.",Variable Specification,"In a separate model, we next entered performance on the CBS tests as predictors of IES-R scores, controlling for gender (because of its relationship to performance on certain cognitive tests, particularly those involving spatial processes; Levine et al., 2016) and years of education (to account for domain-general processes, e.g., general intelligence). ... This relationship held when Grammatical Reasoning was included in a model with other CBS tasks that are more explicitly focused on visuospatial cognition (Odd One Out, Rotations, Paired Associates; Table 2), suggesting specificity to the abstract-reasoning domain (for zero-order correlations, see the Supplemental Material).","df_master %>% 
+  filter(
+    !is.na(gender_flup_clean),
+    !(gender_flup_clean == ""Other/Prefer not to answer""),
+    ### only among those with demo data
+    recorded_data_demo == ""DEM"",
+    ### only among those with self-reported trauma exposure
+    str_detect(trauma, ""Yes""),
+    ) %>% 
+  select(
+    phq_9, osiq_o, osiq_s, 
+    ies_recent_total, # ies_recent_int, ies_recent_avd, ies_recent_hyp,
+    final_score_raw_gr, final_score_raw_oo, final_score_raw_ro, avg_score_raw_pa,
+    # sam_epi_zscore_demo, sam_sem_zscore_demo, sam_spa_zscore_demo, sam_fut_zscore_demo, 
+    ) %>% 
+  rename(
+    cbs_gr = final_score_raw_gr,
+    cbs_oo = final_score_raw_oo,
+    cbs_ro = final_score_raw_ro,
+    cbs_pa = avg_score_raw_pa,
+  ) %>%
+  # nrow()
+  rstatix::cor_mat() %>% 
+  rstatix::cor_mark_significant()
+
+plot_cor_ies_gr <- 
+  df_master %>% 
+  ggplot(data = .,
+         aes(x = final_score_raw_gr, y = ies_recent_total)) + 
+  labs(x = ""Grammatical Reasoning\n(Raw Final Score)"",
+       y = ""PTSD Symptoms (IES-R)"",
+       tag = ""*"") +
+  scale_y_continuous(breaks = seq(0, 80, 20)) +
+  theme(text = element_text(size = 14),
+        axis.title = element_text(face = ""bold""),
+        plot.tag.position = c(0.925, 0.9),
+        plot.tag = element_text(size = 30)) + 
+  geom_point(inherit.aes = TRUE,
+             position = position_jitter(width = 0.2, height = 0.2, seed = 725),
+             alpha = 0.3, size = 0.5) +
+  geom_smooth(method = lm, fullrange = TRUE,
+              colour = ""red"", size = 1, alpha = 0.3)
+
+plot_cor_ies_oo <- 
+  df_master %>% 
+  ggplot(data = .,
+         aes(x = final_score_raw_oo, y = ies_recent_total)) + 
+  labs(x = ""Odd One Out\n(Raw Final Score)"",
+       y = """", # PTSD Symptoms (IES-R)
+       tag = ""*"") +
+  scale_y_continuous(breaks = seq(0, 80, 20)) +
+  theme(text = element_text(size = 14),
+        axis.title = element_text(face = ""bold""),
+        plot.tag.position = c(0.925, 0.9),
+        plot.tag = element_text(size = 30)) + 
+  geom_point(inherit.aes = TRUE,
+             position = position_jitter(width = 0.2, height = 0.2, seed = 725),
+             alpha = 0.3, size = 0.5) +
+  geom_smooth(method = lm, fullrange = TRUE,
+              colour = ""red"", size = 1, alpha = 0.3)
+
+plot_cor_ies_ro <- 
+  df_master %>% 
+  ggplot(data = .,
+         aes(x = final_score_raw_ro, y = ies_recent_total)) + 
+  labs(x = ""Rotations\n(Raw Final Score)"",
+       y = ""PTSD Symptoms (IES-R)"", 
+       tag = ""ns"") +
+  scale_x_continuous(breaks = seq(0, 200, 40), limits = c(0, 200)) +
+  scale_y_continuous(breaks = seq(0, 80, 20)) +
+  theme(text = element_text(size = 14),
+        axis.title = element_text(face = ""bold""),
+        plot.tag.position = c(0.945, 0.9),
+        plot.tag = element_text(face = c(""bold.italic""))) + 
+  geom_point(inherit.aes = TRUE,
+             position = position_jitter(width = 0.2, height = 0.2, seed = 725),
+             alpha = 0.3, size = 0.5) +
+  geom_smooth(method = lm, fullrange = TRUE,
+              colour = ""red"", size = 1, alpha = 0.3)
+
+plot_cor_ies_pa <- 
+  df_master %>% 
+  ggplot(data = .,
+         aes(x = avg_score_raw_pa, y = ies_recent_total)) + 
+  labs(x = ""Paired Associates\n(Raw Final Score)"",
+       y = """", # PTSD Symptoms (IES-R)
+       tag = ""ns"") +
+  scale_y_continuous(breaks = seq(0, 80, 20)) +
+  theme(text = element_text(size = 14),
+        axis.title = element_text(face = ""bold""),
+        plot.tag.position = c(0.945, 0.9),
+        plot.tag = element_text(face = c(""bold.italic""))) +
+  geom_point(inherit.aes = TRUE,
+             position = position_jitter(width = 0.2, height = 0.2, seed = 725),
+             alpha = 0.3, size = 0.5) +
+  geom_smooth(method = lm, fullrange = TRUE,
+              colour = ""red"", size = 1, alpha = 0.3)",match,"The code computes zero-order correlations between IES-R total scores and all four CBS task scores, matching the paper’s description of bivariate associations between PTSD symptoms and each CBS task. Additional variables (e.g., PHQ-9, OSIQ) are included in the correlation matrix but do not alter the variable roles relevant to this analysis-dimension pairing.",,
+yeung,10,"In Study 1, zero-order Pearson correlations between PTSD symptoms (IES-R) and each of the four Cambridge Brain Sciences (CBS) task scores—Grammatical Reasoning, Odd One Out, Rotations, and Paired Associates—were computed to characterize bivariate associations prior to regression. These correlations, reported in the Supplemental Material, showed that only Grammatical Reasoning had a notable negative association with PTSD symptoms, consistent with its unique predictive value in multivariate models.",Transformation Specification,"In the Grammatical Reasoning task, participants rated statements of various syntactic complexity (e.g., “The square is not encapsulated by the circle”) as true or false based on a presented image of a square and a circle. This task is scored as the number of correct answers minus number of incorrect answers completed in 90 s. In the Paired Associates task, participants had to learn and recall the locations of items in sets of increasing sizes. The score was the maximum set size correctly recalled. In the Rotations task, participants judged whether two grids of squares could be rotated to look identical to one another. The score was the number of correct answers, weighted by difficulty. In the Odd One Out task, nine sets of shapes that differed on various dimensions (i.e., number, shape, or color) were presented. Participants selected the set that did not fit with any of the others. This task was scored as number of correct answers minus number of incorrect answers. … Continuous predictors (years of education, Grammatical Reasoning, Odd One Out, Rotations, Paired Associates) were mean-centered.","```r
+### center numeric predictors in later regression models
+df_master <-
+  df_master %>% 
+  mutate(
+    ### osiq_o
+    osiq_o_cen = scale(osiq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osiq_s
+    osiq_s_cen = scale(osiq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    phq_total_cen = scale(phq_total, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_flup_cen = scale(age_flup, scale = FALSE),
+    ### pte_exposure_count
+    pte_exposure_count_cen = scale(pte_exposure_count, scale = FALSE),
+    ### grammatical reasoning
+    final_score_raw_gr_cen = scale(final_score_raw_gr, scale = FALSE),
+    ### odd-one-out
+    final_score_raw_oo_cen = scale(final_score_raw_oo, scale = FALSE),
+    ### paired associates
+    avg_score_raw_pa_cen = scale(avg_score_raw_pa, scale = FALSE),
+    ### mental rotation
+    final_score_raw_ro_cen = scale(final_score_raw_ro, scale = FALSE),
+    ### education
+    edu_flup_cen = scale(edu_flup, scale = FALSE),
+    )
+```
+
+```r
+df_master %>% 
+  filter(
+    !is.na(gender_flup_clean),
+    !(gender_flup_clean == ""Other/Prefer not to answer""),
+    ### only among those with demo data
+    recorded_data_demo == ""DEM"",
+    ### only among those with self-reported trauma exposure
+    str_detect(trauma, ""Yes""),
+    ) %>% 
+  select(
+    phq_9, osiq_o, osiq_s, 
+    ies_recent_total, # ies_recent_int, ies_recent_avd, ies_recent_hyp,
+    final_score_raw_gr, final_score_raw_oo, final_score_raw_ro, avg_score_raw_pa,
+    # sam_epi_zscore_demo, sam_sem_zscore_demo, sam_spa_zscore_demo, sam_fut_zscore_demo, 
+    ) %>% 
+  rename(
+    cbs_gr = final_score_raw_gr,
+    cbs_oo = final_score_raw_oo,
+    cbs_ro = final_score_raw_ro,
+    cbs_pa = avg_score_raw_pa,
+  ) %>%
+  # nrow()
+  rstatix::cor_mat() %>% 
+  rstatix::cor_mark_significant()
+```",match,"The code mean-centers the continuous predictors exactly as described and then computes the PTSD–CBS zero-order correlations on the raw task scores, which is consistent with the paper because centering does not affect Pearson correlations. No additional unreported transformations (e.g., standardization, trimming) are applied before computing the correlations.",,
+yeung,10,"In Study 1, zero-order Pearson correlations between PTSD symptoms (IES-R) and each of the four Cambridge Brain Sciences (CBS) task scores—Grammatical Reasoning, Odd One Out, Rotations, and Paired Associates—were computed to characterize bivariate associations prior to regression. These correlations, reported in the Supplemental Material, showed that only Grammatical Reasoning had a notable negative association with PTSD symptoms, consistent with its unique predictive value in multivariate models.",Inference Specification,"Table 2. Regression Results for Cambridge Brain Sciences Task Performance Versus Symptoms of Posttraumatic Stress Disorder in Trauma-Exposed Adults
+...
+Note: Outcome is Impact of Event Scale–Revised score. R2 = .04, 
+n = 518. Continuous predictors (years of education, Grammatical 
+Reasoning, Odd One Out, Rotations, Paired Associates) were mean-
+centered.
+...
+*p < .05. ** p < .01.
+
+Table 3.  Regression Results for Imagery and Grammatical 
+Reasoning Versus Symptoms of Posttraumatic Stress 
+Disorder in Trauma-Exposed Adults
+...
+Note: Outcome is Impact of Event Scale–Revised score. R2 = .19, 
+n = 545. Continuous predictors (PHQ-9, years of education, 
+Grammatical Reasoning, OSIQ-O, OSIQ-S) were mean-centered. PHQ-
+9 = Patient Health Questionnaire–9; OSIQ-O = Object-Spatial Imagery 
+Questionnaire Object subscale; OSIQ-S = Object-Spatial Imagery 
+Questionnaire Spatial subscale.
+...
+*p < .05. ***p < .001.","df_master %>% 
+  filter(
+    !is.na(gender_flup_clean),
+    !(gender_flup_clean == ""Other/Prefer not to answer""),
+    ### only among those with demo data
+    recorded_data_demo == ""DEM"",
+    ### only among those with self-reported trauma exposure
+    str_detect(trauma, ""Yes""),
+    ) %>% 
+  select(
+    phq_9, osiq_o, osiq_s, 
+    ies_recent_total, # ies_recent_int, ies_recent_avd, ies_recent_hyp,
+    final_score_raw_gr, final_score_raw_oo, final_score_raw_ro, avg_score_raw_pa,
+    # sam_epi_zscore_demo, sam_sem_zscore_demo, sam_spa_zscore_demo, sam_fut_zscore_demo, 
+    ) %>% 
+  rename(
+    cbs_gr = final_score_raw_gr,
+    cbs_oo = final_score_raw_oo,
+    cbs_ro = final_score_raw_ro,
+    cbs_pa = avg_score_raw_pa,
+  ) %>%
+  # nrow()
+  rstatix::cor_mat() %>% 
+  rstatix::cor_mark_significant()
+
+plot_cor_ies_gr <- 
+  df_master %>% 
+  ggplot(data = .,
+         aes(x = final_score_raw_gr, y = ies_recent_total)) + 
+  labs(x = ""Grammatical Reasoning\n(Raw Final Score)"",
+       y = ""PTSD Symptoms (IES-R)"",
+       tag = ""*"") +
+  ...
+
+plot_cor_ies_oo <- 
+  df_master %>% 
+  ggplot(data = .,
+         aes(x = final_score_raw_oo, y = ies_recent_total)) + 
+  labs(x = ""Odd One Out\n(Raw Final Score)"",
+       y = """", # PTSD Symptoms (IES-R)
+       tag = ""*"") +
+  ...
+
+plot_cor_ies_ro <- 
+  df_master %>% 
+  ggplot(data = .,
+         aes(x = final_score_raw_ro, y = ies_recent_total)) + 
+  labs(x = ""Rotations\n(Raw Final Score)"",
+       y = ""PTSD Symptoms (IES-R)"", 
+       tag = ""ns"") +
+  ...
+
+plot_cor_ies_pa <- 
+  df_master %>% 
+  ggplot(data = .,
+         aes(x = avg_score_raw_pa, y = ies_recent_total)) + 
+  labs(x = ""Paired Associates\n(Raw Final Score)"",
+       y = """", # PTSD Symptoms (IES-R)
+       tag = ""ns"") +
+  ...",match,"The paper uses conventional p-value thresholds for inference (e.g., * p < .05), and the code applies standard significance marking to the zero-order correlations consistent with an alpha of .05. The plotting code further labels significant vs. non-significant CBS–PTSD correlations with asterisks and 'ns' in line with these criteria.",,
+yeung,11,"In Study 2, the authors calculated a zero-order Pearson correlation between trait object imagery (OSIQ-O) and PTSD symptoms (PCL-5 total score) among undergraduates (n = 493, with correlation n likely 471 after exclusions). The correlation was positive and moderate (r = .28, p < .001), indicating that higher object imagery was associated with greater PTSD symptom severity.",Model Specification,"Zero-order correlations with PTSD symptoms were r  = .28 for OSIQ-O (p  < .001) and r  = .08 for OSIQ-S ( p = .08), which were significantly different from each other (p  < .001).","## Overall Cor Matrix
+
+df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen), 
+    !is.na(gender_clean),
+    ) %>% 
+  select(
+    dass_d, osivq_o, osivq_s, pcl_5
+    ) %>% 
+  # nrow()
+  rstatix::cor_mat() %>% 
+  rstatix::cor_mark_significant()
+
+...
+
+## Compare O vs. S Cor
+
+```{r compare pcl osiq correlations, warning = F}
+df_joined_cor <-
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    !is.na(gender_clean),
+    ) %>% 
+  select(pcl_5, osivq_o, osivq_s)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_o)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_s)
+
+df_joined_cor %>% 
+  as.data.frame() %>% 
+  cocor::cocor(~pcl_5 + osivq_o | pcl_5 + osivq_s, data = .)
+```",match,"The code computes zero-order Pearson correlations between PCL-5 and OSIQ-O/OSIQ-S and then statistically compares these correlations, which aligns with the paper’s description. Both sources indicate simple bivariate (zero-order) correlations and a test of the difference between them.",,
+yeung,11,"In Study 2, the authors calculated a zero-order Pearson correlation between trait object imagery (OSIQ-O) and PTSD symptoms (PCL-5 total score) among undergraduates (n = 493, with correlation n likely 471 after exclusions). The correlation was positive and moderate (r = .28, p < .001), indicating that higher object imagery was associated with greater PTSD symptom severity.",Variable Specification,"As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome. Zero-order correlations with PTSD symptoms were r  = .28 for OSIQ-O (p  < .001) and r  = .08 for OSIQ-S ( p = .08), which were significantly different from each other (p  < .001).","## Overall Cor Matrix
+
+df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen), 
+    !is.na(gender_clean),
+    ) %>% 
+  select(
+    dass_d, osivq_o, osivq_s, pcl_5
+    ) %>% 
+  # nrow()
+  rstatix::cor_mat() %>% 
+  rstatix::cor_mark_significant()
+
+## Object PCL-5
+
+plot_cor_object_pcl_5 <- 
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    !is.na(gender_clean),
+    ) %>% 
+  ggplot(data = ., aes(x = osivq_o, y = pcl_5)) + 
+  scale_x_continuous(limits = c(1, 5), breaks = c(1:5)) + 
+  scale_y_continuous(limits = c(0, 80)) +
+  labs(x = ""Object Imagery (OSIQ-O)"",
+       y = ""PTSD Symptoms (PCL-5)"") + 
+  theme(text = element_text(size = 14),
+        axis.title = element_text(face = ""bold"")) + 
+  annotate(""text"", label = ""***"", size = 10,
+           x = 5, y = Inf, 
+           hjust = 0.8, vjust = 1.3) +
+  annotate(""text"", label = ""r = .28"", size = 5,
+           x = 4.7, y = Inf, 
+           hjust = 0.35, vjust = 3) +
+  geom_point(inherit.aes = TRUE,
+             position = position_jitter(width = 0.2, height = 0.2, seed = 725),
+             alpha = 0.4) +
+  geom_smooth(method = lm, fullrange = TRUE, colour = ""red"", 
+              size = 1, alpha = 0.3)
+
+## Compare O vs. S Cor
+
+df_joined_cor <-
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    !is.na(gender_clean),
+    ) %>% 
+  select(pcl_5, osivq_o, osivq_s)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_o)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_s)",match,The code uses the same variables and roles as described in the paper for the zero-order correlations between trait imagery and PTSD symptoms.,,
+yeung,11,"In Study 2, the authors calculated a zero-order Pearson correlation between trait object imagery (OSIQ-O) and PTSD symptoms (PCL-5 total score) among undergraduates (n = 493, with correlation n likely 471 after exclusions). The correlation was positive and moderate (r = .28, p < .001), indicating that higher object imagery was associated with greater PTSD symptom severity.",Transformation Specification,"Total scores reflecting object and spatial imagery are calculated by averaging the raw scores of all the items in each domain.
+
+As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome. We also controlled for depression symptoms (DASS-D; mean-centered) and gender and examined potential interactions between gender and the OSIQ-O and OSIQ-S.
+
+As was the case in Study 1, results were not affected by exclusion of OSIQ-O items that pertained to intrusive memory or the inclusion of age as a predictor (see the Supplemental Material).","df_osivq <- 
+  df_clean %>% 
+  select(deidentified_id_code, starts_with(""osivq"")) %>% 
+  ### reverse items that are reverse coded
+  mutate(across(ends_with(""_rev""), ~ 6-.)) %>% 
+  rowwise() %>% 
+  mutate( 
+    ### averages across items, even if Ps are missing responses
+    osivq_o = mean(c_across(contains(""_o"")), na.rm = T),
+    osivq_s = mean(c_across(contains(""_s"")), na.rm = T),
+    osivq_v = mean(c_across(contains(""_v"")), na.rm = T),
+    ) %>% 
+  mutate(
+    ### replace NaNs with NAs
+    across(
+      c(osivq_o, osivq_s, osivq_v),
+      ~ case_when(
+        .x == ""NaN"" ~ NA,
+        TRUE ~ .x,
+        )
+      )
+    ) %>% 
+  ungroup()
+
+osiq_drop_items <- c(""osivq_33_o"", ""osivq_43_o"")
+
+df_osivq <-
+  df_osivq %>%
+  ### calculate OSIVQ-O & OSIVQ-S difference score (+ve = more O, -ve = more S)
+  mutate(osiq_diff_o_s = osivq_o - osivq_s) %>%
+  ### calculate OSIVQ-O without items 22 and 28
+  mutate(
+    osiq_o_drop = rowMeans(
+      select(
+        ., starts_with(""osivq_"") & ends_with(""_o"") & !matches(osiq_drop_items)
+        ),
+      na.rm = TRUE,
+      )
+    ) %>% 
+  mutate(
+    ### replace NaNs with NAs
+    osiq_o_drop = case_when(
+      osiq_o_drop == ""NaN"" ~ NA,
+      .default = osiq_o_drop,
+      )
+    )
+
+
+dass_d_items <- c(""_3"", ""_5"", ""_10"", ""_13"", ""_16"", ""_17"", ""_21"")
+
+df_clean <- 
+  df_clean %>% 
+  rowwise() %>% 
+  mutate(pcl_5 = sum(across(starts_with(""pcl_5_"") & !contains(""timing"")))-20) %>% 
+  mutate(
+    pcl_5_cutoff = case_when(
+      ### 33 cutoff (probable PTSD) according to Wortmann et al. (https://doi.org/10.1037/pas0000260)
+      pcl_5 >= 33 ~ TRUE,
+      pcl_5 < 33 ~ FALSE,
+      )
+    ) %>% 
+  mutate(dass_d = sum(across(starts_with(""dass_"") & ends_with(dass_d_items)))) %>%  
+  mutate(
+    dass_d_cutoff1 = case_when(
+      ### mild
+      dass_d >= 5 ~ TRUE,
+      dass_d < 5 ~ FALSE,
+      ),
+    dass_d_cutoff2 = case_when(
+      ### moderate
+      dass_d >= 7 ~ TRUE,
+      dass_d < 7 ~ FALSE,
+      ),
+    dass_d_cutoff3 = case_when(
+      ### severe
+      dass_d >= 11 ~ TRUE,
+      dass_d < 11 ~ FALSE,
+      )
+    ) %>% 
+  ungroup()
+
+
+df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen), 
+    !is.na(gender_clean),
+    ) %>% 
+  select(
+    dass_d, osivq_o, osivq_s, pcl_5
+    ) %>% 
+  # nrow()
+  rstatix::cor_mat() %>% 
+  rstatix::cor_mark_significant()",unknown,,,
+yeung,11,"In Study 2, the authors calculated a zero-order Pearson correlation between trait object imagery (OSIQ-O) and PTSD symptoms (PCL-5 total score) among undergraduates (n = 493, with correlation n likely 471 after exclusions). The correlation was positive and moderate (r = .28, p < .001), indicating that higher object imagery was associated with greater PTSD symptom severity.",Inference Specification,"Zero-order correlations with PTSD symptoms were r  = .28 for OSIQ-O (p  < .001) and r  = .08 for OSIQ-S ( p = .08), which were significantly different from each other (p  < .001).","df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen), 
+    !is.na(gender_clean),
+    ) %>% 
+  select(
+    dass_d, osivq_o, osivq_s, pcl_5
+    ) %>% 
+  # nrow()
+  rstatix::cor_mat() %>% 
+  rstatix::cor_mark_significant()
+
+plot_cor_object_pcl_5 <- 
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    !is.na(gender_clean),
+    ) %>% 
+  ggplot(data = ., aes(x = osivq_o, y = pcl_5)) + 
+  scale_x_continuous(limits = c(1, 5), breaks = c(1:5)) + 
+  scale_y_continuous(limits = c(0, 80)) +
+  labs(x = ""Object Imagery (OSIQ-O)"",
+       y = ""PTSD Symptoms (PCL-5)"") + 
+  theme(text = element_text(size = 14),
+        axis.title = element_text(face = ""bold"")) + 
+  annotate(""text"", label = ""***"", size = 10,
+           x = 5, y = Inf, 
+           hjust = 0.8, vjust = 1.3) +
+  annotate(""text"", label = ""r = .28"", size = 5,
+           x = 4.7, y = Inf, 
+           hjust = 0.35, vjust = 3) +
+  geom_point(inherit.aes = TRUE,
+             position = position_jitter(width = 0.2, height = 0.2, seed = 725),
+             alpha = 0.4) +
+  geom_smooth(method = lm, fullrange = TRUE, colour = ""red"", 
+              size = 1, alpha = 0.3)
+
+df_joined_cor <-
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    !is.na(gender_clean),
+    ) %>% 
+  select(pcl_5, osivq_o, osivq_s)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_o)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_s)
+
+df_joined_cor %>% 
+  as.data.frame() %>% 
+  cocor::cocor(~pcl_5 + osivq_o | pcl_5 + osivq_s, data = .)",match,"The code computes significance tests for the correlations and their difference and annotates the correlation as highly significant, consistent with the paper’s reported p-values and inference. No conflicting inference criteria (e.g., different alpha levels) are evident between the paper and code.",,
+yeung,12,"Also in Study 2, a zero-order Pearson correlation was computed between trait spatial imagery (OSIQ-S) and PTSD symptoms (PCL-5). This association was small and non-significant at the zero-order level (r = .08, p = .08), suggesting little overall linear relation before considering gender interactions.",Model Specification,"Zero-order correlations with PTSD symptoms were r  = .28 for OSIQ-O (p  < .001) and r  = .08 for OSIQ-S ( p = .08), which were significantly different from each other (p  < .001).","df_joined_cor <-
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    !is.na(gender_clean),
+    ) %>% 
+  select(pcl_5, osivq_o, osivq_s)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_o)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_s)",match,"The paper describes a zero-order correlation between PCL-5 and OSIQ-S, and the code computes a simple Pearson correlation between these two variables with no covariates. This aligns with the specified model type for the analysis.",,
+yeung,12,"Also in Study 2, a zero-order Pearson correlation was computed between trait spatial imagery (OSIQ-S) and PTSD symptoms (PCL-5). This association was small and non-significant at the zero-order level (r = .08, p = .08), suggesting little overall linear relation before considering gender interactions.",Variable Specification,"Zero-order correlations with PTSD symptoms were r  = .28 for OSIQ-O (p  < .001) and r  = .08 for OSIQ-S ( p = .08), which were significantly different from each other (p  < .001).","df_joined_cor <-
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    !is.na(gender_clean),
+    ) %>% 
+  select(pcl_5, osivq_o, osivq_s)
+
+...
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_s)
+",match,"The code computes a zero-order correlation between PTSD symptoms (PCL-5) and spatial imagery (OSIQ-S), matching the variables described in the paper for this analysis.",,
+yeung,12,"Also in Study 2, a zero-order Pearson correlation was computed between trait spatial imagery (OSIQ-S) and PTSD symptoms (PCL-5). This association was small and non-significant at the zero-order level (r = .08, p = .08), suggesting little overall linear relation before considering gender interactions.",Transformation Specification,Total scores reflecting object and spatial imagery are calculated by averaging the raw scores of all the items in each domain.,"df_osivq <- 
+  df_clean %>% 
+  select(deidentified_id_code, starts_with(""osivq"")) %>% 
+  ### reverse items that are reverse coded
+  mutate(across(ends_with(""_rev""), ~ 6-.)) %>% 
+  rowwise() %>% 
+  mutate( 
+    ### averages across items, even if Ps are missing responses
+    osivq_o = mean(c_across(contains(""_o"")), na.rm = T),
+    osivq_s = mean(c_across(contains(""_s"")), na.rm = T),
+    osivq_v = mean(c_across(contains(""_v"")), na.rm = T),
+    ) %>% 
+  mutate(
+    ### replace NaNs with NAs
+    across(
+      c(osivq_o, osivq_s, osivq_v),
+      ~ case_when(
+        .x == ""NaN"" ~ NA,
+        TRUE ~ .x,
+        )
+      )
+    ) %>% 
+  ungroup()",match,"The code computes OSIQ/OSIVQ domain scores by averaging item responses within each domain, consistent with the paper’s description of total scores as averages of all items in each domain. Additional steps like reverse-coding and handling missing data are not contradicted by the paper and do not alter this core transformation specification.",,
+yeung,12,"Also in Study 2, a zero-order Pearson correlation was computed between trait spatial imagery (OSIQ-S) and PTSD symptoms (PCL-5). This association was small and non-significant at the zero-order level (r = .08, p = .08), suggesting little overall linear relation before considering gender interactions.",Inference Specification,"Zero-order correlations with PTSD symptoms were r  = .28 for OSIQ-O (p  <  .001) and r  = .08 for OSIQ-S ( p = .08), which were significantly different from each other (p  <  .001).","df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen), 
+    !is.na(gender_clean),
+    ) %>% 
+  select(
+    dass_d, osivq_o, osivq_s, pcl_5
+    ) %>% 
+  # nrow()
+  rstatix::cor_mat() %>% 
+  rstatix::cor_mark_significant()
+...
+plot_cor_spatial_pcl_5 <-
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    !is.na(gender_clean),
+    ) %>% 
+  ggplot(data = ., aes(x = osivq_s, y = pcl_5)) + 
+  scale_x_continuous(limits = c(1, 5), breaks = c(1:5)) + 
+  scale_y_continuous(limits = c(0 ,80)) +
+  labs(x = ""Spatial Imagery (OSIQ-S)"",
+       y = ""PTSD Symptoms (PCL-5)"") +
+  theme(text = element_text(size = 14),
+        axis.title = element_text(face = ""bold"")) + 
+  annotate(""text"", label = ""paste(italic(ns))"",
+           parse = TRUE, size = 6,
+           x = 5, y = Inf, 
+           hjust = 0.7, vjust = 1.3) +
+  annotate(""text"", label = ""r = .08"", size = 5,
+           x = 4.7, y = Inf, 
+           hjust = 0.35, vjust = 3) +
+  geom_point(inherit.aes = TRUE,
+             position = position_jitter(width = 0.2, height = 0.2, seed = 725),
+             alpha = 0.4) +
+  geom_smooth(method = lm, fullrange = TRUE,
+              colour = ""red"", size = 1, alpha = 0.3)
+...
+df_joined_cor <-
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    !is.na(gender_clean),
+    ) %>% 
+  select(pcl_5, osivq_o, osivq_s)
+...
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_s)",match,"Both paper and code use a standard significance test for the zero-order Pearson correlation and treat p = .08 as non-significant, consistent with an implicit α = .05 criterion. The code computes the correlation and p-value via cor.test and labels the result as non-significant, matching the paper’s inference description.",,
+yeung,13,"The Study 2 authors compared the magnitudes of the OSIQ-O–PCL-5 and OSIQ-S–PCL-5 correlations using cocor to test whether the two dependent correlations differed. The correlation involving object imagery was significantly stronger than that involving spatial imagery (p < .001), reinforcing the distinct roles of these imagery modalities in relation to PTSD symptoms.",Model Specification,"Analyses were conducted in R (Version 4.2.2), including stats for linear regressions and correlations (R Core Team, 2022), cocor for testing significant differences among correlations (Diedenhofen & Musch, 2015), and rstatix for correlation matrices (Kassambara, 2023).","df_joined_cor <-
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    !is.na(gender_clean),
+    ) %>% 
+  select(pcl_5, osivq_o, osivq_s)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_o)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_s)
+
+df_joined_cor %>% 
+  as.data.frame() %>% 
+  cocor::cocor(~pcl_5 + osivq_o | pcl_5 + osivq_s, data = .)",match,The code uses cocor to compare two dependent correlations exactly as described in the paper for testing differences between the OSIQ-O–PCL-5 and OSIQ-S–PCL-5 correlations.,,
+yeung,13,"The Study 2 authors compared the magnitudes of the OSIQ-O–PCL-5 and OSIQ-S–PCL-5 correlations using cocor to test whether the two dependent correlations differed. The correlation involving object imagery was significantly stronger than that involving spatial imagery (p < .001), reinforcing the distinct roles of these imagery modalities in relation to PTSD symptoms.",Variable Specification,"Zero-order correlations with PTSD symptoms were r  = .28 for OSIQ-O (p  < .001) and r  = .08 for OSIQ-S ( p = .08), which were significantly different from each other (p  < .001).","```{r compare pcl osiq correlations, warning = F}
+df_joined_cor <-
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    !is.na(gender_clean),
+    ) %>% 
+  select(pcl_5, osivq_o, osivq_s)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_o)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_s)
+
+df_joined_cor %>% 
+  as.data.frame() %>% 
+  cocor::cocor(~pcl_5 + osivq_o | pcl_5 + osivq_s, data = .)
+```",match,"The code uses PTSD symptoms (pcl_5) and the object and spatial imagery scores (osivq_o, osivq_s) as the variables in the two dependent correlations, matching the paper’s description of correlations between PCL-5 and OSIQ-O/OSIQ-S. The designation of variables as the two imagery predictors correlated with PTSD symptoms is consistent between the paper and the code.",,
+yeung,13,"The Study 2 authors compared the magnitudes of the OSIQ-O–PCL-5 and OSIQ-S–PCL-5 correlations using cocor to test whether the two dependent correlations differed. The correlation involving object imagery was significantly stronger than that involving spatial imagery (p < .001), reinforcing the distinct roles of these imagery modalities in relation to PTSD symptoms.",Transformation Specification,"The Object-Spatial Imagery Questionnaire (OSIQ; Blajenkova et al., 2006) is a widely used self-report questionnaire assessing object imagery (the ability to vividly imagine specific details of an image, such as the color or shape of a specific object) and spatial imagery (the ability to imagine spatial transformations, such as mentally rotating an object, and visualizing using schematics), rated on a Likert scale from 1 to 5. Total scores reflecting object and spatial imagery are calculated by averaging the raw scores of all the items in each domain. … As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome. We also controlled for depression symptoms (DASS-D; mean-centered) and gender and examined potential interactions between gender and the OSIQ-O and OSIQ-S. … As was the case in Study 1, results were not affected by exclusion of OSIQ-O items that pertained to intrusive memory or the inclusion of age as a predictor (see the Supplemental Material).","df_osivq <- 
+  df_clean %>% 
+  select(deidentified_id_code, starts_with(""osivq"")) %>% 
+  ### reverse items that are reverse coded
+  mutate(across(ends_with(""_rev""), ~ 6-.)) %>% 
+  rowwise() %>% 
+  mutate( 
+    ### averages across items, even if Ps are missing responses
+    osivq_o = mean(c_across(contains(""_o"")), na.rm = T),
+    osivq_s = mean(c_across(contains(""_s"")), na.rm = T),
+    osivq_v = mean(c_across(contains(""_v"")), na.rm = T),
+    ) %>% 
+  mutate(
+    ### replace NaNs with NAs
+    across(
+      c(osivq_o, osivq_s, osivq_v),
+      ~ case_when(
+        .x == ""NaN"" ~ NA,
+        TRUE ~ .x,
+        )
+      )
+    ) %>% 
+  ungroup()
+...
+
+df_clean <- 
+  df_clean %>% 
+  rowwise() %>% 
+  mutate(pcl_5 = sum(across(starts_with(""pcl_5_"") & !contains(""timing"")))-20) %>% 
+  mutate(
+    pcl_5_cutoff = case_when(
+      ### 33 cutoff (probable PTSD) according to Wortmann et al. (https://doi.org/10.1037/pas0000260)
+      pcl_5 >= 33 ~ TRUE,
+      pcl_5 < 33 ~ FALSE,
+      )
+    ) %>% 
+  mutate(dass_d = sum(across(starts_with(""dass_"") & ends_with(dass_d_items)))) %>%  
+  mutate(
+    dass_d_cutoff1 = case_when(
+      ### mild
+      dass_d >= 5 ~ TRUE,
+      dass_d < 5 ~ FALSE,
+      ),
+    dass_d_cutoff2 = case_when(
+      ### moderate
+      dass_d >= 7 ~ TRUE,
+      dass_d < 7 ~ FALSE,
+      ),
+    dass_d_cutoff3 = case_when(
+      ### severe
+      dass_d >= 11 ~ TRUE,
+      dass_d < 11 ~ FALSE,
+      )
+    ) %>% 
+  ungroup()
+...
+
+df_joined <-
+  df_joined %>% 
+  mutate(
+    ### osivq_o
+    osivq_o_cen = scale(osivq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osivq_s
+    osivq_s_cen = scale(osivq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    dass_d_cen = scale(dass_d, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_cen = scale(age, scale = FALSE),
+    )
+...
+
+df_joined_cor <-
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    !is.na(gender_clean),
+    ) %>% 
+  select(pcl_5, osivq_o, osivq_s)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_o)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_s)
+
+df_joined_cor %>% 
+  as.data.frame() %>% 
+  cocor::cocor(~pcl_5 + osivq_o | pcl_5 + osivq_s, data = .)
+",match,"The code computes OSIQ object and spatial scores by averaging item responses and then mean-centers the relevant predictors exactly as described in the paper, and uses these untransformed totals for the correlation and cocor comparison, which is consistent with the reported analysis. No contradictory or additional unreported transformations affecting this correlation comparison are evident.",,
+yeung,13,"The Study 2 authors compared the magnitudes of the OSIQ-O–PCL-5 and OSIQ-S–PCL-5 correlations using cocor to test whether the two dependent correlations differed. The correlation involving object imagery was significantly stronger than that involving spatial imagery (p < .001), reinforcing the distinct roles of these imagery modalities in relation to PTSD symptoms.",Inference Specification,"Zero-order correlations with PTSD symptoms were r  = .28 for OSIQ-O (p  < .001) and r  = .08 for OSIQ-S ( p = .08), which were significantly different from each other (p  < .001).","df_joined_cor <-
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    !is.na(gender_clean),
+    ) %>% 
+  select(pcl_5, osivq_o, osivq_s)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_o)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_s)
+
+df_joined_cor %>% 
+  as.data.frame() %>% 
+  cocor::cocor(~pcl_5 + osivq_o | pcl_5 + osivq_s, data = .)",match,"The paper reports using cocor to test whether the two dependent correlations (OSIQ-O–PCL-5 vs. OSIQ-S–PCL-5) differ and interprets the resulting p-value, and the code implements exactly this cocor comparison without specifying any inference criterion beyond p-values, which is consistent with the paper. No conflicting alpha or alternative inferential rule is specified in either source.",,
+yeung,14,"The primary Study 2 analysis was a multiple linear regression with PTSD symptoms (PCL-5 total) as the dependent variable and mean-centered depression (DASS-21 Depression subscale), gender, OSIQ-O, OSIQ-S, and the OSIQ-O × gender and OSIQ-S × gender interaction terms as predictors (n = 471). DASS-D showed a strong positive association (B = 1.98, β = 0.62, p < .001), OSIQ-O was significantly positively related to PTSD symptoms (B = 5.92, β = 0.21, p = .002), OSIQ-S had a significant negative main effect (B = −4.51, β = −0.15, p = .03), and there was a significant positive OSIQ-S × gender interaction (B = 7.33, β = 0.25, p = .002), with the model explaining 47% of the variance (R² = .47).",Model Specification,"Data analysis. As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome.","### subset with pcl_5, dass_d, osivq, and gender (men or women) data
+df_joined_filter <- 
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen), !is.na(gender_clean),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    )
+
+### null model
+mod_null <-
+  df_joined_filter %>% 
+  lm(pcl_5 ~ 1, 
+     data = .)
+
+### full model
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + 
+       osivq_o_cen*gender_clean + 
+       osivq_s_cen*gender_clean, 
+     data = .)
+
+### regression table
+tab_model(
+  mod_pcl_dass_d_osivq_gender,
+  show.std = TRUE, show.se = TRUE,
+  p.style = ""numeric_stars""
+  )",match,"Both the paper and the code use a linear regression model with PTSD symptoms (PCL-5) as the dependent variable. The code implements this via R’s lm() function, consistent with the paper’s description of using linear regression.",,
+yeung,14,"The primary Study 2 analysis was a multiple linear regression with PTSD symptoms (PCL-5 total) as the dependent variable and mean-centered depression (DASS-21 Depression subscale), gender, OSIQ-O, OSIQ-S, and the OSIQ-O × gender and OSIQ-S × gender interaction terms as predictors (n = 471). DASS-D showed a strong positive association (B = 1.98, β = 0.62, p < .001), OSIQ-O was significantly positively related to PTSD symptoms (B = 5.92, β = 0.21, p = .002), OSIQ-S had a significant negative main effect (B = −4.51, β = −0.15, p = .03), and there was a significant positive OSIQ-S × gender interaction (B = 7.33, β = 0.25, p = .002), with the model explaining 47% of the variance (R² = .47).",Variable Specification,"Data analysis. As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome. We also controlled for depression symptoms (DASS-D; mean-centered) and gender and examined potential interactions between gender and the OSIQ-O and OSIQ-S. ... Table 4. Regression Results for Imagery Versus Symptoms of Posttraumatic Stress Disorder in Undergraduates ... Note: Outcome is PCL-5 score. R2 = 0.47, n = 471. Continuous predictors (DASS-D, OSIQ-O, OSIQ-S) were mean-centered. DASS-D = Depression, Anxiety, Stress Scales Depression subscale; OSIQ-O = Object-Spatial Imagery Questionnaire Object subscale; OSIQ-S = Object-Spatial Imagery Questionnaire Spatial subscale.","### center numeric predictors for later regression models
+df_joined <-
+  df_joined %>% 
+  mutate(
+    ### osivq_o
+    osivq_o_cen = scale(osivq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osivq_s
+    osivq_s_cen = scale(osivq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    dass_d_cen = scale(dass_d, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_cen = scale(age, scale = FALSE),
+    )
+
+### subset with pcl_5, dass_d, osivq, and gender (men or women) data
+df_joined_filter <- 
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen), !is.na(gender_clean),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    )
+
+### null model
+mod_null <-
+  df_joined_filter %>% 
+  lm(pcl_5 ~ 1, 
+     data = .)
+
+### full model
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + 
+       osivq_o_cen*gender_clean + 
+       osivq_s_cen*gender_clean, 
+     data = .)",match,"The code specifies PCL-5 total as the outcome and includes mean-centered depression (DASS-D), gender, OSIQ-O, OSIQ-S, and the OSIQ-O × gender and OSIQ-S × gender interactions as predictors, consistent with the paper. The R formula using osivq_o_cen*gender_clean and osivq_s_cen*gender_clean implicitly includes the main effects and interaction terms as described.",,
+yeung,14,"The primary Study 2 analysis was a multiple linear regression with PTSD symptoms (PCL-5 total) as the dependent variable and mean-centered depression (DASS-21 Depression subscale), gender, OSIQ-O, OSIQ-S, and the OSIQ-O × gender and OSIQ-S × gender interaction terms as predictors (n = 471). DASS-D showed a strong positive association (B = 1.98, β = 0.62, p < .001), OSIQ-O was significantly positively related to PTSD symptoms (B = 5.92, β = 0.21, p = .002), OSIQ-S had a significant negative main effect (B = −4.51, β = −0.15, p = .03), and there was a significant positive OSIQ-S × gender interaction (B = 7.33, β = 0.25, p = .002), with the model explaining 47% of the variance (R² = .47).",Transformation Specification,"As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome. We also controlled for depression symptoms (DASS-D; mean-centered) and gender and examined potential interactions between gender and the OSIQ-O and OSIQ-S. ... Note: Outcome is PCL-5 score. R2 = 0.47, n = 471. Continuous predictors (DASS-D, OSIQ-O, OSIQ-S) were mean-centered. ... Total scores reflecting object and spatial imagery are calculated by averaging the raw scores of all the items in each domain.","df_osivq <- 
+  df_clean %>% 
+  select(deidentified_id_code, starts_with(""osivq"")) %>% 
+  ### reverse items that are reverse coded
+  mutate(across(ends_with(""_rev""), ~ 6-.)) %>% 
+  rowwise() %>% 
+  mutate( 
+    ### averages across items, even if Ps are missing responses
+    osivq_o = mean(c_across(contains(""_o"")), na.rm = T),
+    osivq_s = mean(c_across(contains(""_s"")), na.rm = T),
+    osivq_v = mean(c_across(contains(""_v"")), na.rm = T),
+    ) %>% 
+  mutate(
+    ### replace NaNs with NAs
+    across(
+      c(osivq_o, osivq_s, osivq_v),
+      ~ case_when(
+        .x == ""NaN"" ~ NA,
+        TRUE ~ .x,
+        )
+      )
+    ) %>% 
+  ungroup()
+
+### identify items that might just be tapping into PTSD-like intrusions
+osiq_drop_items <- c(""osivq_33_o"", ""osivq_43_o"")
+
+df_osivq <-
+  df_osivq %>%
+  ### calculate OSIVQ-O & OSIVQ-S difference score (+ve = more O, -ve = more S)
+  mutate(osiq_diff_o_s = osivq_o - osivq_s) %>%
+  ### calculate OSIVQ-O without items 22 and 28
+  mutate(
+    osiq_o_drop = rowMeans(
+      select(
+        ., starts_with(""osivq_"") & ends_with(""_o"") & !matches(osiq_drop_items)
+        ),
+      na.rm = TRUE,
+      )
+    ) %>% 
+  mutate(
+    ### replace NaNs with NAs
+    osiq_o_drop = case_when(
+      osiq_o_drop == ""NaN"" ~ NA,
+      .default = osiq_o_drop,
+      )
+    )
+
+
+dass_d_items <- c(""_3"", ""_5"", ""_10"", ""_13"", ""_16"", ""_17"", ""_21"")
+
+
+df_clean <- 
+  df_clean %>% 
+  rowwise() %>% 
+  mutate(pcl_5 = sum(across(starts_with(""pcl_5_"") & !contains(""timing"")))-20) %>% 
+  mutate(
+    pcl_5_cutoff = case_when(
+      ### 33 cutoff (probable PTSD) according to Wortmann et al. (https://doi.org/10.1037/pas0000260)
+      pcl_5 >= 33 ~ TRUE,
+      pcl_5 < 33 ~ FALSE,
+      )
+    ) %>% 
+  mutate(dass_d = sum(across(starts_with(""dass_"") & ends_with(dass_d_items)))) %>%  
+  mutate(
+    dass_d_cutoff1 = case_when(
+      ### mild
+      dass_d >= 5 ~ TRUE,
+      dass_d < 5 ~ FALSE,
+      ),
+    dass_d_cutoff2 = case_when(
+      ### moderate
+      dass_d >= 7 ~ TRUE,
+      dass_d < 7 ~ FALSE,
+      ),
+    dass_d_cutoff3 = case_when(
+      ### severe
+      dass_d >= 11 ~ TRUE,
+      dass_d < 11 ~ FALSE,
+      )
+    ) %>% 
+  ungroup()
+
+
+### center numeric predictors for later regression models
+df_joined <-
+  df_joined %>% 
+  mutate(
+    ### osivq_o
+    osivq_o_cen = scale(osivq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osivq_s
+    osivq_s_cen = scale(osivq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    dass_d_cen = scale(dass_d, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_cen = scale(age, scale = FALSE),
+    )
+
+
+### subset with pcl_5, dass_d, osivq, and gender (men or women) data
+df_joined_filter <- 
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen), !is.na(gender_clean),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    )",match,"The code computes scale scores and mean-centers continuous predictors exactly as described in the paper, with OSIQ/OSIVQ domain scores formed by averaging items and DASS-D and imagery predictors mean-centered before regression. There is no clear evidence of a conflicting transformation relative to the paper’s description.",,
+yeung,14,"The primary Study 2 analysis was a multiple linear regression with PTSD symptoms (PCL-5 total) as the dependent variable and mean-centered depression (DASS-21 Depression subscale), gender, OSIQ-O, OSIQ-S, and the OSIQ-O × gender and OSIQ-S × gender interaction terms as predictors (n = 471). DASS-D showed a strong positive association (B = 1.98, β = 0.62, p < .001), OSIQ-O was significantly positively related to PTSD symptoms (B = 5.92, β = 0.21, p = .002), OSIQ-S had a significant negative main effect (B = −4.51, β = −0.15, p = .03), and there was a significant positive OSIQ-S × gender interaction (B = 7.33, β = 0.25, p = .002), with the model explaining 47% of the variance (R² = .47).",Inference Specification,*p < .05. **p < .01. ***p < .001.,"### full model
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + 
+       osivq_o_cen*gender_clean + 
+       osivq_s_cen*gender_clean, 
+     data = .)
+
+### regression table
+tab_model(
+  mod_pcl_dass_d_osivq_gender,
+  show.std = TRUE, show.se = TRUE,
+  p.style = ""numeric_stars""
+  )
+
+### simple slopes
+emtrends(mod_pcl_dass_d_osivq_gender, ~ gender_clean, var = ""osivq_s_cen"", infer = c(TRUE , TRUE))",match,"The paper’s use of significance stars at p < .05, .01, and .001 is consistent with the code’s use of numeric significance stars and default inference in emtrends, which employs standard alpha thresholds (typically .05). There is no indication of a different or custom inference criterion in either the paper or the code.",,
+yeung,15,"To probe the significant OSIQ-S × gender interaction in Study 2, a simple-slopes analysis estimated the effect of spatial imagery on PTSD symptoms (PCL-5) among men. The simple slope for men indicated a significant negative association (B = −4.51, p = .03), meaning that higher spatial imagery predicted fewer PTSD symptoms specifically in male participants.",Model Specification,"Data analysis. As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome. ... Simple-slopes analysis indicated that this significant negative relationship was specific to men (B  = − 4.51, p = .03).","### full model
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + 
+       osivq_o_cen*gender_clean + 
+       osivq_s_cen*gender_clean, 
+     data = .)
+
+### simple slopes
+emtrends(mod_pcl_dass_d_osivq_gender, ~ gender_clean, var = ""osivq_s_cen"", infer = c(TRUE , TRUE)) %>% 
+  kable(table.attr = ""style = \""color: black;\"""", caption = ""simple slopes for OSIQ-S × gender"") %>% 
+  kable_styling(c(""striped"", ""hover"", ""condensed"")) %>%
+  scroll_box(width = ""100%"")",match,Both the paper and the code use linear regression as the core model and then perform a simple-slopes analysis on the OSIQ-S × gender interaction. The added covariate (dass_d_cen) in the code does not change the underlying model type for this dimension.,,
+yeung,15,"To probe the significant OSIQ-S × gender interaction in Study 2, a simple-slopes analysis estimated the effect of spatial imagery on PTSD symptoms (PCL-5) among men. The simple slope for men indicated a significant negative association (B = −4.51, p = .03), meaning that higher spatial imagery predicted fewer PTSD symptoms specifically in male participants.",Variable Specification,"As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome. We also controlled for depression symptoms (DASS-D; mean-centered) and gender and examined potential interactions between gender and the OSIQ-O and OSIQ-S. Once again, object imagery was significantly and positively associated with PTSD symptoms. Spatial imagery was also significantly negatively related to PTSD symptoms but qualified by a significant interaction with gender: Simple-slopes analysis indicated that this significant negative relationship was specific to men (B  = − 4.51, p = .03). Women showed the opposite pattern: Their spatial imagery was significantly and positively related to PTSD symptoms (B  = 2.82, p = .02; Table 4 and Fig. 2).","### subset with pcl_5, dass_d, osivq, and gender (men or women) data
+df_joined_filter <- 
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen), !is.na(gender_clean),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    )
+
+### null model
+mod_null <-
+  df_joined_filter %>% 
+  lm(pcl_5 ~ 1, 
+     data = .)
+
+### full model
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + 
+       osivq_o_cen*gender_clean + 
+       osivq_s_cen*gender_clean, 
+     data = .)
+
+### simple slopes
+emtrends(mod_pcl_dass_d_osivq_gender, ~ gender_clean, var = ""osivq_s_cen"", infer = c(TRUE , TRUE)) %>% 
+  kable(table.attr = ""style = \""color: black;\"""", caption = ""simple slopes for OSIQ-S × gender"") %>% 
+  kable_styling(c(""striped"", ""hover"", ""condensed"")) %>%
+  scroll_box(width = ""100%"")",match,"The code uses PTSD symptoms (pcl_5) as the outcome and includes centered depression (dass_d_cen), centered spatial imagery (osivq_s_cen), centered object imagery (osivq_o_cen), gender, and their interactions exactly as described, then computes simple slopes of spatial imagery by gender. This aligns with the paper’s description of the variables and their roles in the regression and simple-slopes analysis.",,
+yeung,15,"To probe the significant OSIQ-S × gender interaction in Study 2, a simple-slopes analysis estimated the effect of spatial imagery on PTSD symptoms (PCL-5) among men. The simple slope for men indicated a significant negative association (B = −4.51, p = .03), meaning that higher spatial imagery predicted fewer PTSD symptoms specifically in male participants.",Transformation Specification,"“Data analysis. As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome. We also controlled for depression symptoms (DASS-D; mean-centered) and gender and examined potential interactions between gender and the OSIQ-O and OSIQ-S.”
+
+“OSIQ. See Materials above (Study 1) for details on the OSIQ (Blajenkova et al., 2006).”
+
+“Object-Spatial Imagery Questionnaire. … Total scores reflecting object and spatial imagery are calculated by averaging the raw scores of all the items in each domain.”
+
+“Table 4. … Note: Outcome is PCL-5 score. R2 = 0.47, n = 471. Continuous predictors (DASS-D, OSIQ-O, OSIQ-S) were mean-centered.”","## Gender
+
+df_clean <- 
+  df_clean %>% 
+  mutate(
+    ### match ""other"" gender responses to nearest gender label
+    gender_other_recoded = gendercoder::recode_gender(
+      gender = gender_other, 
+      dictionary = manylevels_en, 
+      retain_unmatched = FALSE
+      )
+    ) %>% 
+  mutate(
+    gender_clean = case_when(
+      gender == ""Man / Transman"" ~ ""Man"",
+      gender == ""Woman / Transwoman"" ~ ""Woman"",
+      )
+    ) 
+
+## OSIVQ scoring and transformations
+
+df_osivq <- 
+  df_clean %>% 
+  select(deidentified_id_code, starts_with(""osivq"")) %>% 
+  ### reverse items that are reverse coded
+  mutate(across(ends_with(""_rev""), ~ 6-.)) %>% 
+  rowwise() %>% 
+  mutate( 
+    ### averages across items, even if Ps are missing responses
+    osivq_o = mean(c_across(contains(""_o"")), na.rm = T),
+    osivq_s = mean(c_across(contains(""_s"")), na.rm = T),
+    osivq_v = mean(c_across(contains(""_v"")), na.rm = T),
+    ) %>% 
+  mutate(
+    ### replace NaNs with NAs
+    across(
+      c(osivq_o, osivq_s, osivq_v),
+      ~ case_when(
+        .x == ""NaN"" ~ NA,
+        TRUE ~ .x,
+        )
+      )
+    ) %>% 
+  ungroup()
+
+### identify items that might just be tapping into PTSD-like intrusions
+osiq_drop_items <- c(""osivq_33_o"", ""osivq_43_o"")
+
+df_osivq <-
+  df_osivq %>%
+  ### calculate OSIVQ-O & OSIVQ-S difference score (+ve = more O, -ve = more S)
+  mutate(osiq_diff_o_s = osivq_o - osivq_s) %>%
+  ### calculate OSIVQ-O without items 22 and 28
+  mutate(
+    osiq_o_drop = rowMeans(
+      select(
+        ., starts_with(""osivq_"") & ends_with(""_o"") & !matches(osiq_drop_items)
+        ),
+      na.rm = TRUE,
+      )
+    ) %>% 
+  mutate(
+    ### replace NaNs with NAs
+    osiq_o_drop = case_when(
+      osiq_o_drop == ""NaN"" ~ NA,
+      .default = osiq_o_drop,
+      )
+    )
+
+## Psychopathology scoring
+
+dass_d_items <- c(""_3"", ""_5"", ""_10"", ""_13"", ""_16"", ""_17"", ""_21"")
+
+df_clean <- 
+  df_clean %>% 
+  rowwise() %>% 
+  mutate(pcl_5 = sum(across(starts_with(""pcl_5_"") & !contains(""timing"")))-20) %>% 
+  mutate(
+    pcl_5_cutoff = case_when(
+      ### 33 cutoff (probable PTSD) according to Wortmann et al. (https://doi.org/10.1037/pas0000260)
+      pcl_5 >= 33 ~ TRUE,
+      pcl_5 < 33 ~ FALSE,
+      )
+    ) %>% 
+  mutate(dass_d = sum(across(starts_with(""dass_"") & ends_with(dass_d_items)))) %>%  
+  mutate(
+    dass_d_cutoff1 = case_when(
+      ### mild
+      dass_d >= 5 ~ TRUE,
+      dass_d < 5 ~ FALSE,
+      ),
+    dass_d_cutoff2 = case_when(
+      ### moderate
+      dass_d >= 7 ~ TRUE,
+      dass_d < 7 ~ FALSE,
+      ),
+    dass_d_cutoff3 = case_when(
+      ### severe
+      dass_d >= 11 ~ TRUE,
+      dass_d < 11 ~ FALSE,
+      )
+    ) %>% 
+  ungroup()
+
+## Join and centering of predictors used in the simple-slopes model
+
+### reattach calculated OSIVQ data to main dataframe
+df_joined <- 
+  left_join(df_clean, df_osivq, by = ""deidentified_id_code"")
+
+### center numeric predictors for later regression models
+df_joined <-
+  df_joined %>% 
+  mutate(
+    ### osivq_o
+    osivq_o_cen = scale(osivq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osivq_s
+    osivq_s_cen = scale(osivq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    dass_d_cen = scale(dass_d, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_cen = scale(age, scale = FALSE),
+    )
+
+## Use of transformed variables in the interaction model and simple-slopes analysis
+
+### subset with pcl_5, dass_d, osivq, and gender (men or women) data
+df_joined_filter <- 
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen), !is.na(gender_clean),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    )
+
+### full model
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + 
+       osivq_o_cen*gender_clean + 
+       osivq_s_cen*gender_clean, 
+     data = .)
+
+### simple slopes
+emtrends(mod_pcl_dass_d_osivq_gender, ~ gender_clean, var = ""osivq_s_cen"", infer = c(TRUE , TRUE)) %>% 
+  kable(table.attr = ""style = \""color: black;\"""", caption = ""simple slopes for OSIQ-S × gender"") %>% 
+  kable_styling(c(""striped"", ""hover"", ""condensed"")) %>%
+  scroll_box(width = ""100%"")
+",match,"The code computes OSIQ/OSIVQ spatial imagery as mean scores across items and mean-centers all continuous predictors (OSIQ-O, OSIQ-S, DASS-D) before fitting the interaction and simple-slopes models, consistent with the paper’s transformation description. Any additional transformations (e.g., alternative OSIQ-O scores, difference scores) are not used in the reported simple-slopes analysis and do not conflict with the described procedure.",,
+yeung,15,"To probe the significant OSIQ-S × gender interaction in Study 2, a simple-slopes analysis estimated the effect of spatial imagery on PTSD symptoms (PCL-5) among men. The simple slope for men indicated a significant negative association (B = −4.51, p = .03), meaning that higher spatial imagery predicted fewer PTSD symptoms specifically in male participants.",Inference Specification,"Spatial imagery was also significantly negatively related to PTSD symptoms but qualified by a significant interaction with gender: Simple-slopes analysis indicated that this significant negative relationship was specific to men (B  = − 4.51, p = .03). Women showed the opposite pattern: Their spatial imagery was significantly and positively related to PTSD symptoms (B  = 2.82, p = .02; Table 4 and Fig. 2). ... Note: Outcome is PCL-5 score. R2 = 0.47, n = 471. Continuous predictors (DASS-D, OSIQ-O, OSIQ-S) were mean-centered. DASS-D = Depression, Anxiety, Stress Scales Depression subscale; OSIQ-O = Object-Spatial Imagery Questionnaire Object subscale; OSIQ-S = Object-Spatial Imagery Questionnaire Spatial subscale. aReference level is men; comparison group is women. *p < .05. **p < .01. ***p < .001.","### regression table
+tab_model(
+  mod_pcl_dass_d_osivq_gender,
+  show.std = TRUE, show.se = TRUE,
+  p.style = ""numeric_stars""
+  )
+
+### simple slopes
+emtrends(mod_pcl_dass_d_osivq_gender, ~ gender_clean, var = ""osivq_s_cen"", infer = c(TRUE , TRUE)) %>% 
+  kable(table.attr = ""style = \""color: black;\"""", caption = ""simple slopes for OSIQ-S × gender"") %>% 
+  kable_styling(c(""striped"", ""hover"", ""condensed"")) %>%
+  scroll_box(width = ""100%"")
+
+### check against null model
+anova(mod_null, mod_pcl_dass_d_osivq_gender, test = ""Chisq"")
+
+### overall model F stats and p value
+summary(mod_pcl_dass_d_osivq_gender)",match,"The paper interprets effects using conventional p-value thresholds (e.g., p = .03 with *p < .05), and the code uses standard inferential procedures with default alpha (95% CIs and p-values) consistent with these criteria. No alternative or nonstandard inference rules are evident in the code.",,
+yeung,16,"The same simple-slopes analysis in Study 2 evaluated the effect of spatial imagery on PTSD symptoms (PCL-5) among women, conditional on the OSIQ-S × gender interaction. For women, the simple slope was significantly positive (B = 2.82, p = .02), indicating that higher spatial imagery was associated with more PTSD symptoms in female undergraduates, opposite in direction to the effect in men.",Model Specification,"Data analysis. As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome. We also controlled for depression symptoms (DASS-D; mean-centered) and gender and examined potential interactions between gender and the OSIQ-O and OSIQ-S. ... Spatial imagery was also significantly negatively related to PTSD symptoms but qualified by a significant interaction with gender: Simple-slopes analysis indicated that this significant negative relationship was specific to men (B  = − 4.51, p = .03). Women showed the opposite pattern: Their spatial imagery was significantly and positively related to PTSD symptoms (B  = 2.82, p = .02; Table 4 and Fig. 2).","### full model
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + 
+       osivq_o_cen*gender_clean + 
+       osivq_s_cen*gender_clean, 
+     data = .)
+
+### simple slopes
+emtrends(mod_pcl_dass_d_osivq_gender, ~ gender_clean, var = ""osivq_s_cen"", infer = c(TRUE , TRUE)) %>% 
+  kable(table.attr = ""style = \""color: black;\"""", caption = ""simple slopes for OSIQ-S × gender"") %>% 
+  kable_styling(c(""striped"", ""hover"", ""condensed"")) %>%
+  scroll_box(width = ""100%"")",match,"The code fits a linear regression with PTSD symptoms (PCL-5) as the outcome, including depression, object imagery, spatial imagery, gender, and their interactions with gender, and then computes simple slopes for the OSIQ-S × gender interaction, matching the paper’s described model and simple-slopes analysis. No differences in the specified test type or model structure are evident.",,
+yeung,16,"The same simple-slopes analysis in Study 2 evaluated the effect of spatial imagery on PTSD symptoms (PCL-5) among women, conditional on the OSIQ-S × gender interaction. For women, the simple slope was significantly positive (B = 2.82, p = .02), indicating that higher spatial imagery was associated with more PTSD symptoms in female undergraduates, opposite in direction to the effect in men.",Variable Specification,"Data analysis. As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome. We also controlled for depression symptoms (DASS-D; mean-centered) and gender and examined potential interactions between gender and the OSIQ-O and OSIQ-S.
+
+Results
+Once again, object imagery was significantly and positively associated with PTSD symptoms. Spatial imagery was also significantly negatively related to PTSD symptoms but qualified by a significant interaction with gender: Simple-slopes analysis indicated that this significant negative relationship was specific to men (B  = − 4.51, p = .03). Women showed the opposite pattern: Their spatial imagery was significantly and positively related to PTSD symptoms (B  = 2.82, p = .02; Table 4 and Fig. 2).","### subset with pcl_5, dass_d, osivq, and gender (men or women) data
+df_joined_filter <- 
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen), !is.na(gender_clean),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    )
+
+### null model
+mod_null <-
+  df_joined_filter %>% 
+  lm(pcl_5 ~ 1, 
+     data = .)
+
+### full model
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + 
+       osivq_o_cen*gender_clean + 
+       osivq_s_cen*gender_clean, 
+     data = .)
+
+### simple slopes
+emtrends(mod_pcl_dass_d_osivq_gender, ~ gender_clean, var = ""osivq_s_cen"", infer = c(TRUE , TRUE)) %>% 
+  kable(table.attr = ""style = \""color: black;\"""", caption = ""simple slopes for OSIQ-S × gender"") %>% 
+  kable_styling(c(""striped"", ""hover"", ""condensed"")) %>%
+  scroll_box(width = ""100%"")",match,"The code uses PTSD symptoms (pcl_5) as the outcome and includes spatial imagery (osivq_s_cen), object imagery (osivq_o_cen), depression (dass_d_cen), and gender (gender_clean) with OSIQ-S × gender and OSIQ-O × gender interactions, matching the variables and roles described in the paper for this analysis. The simple-slopes analysis is then explicitly conducted for spatial imagery across gender levels, as in the paper’s description of the OSIQ-S × gender interaction on PTSD symptoms.",,
+yeung,16,"The same simple-slopes analysis in Study 2 evaluated the effect of spatial imagery on PTSD symptoms (PCL-5) among women, conditional on the OSIQ-S × gender interaction. For women, the simple slope was significantly positive (B = 2.82, p = .02), indicating that higher spatial imagery was associated with more PTSD symptoms in female undergraduates, opposite in direction to the effect in men.",Transformation Specification,"As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome. We also controlled for depression symptoms (DASS-D; mean-centered) and gender and examined potential interactions between gender and the OSIQ-O and OSIQ-S. ... Continuous predictors (DASS-D, OSIQ-O, OSIQ-S) were mean-centered. ... The Object-Spatial Imagery Questionnaire (OSIQ; Blajenkova et al., 2006) is a widely used self-report questionnaire assessing object imagery ... and spatial imagery ..., rated on a Likert scale from 1 to 5. Total scores reflecting object and spatial imagery are calculated by averaging the raw scores of all the items in each domain. ... The PTSD Checklist for DSM-5 (PCL-5; Weathers et al., 2013) consists of 20 items assessing PTSD symptoms, rated on a Likert scale from 0 to 4.","## OSIVQ scoring and transformation
+
+df_osivq <- 
+  df_clean %>% 
+  select(deidentified_id_code, starts_with(""osivq"")) %>% 
+  ### reverse items that are reverse coded
+  mutate(across(ends_with(""_rev""), ~ 6-.)) %>% 
+  rowwise() %>% 
+  mutate( 
+    ### averages across items, even if Ps are missing responses
+    osivq_o = mean(c_across(contains(""_o"")), na.rm = T),
+    osivq_s = mean(c_across(contains(""_s"")), na.rm = T),
+    osivq_v = mean(c_across(contains(""_v"")), na.rm = T),
+    ) %>% 
+  mutate(
+    ### replace NaNs with NAs
+    across(
+      c(osivq_o, osivq_s, osivq_v),
+      ~ case_when(
+        .x == ""NaN"" ~ NA,
+        TRUE ~ .x,
+        )
+      )
+    ) %>% 
+  ungroup()
+
+### identify items that might just be tapping into PTSD-like intrusions
+osiq_drop_items <- c(""osivq_33_o"", ""osivq_43_o"")
+
+df_osivq <-
+  df_osivq %>%
+  ### calculate OSIVQ-O & OSIVQ-S difference score (+ve = more O, -ve = more S)
+  mutate(osiq_diff_o_s = osivq_o - osivq_s) %>%
+  ### calculate OSIVQ-O without items 22 and 28
+  mutate(
+    osiq_o_drop = rowMeans(
+      select(
+        ., starts_with(""osivq_"") & ends_with(""_o"") & !matches(osiq_drop_items)
+        ),
+      na.rm = TRUE,
+      )
+    ) %>% 
+  mutate(
+    ### replace NaNs with NAs
+    osiq_o_drop = case_when(
+      osiq_o_drop == ""NaN"" ~ NA,
+      .default = osiq_o_drop,
+      )
+    )
+  
+...
+
+df_osivq <-
+  df_osivq %>% 
+  select(deidentified_id_code, osivq_o, osivq_s, osivq_v, osiq_diff_o_s, osiq_o_drop)
+
+## PCL-5 and DASS-D scoring
+
+dass_d_items <- c(""_3"", ""_5"", ""_10"", ""_13"", ""_16"", ""_17"", ""_21"")
+
+df_clean <- 
+  df_clean %>% 
+  rowwise() %>% 
+  mutate(pcl_5 = sum(across(starts_with(""pcl_5_"") & !contains(""timing"")))-20) %>% 
+  mutate(
+    pcl_5_cutoff = case_when(
+      ### 33 cutoff (probable PTSD) according to Wortmann et al. (https://doi.org/10.1037/pas0000260)
+      pcl_5 >= 33 ~ TRUE,
+      pcl_5 < 33 ~ FALSE,
+      )
+    ) %>% 
+  mutate(dass_d = sum(across(starts_with(""dass_"") & ends_with(dass_d_items)))) %>%  
+  mutate(
+    dass_d_cutoff1 = case_when(
+      ### mild
+      dass_d >= 5 ~ TRUE,
+      dass_d < 5 ~ FALSE,
+      ),
+    dass_d_cutoff2 = case_when(
+      ### moderate
+      dass_d >= 7 ~ TRUE,
+      dass_d < 7 ~ FALSE,
+      ),
+    dass_d_cutoff3 = case_when(
+      ### severe
+      dass_d >= 11 ~ TRUE,
+      dass_d < 11 ~ FALSE,
+      )
+    ) %>% 
+  ungroup()
+
+## Join and centering of continuous predictors used in the simple-slopes analysis
+
+### reattach calculated OSIVQ data to main dataframe
+df_joined <- 
+  left_join(df_clean, df_osivq, by = ""deidentified_id_code"")
+
+### center numeric predictors for later regression models
+df_joined <-
+  df_joined %>% 
+  mutate(
+    ### osivq_o
+    osivq_o_cen = scale(osivq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osivq_s
+    osivq_s_cen = scale(osivq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    dass_d_cen = scale(dass_d, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_cen = scale(age, scale = FALSE),
+    )
+
+## Regression using centered spatial imagery for simple slopes
+
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + 
+       osivq_o_cen*gender_clean + 
+       osivq_s_cen*gender_clean, 
+     data = .)
+
+### simple slopes
+emtrends(mod_pcl_dass_d_osivq_gender, ~ gender_clean, var = ""osivq_s_cen"", infer = c(TRUE , TRUE))",match,"The code computes OSIQ object and spatial imagery as item means, scores PCL-5 and DASS-D via item sums, and mean-centers the continuous predictors exactly as described in the paper for this analysis. No transformations used in the regression contradict the paper’s stated procedures.",,
+yeung,16,"The same simple-slopes analysis in Study 2 evaluated the effect of spatial imagery on PTSD symptoms (PCL-5) among women, conditional on the OSIQ-S × gender interaction. For women, the simple slope was significantly positive (B = 2.82, p = .02), indicating that higher spatial imagery was associated with more PTSD symptoms in female undergraduates, opposite in direction to the effect in men.",Inference Specification,"Simple-slopes analysis indicated that this significant negative relationship was specific to men (B  = − 4.51, p = .03). Women showed the opposite pattern: Their spatial imagery was significantly and positively related to PTSD symptoms (B  = 2.82, p = .02; Table 4 and Fig. 2).","### regression table
+tab_model(
+  mod_pcl_dass_d_osivq_gender,
+  show.std = TRUE, show.se = TRUE,
+  p.style = ""numeric_stars""
+  )
+
+### simple slopes
+emtrends(mod_pcl_dass_d_osivq_gender, ~ gender_clean, var = ""osivq_s_cen"", infer = c(TRUE , TRUE)) %>% 
+  kable(table.attr = ""style = \""color: black;\"""", caption = ""simple slopes for OSIQ-S × gender"") %>% 
+  kable_styling(c(""striped"", ""hover"", ""condensed"")) %>%
+  scroll_box(width = ""100%"")",match,"The paper reports p-values for the simple slopes, and the code uses emtrends with infer = c(TRUE, TRUE), which requests hypothesis tests and confidence intervals using the default significance criteria, consistent with the reported inferential results.",,
+yeung,17,"In Study 2, the authors also reran the imagery–PTSD regression after removing OSIQ-O items closely related to intrusive imagery and recalculating scores to reduce item-content overlap with PCL-5 intrusion symptoms. The linear regression with PCL-5 as outcome and predictors including DASS-D, gender, revised OSIQ-O, OSIQ-S, and interaction terms yielded the same interpretation as the main model, indicating that the positive object imagery effect and spatial imagery × gender interaction were not artifacts of overlapping item wording.",Model Specification,"As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome.","{""code_value"":""```r\n## Drop Items\n\nDrop items that are potentially overlapping across OSIQ and PCL-5. \n\n-   **OSIQ 22:** *\""Sometimes my images are so vivid and persistent that it is difficult to ignore them.\""* (**`osiq_o_22`**).\n-   **OSIQ 28:** *\""My visual images are in my head all the time. They are just right there.\""* (**`osiq_o_28`**).\n\n```{r lin reg pcl_5 by dass_d osivq gender drop items, warning = F}\n### subset with pcl_5, dass_d, osivq, and gender (men or women) data\ndf_joined_filter <- \n  df_joined %>% \n  filter(\n    !is.na(pcl_5), !is.na(dass_d_cen), !is.na(gender_clean),\n    !is.na(osiq_o_drop_cen), !is.na(osivq_s_cen),\n    )\n\n### null model\nmod_null <-\n  df_joined_filter %>% \n  lm(pcl_5 ~ 1, \n     data = .)\n\n### full model\nmod_pcl_dass_d_osivq_gender <- \n  df_joined_filter %>% \n  lm(pcl_5 ~ dass_d_cen + \n       osiq_o_drop_cen*gender_clean + \n       osivq_s_cen*gender_clean, \n     data = .)\n\n### regression table\ntab_model(\n  mod_pcl_dass_d_osivq_gender,\n  show.std = TRUE, show.se = TRUE,\n  p.style = \""numeric_stars\""\n  )\n\n### simple slopes\nemtrends(mod_pcl_dass_d_osivq_gender, ~ gender_clean, var = \""osivq_s_cen\"", infer = c(TRUE , TRUE)) %>% \n  kable(table.attr = \""style = \\\""color: black;\\\""\"", caption = \""simple slopes for OSIQ-S × gender\"") %>% \n  kable_styling(c(\""striped\"", \""hover\"", \""condensed\"")) %>%\n  scroll_box(width = \""100%\"")\n```\n\n<hr>\n\n> **DIAGNOSTICS**\n\n```{r lin reg pcl_5 by dass_d osivq gender drop items diagnostics, message = F}\n### check against null model\nanova(mod_null, mod_pcl_dass_d_osivq_gender, test = \""Chisq\"")\n\n### overall model F stats and p value\nsummary(mod_pcl_dass_d_osivq_gender)\n\n### variance inflation factors\ncar::vif(mod_pcl_dass_d_osivq_gender) %>% \n  kable(col.names = \""VIF\"") %>% \n  kable_styling(bootstrap_options = c(\""striped\"", \""hover\"", \""condensed\""), full_width = F)\n```\n```"",""evidence"":{""code_path"":""/Users/jamie/git/codebot-for-psychology/data/raw/main/codebot/materials/codebot_pairs/yeung/OSIQ-PTSD_Study2_Rev1_OSF.Rmd"",""code_lines"":""```r\n### null model\nmod_null <-\n  df_joined_filter %>% \n  lm(pcl_5 ~ 1, \n     data = .)\n\n### full model\nmod_pcl_dass_d_osivq_gender <- \n  df_joined_filter %>% \n  lm(pcl_5 ~ dass_d_cen + \n       osiq_o_drop_cen*gender_clean + \n       osivq_s_cen*gender_clean, \n     data = .)\n```""}}}",match,"Both the paper and the code specify a linear regression model with PCL-5 as the outcome and imagery predictors, so the model specification aligns. The code further includes additional predictors (DASS-D and interactions), but this does not change the type of statistical test used.",,
+yeung,17,"In Study 2, the authors also reran the imagery–PTSD regression after removing OSIQ-O items closely related to intrusive imagery and recalculating scores to reduce item-content overlap with PCL-5 intrusion symptoms. The linear regression with PCL-5 as outcome and predictors including DASS-D, gender, revised OSIQ-O, OSIQ-S, and interaction terms yielded the same interpretation as the main model, indicating that the positive object imagery effect and spatial imagery × gender interaction were not artifacts of overlapping item wording.",Variable Specification,"As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome. We also controlled for depression symptoms (DASS-D; mean-centered) and gender and examined potential interactions between gender and the OSIQ-O and OSIQ-S. As was the case in Study 1, results were not affected by exclusion of OSIQ-O items that pertained to intrusive memory or the inclusion of age as a predictor (see the Supplemental Material).","### identify items that might just be tapping into PTSD-like intrusions
+osiq_drop_items <- c(""osivq_33_o"", ""osivq_43_o"")
+
+df_osivq <-
+  df_osivq %>%
+  ### calculate OSIVQ-O & OSIVQ-S difference score (+ve = more O, -ve = more S)
+  mutate(osiq_diff_o_s = osivq_o - osivq_s) %>%
+  ### calculate OSIVQ-O without items 22 and 28
+  mutate(
+    osiq_o_drop = rowMeans(
+      select(
+        ., starts_with(""osivq_"") & ends_with(""_o"") & !matches(osiq_drop_items)
+        ),
+      na.rm = TRUE,
+      )
+    ) %>% 
+  mutate(
+    ### replace NaNs with NAs
+    osiq_o_drop = case_when(
+      osiq_o_drop == ""NaN"" ~ NA,
+      .default = osiq_o_drop,
+      )
+    )
+...
+### center numeric predictors for later regression models
+df_joined <-
+  df_joined %>% 
+  mutate(
+    ### osivq_o
+    osivq_o_cen = scale(osivq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osivq_s
+    osivq_s_cen = scale(osivq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    dass_d_cen = scale(dass_d, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_cen = scale(age, scale = FALSE),
+    )
+...
+### subset with pcl_5, dass_d, osivq, and gender (men or women) data
+df_joined_filter <- 
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen), !is.na(gender_clean),
+    !is.na(osiq_o_drop_cen), !is.na(osivq_s_cen),
+    )
+
+### null model
+mod_null <-
+  df_joined_filter %>% 
+  lm(pcl_5 ~ 1, 
+     data = .)
+
+### full model
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + 
+       osiq_o_drop_cen*gender_clean + 
+       osivq_s_cen*gender_clean, 
+     data = .)
+
+### regression table
+tab_model(
+  mod_pcl_dass_d_osivq_gender,
+  show.std = TRUE, show.se = TRUE,
+  p.style = ""numeric_stars""
+  )",match,"The regression in the code uses PCL-5 as the outcome and includes centered depression (DASS-D), the revised object imagery score with intrusive items removed, spatial imagery, gender, and their interactions, matching the variables and roles described in the paper. Age is not included in this specific rerun, which is consistent with the paper’s note that adding age did not affect results rather than being a required predictor in this model.",,
+yeung,17,"In Study 2, the authors also reran the imagery–PTSD regression after removing OSIQ-O items closely related to intrusive imagery and recalculating scores to reduce item-content overlap with PCL-5 intrusion symptoms. The linear regression with PCL-5 as outcome and predictors including DASS-D, gender, revised OSIQ-O, OSIQ-S, and interaction terms yielded the same interpretation as the main model, indicating that the positive object imagery effect and spatial imagery × gender interaction were not artifacts of overlapping item wording.",Transformation Specification,"Two items on the OSIQ-O were conceptually similar to PTSD-related intrusions (i.e., “Sometimes my images are so vivid and persistent that it is difficult to ignore them,” “My visual images are in my head all the time. They are just right there”). Likewise, one item on the IES-R was conceptually similar to trait object imagery (i.e., “Pictures about it popped into my mind”). To ensure that any associations were not simply due to overlap between items on scales, we reran the same regression after recalculating OSIQ-O and IES-R scores without these three items. Removing these potentially overlapping items had minimal impact on results; there were no changes to significance or direction (see the Supplemental Material). ... As was the case in Study 1, results were not affected by exclusion of OSIQ-O items that pertained to intrusive memory or the inclusion of age as a predictor (see the Supplemental Material).","```r
+### identify items that might just be tapping into PTSD-like intrusions
+osiq_drop_items <- c(""osivq_33_o"", ""osivq_43_o"")
+
+df_osivq <-
+  df_osivq %>%
+  ### calculate OSIVQ-O & OSIVQ-S difference score (+ve = more O, -ve = more S)
+  mutate(osiq_diff_o_s = osivq_o - osivq_s) %>%
+  ### calculate OSIVQ-O without items 22 and 28
+  mutate(
+    osiq_o_drop = rowMeans(
+      select(
+        ., starts_with(""osivq_"") & ends_with(""_o"") & !matches(osiq_drop_items)
+        ),
+      na.rm = TRUE,
+      )
+    ) %>% 
+  mutate(
+    ### replace NaNs with NAs
+    osiq_o_drop = case_when(
+      osiq_o_drop == ""NaN"" ~ NA,
+      .default = osiq_o_drop,
+      )
+    )
+
+...
+
+### center numeric predictors for later regression models
+df_joined <-
+  df_joined %>% 
+  mutate(
+    ### osivq_o
+    osivq_o_cen = scale(osivq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osivq_s
+    osivq_s_cen = scale(osivq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    dass_d_cen = scale(dass_d, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_cen = scale(age, scale = FALSE),
+    )
+```",match,"The code recalculates an OSIQ-O score excluding two intrusion-like items and then centers this revised score, matching the paper’s description of removing OSIQ-O items conceptually similar to intrusive imagery before rerunning the regression. The transformation applied (row-wise mean of remaining OSIQ-O items) is consistent with standard scale scoring implied in the paper.",,
+yeung,17,"In Study 2, the authors also reran the imagery–PTSD regression after removing OSIQ-O items closely related to intrusive imagery and recalculating scores to reduce item-content overlap with PCL-5 intrusion symptoms. The linear regression with PCL-5 as outcome and predictors including DASS-D, gender, revised OSIQ-O, OSIQ-S, and interaction terms yielded the same interpretation as the main model, indicating that the positive object imagery effect and spatial imagery × gender interaction were not artifacts of overlapping item wording.",Inference Specification,"As was the case in Study 1, results were not affected by exclusion of OSIQ-O items that pertained to intrusive memory or the inclusion of age as a predictor (see the Supplemental Material).","### null model
+mod_null <-
+  df_joined_filter %>% 
+  lm(pcl_5 ~ 1, 
+     data = .)
+
+### full model
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + 
+       osiq_o_drop_cen*gender_clean + 
+       osivq_s_cen*gender_clean, 
+     data = .)
+
+### regression table
+tab_model(
+  mod_pcl_dass_d_osivq_gender,
+  show.std = TRUE, show.se = TRUE,
+  p.style = ""numeric_stars""
+  )
+
+### simple slopes
+emtrends(mod_pcl_dass_d_osivq_gender, ~ gender_clean, var = ""osivq_s_cen"", infer = c(TRUE , TRUE)) %>% 
+  kable(table.attr = ""style = \""color: black;\"""", caption = ""simple slopes for OSIQ-S × gender"") %>% 
+  kable_styling(c(""striped"", ""hover"", ""condensed"")) %>%
+  scroll_box(width = ""100%"")
+
+### check against null model
+anova(mod_null, mod_pcl_dass_d_osivq_gender, test = ""Chisq"")
+
+### overall model F stats and p value
+summary(mod_pcl_dass_d_osivq_gender)",unknown,"The paper excerpt does not report any specific inference criteria (e.g., alpha level or decision rules), while the code uses default inference settings without explicitly specifying an alpha or threshold. Because the paper’s inference criteria for this specific rerun are not stated, it is unclear whether the code’s implicit criteria match the paper’s description.",,
+yeung,18,"Study 2 further explored whether including participant age as an additional predictor altered the relationships between trait imagery and PTSD symptoms. In a multiple regression model with PCL-5 as the outcome and predictors including DASS-D, gender, OSIQ-O, OSIQ-S, imagery × gender interactions, and age, the pattern of significant effects remained unchanged, indicating that age did not account for the observed associations.",Model Specification,"As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome.","### subset with pcl_5, dass_d, osivq, gender (men or women), and age data
+df_joined_filter <- 
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen), !is.na(gender_clean), !is.na(age_cen), 
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    )
+
+### null model
+mod_null <-
+  df_joined_filter %>% 
+  lm(pcl_5 ~ 1, 
+     data = .)
+
+### full model
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + age_cen +
+       osivq_o_cen*gender_clean + 
+       osivq_s_cen*gender_clean, 
+     data = .)
+",match,Both the paper and the code use a linear (multiple) regression model with PCL-5 as the outcome and trait imagery along with additional predictors (including age) as predictors. The implemented lm() model aligns with the described regression specification for this analysis dimension (type of statistical test).,,
+yeung,18,"Study 2 further explored whether including participant age as an additional predictor altered the relationships between trait imagery and PTSD symptoms. In a multiple regression model with PCL-5 as the outcome and predictors including DASS-D, gender, OSIQ-O, OSIQ-S, imagery × gender interactions, and age, the pattern of significant effects remained unchanged, indicating that age did not account for the observed associations.",Variable Specification,"As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome. We also controlled for depression symptoms (DASS-D; mean-centered) and gender and examined potential interactions between gender and the OSIQ-O and OSIQ-S. As was the case in Study 1, results were not affected by exclusion of OSIQ-O items that pertained to intrusive memory or the inclusion of age as a predictor (see the Supplemental Material).","### center numeric predictors for later regression models
+df_joined <-
+  df_joined %>% 
+  mutate(
+    ### osivq_o
+    osivq_o_cen = scale(osivq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osivq_s
+    osivq_s_cen = scale(osivq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    dass_d_cen = scale(dass_d, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_cen = scale(age, scale = FALSE),
+    )
+
+### subset with pcl_5, dass_d, osivq, gender (men or women), and age data
+df_joined_filter <- 
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen), !is.na(gender_clean), !is.na(age_cen), 
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    )
+
+### null model
+mod_null <-
+  df_joined_filter %>% 
+  lm(pcl_5 ~ 1, 
+     data = .)
+
+### full model
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + age_cen +
+       osivq_o_cen*gender_clean + 
+       osivq_s_cen*gender_clean, 
+     data = .)",match,"The regression model in the code uses PCL-5 as the outcome and includes DASS-D, age, OSIQ-O, OSIQ-S, gender, and the OSIQ × gender interactions as predictors, matching the variables and roles described in the paper. Age is explicitly included as an additional predictor, consistent with the paper’s note about examining the inclusion of age.",,
+yeung,18,"Study 2 further explored whether including participant age as an additional predictor altered the relationships between trait imagery and PTSD symptoms. In a multiple regression model with PCL-5 as the outcome and predictors including DASS-D, gender, OSIQ-O, OSIQ-S, imagery × gender interactions, and age, the pattern of significant effects remained unchanged, indicating that age did not account for the observed associations.",Transformation Specification,"As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome. We also controlled for depression symptoms (DASS-D; mean-centered) and gender and examined potential interactions between gender and the OSIQ-O and OSIQ-S. ... As was the case in Study 1, results were not affected by exclusion of OSIQ-O items that pertained to intrusive memory or the inclusion of age as a predictor (see the Supplemental Material).","## Age
+
+df_clean <-
+  df_clean %>% 
+  mutate(age = as.numeric(age))
+
+
+## OSIVQ scoring and transformations
+
+df_osivq <- 
+  df_clean %>% 
+  select(deidentified_id_code, starts_with(""osivq"")) %>% 
+  ### reverse items that are reverse coded
+  mutate(across(ends_with(""_rev""), ~ 6-.)) %>% 
+  rowwise() %>% 
+  mutate( 
+    ### averages across items, even if Ps are missing responses
+    osivq_o = mean(c_across(contains(""_o"")), na.rm = T),
+    osivq_s = mean(c_across(contains(""_s"")), na.rm = T),
+    osivq_v = mean(c_across(contains(""_v"")), na.rm = T),
+    ) %>% 
+  mutate(
+    ### replace NaNs with NAs
+    across(
+      c(osivq_o, osivq_s, osivq_v),
+      ~ case_when(
+        .x == ""NaN"" ~ NA,
+        TRUE ~ .x,
+        )
+      )
+    ) %>% 
+  ungroup()
+
+
+## PCL-5 and DASS-D scoring
+
+dass_d_items <- c(""_3"", ""_5"", ""_10"", ""_13"", ""_16"", ""_17"", ""_21"")
+
+
+df_clean <- 
+  df_clean %>% 
+  rowwise() %>% 
+  mutate(pcl_5 = sum(across(starts_with(""pcl_5_"") & !contains(""timing"")))-20) %>% 
+  mutate(
+    pcl_5_cutoff = case_when(
+      ### 33 cutoff (probable PTSD) according to Wortmann et al. (https://doi.org/10.1037/pas0000260)
+      pcl_5 >= 33 ~ TRUE,
+      pcl_5 < 33 ~ FALSE,
+      )
+    ) %>% 
+  mutate(dass_d = sum(across(starts_with(""dass_"") & ends_with(dass_d_items)))) %>%  
+  mutate(
+    dass_d_cutoff1 = case_when(
+      ### mild
+      dass_d >= 5 ~ TRUE,
+      dass_d < 5 ~ FALSE,
+      ),
+    dass_d_cutoff2 = case_when(
+      ### moderate
+      dass_d >= 7 ~ TRUE,
+      dass_d < 7 ~ FALSE,
+      ),
+    dass_d_cutoff3 = case_when(
+      ### severe
+      dass_d >= 11 ~ TRUE,
+      dass_d < 11 ~ FALSE,
+      )
+    ) %>% 
+  ungroup()
+
+
+## Centering variables (including age) used in the age-covariate regression
+
+### center numeric predictors for later regression models
+df_joined <-
+  df_joined %>% 
+  mutate(
+    ### osivq_o
+    osivq_o_cen = scale(osivq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osivq_s
+    osivq_s_cen = scale(osivq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    dass_d_cen = scale(dass_d, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_cen = scale(age, scale = FALSE),
+    )",match,"The code applies the same transformations described in the paper, including computing mean imagery scores, summing symptom scales, and mean-centering predictors (including age). It also implements the variant with OSIQ-O items excluded, consistent with the supplemental-age-covariate analysis description.",,
+yeung,18,"Study 2 further explored whether including participant age as an additional predictor altered the relationships between trait imagery and PTSD symptoms. In a multiple regression model with PCL-5 as the outcome and predictors including DASS-D, gender, OSIQ-O, OSIQ-S, imagery × gender interactions, and age, the pattern of significant effects remained unchanged, indicating that age did not account for the observed associations.",Inference Specification,"As was the case in Study 1, results were not affected by exclusion of OSIQ-O items that pertained to intrusive memory or the inclusion of age as a predictor (see the Supplemental Material).","### null model
+mod_null <-
+  df_joined_filter %>% 
+  lm(pcl_5 ~ 1, 
+     data = .)
+
+### full model
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + age_cen +
+       osivq_o_cen*gender_clean + 
+       osivq_s_cen*gender_clean, 
+     data = .)
+
+### regression table
+tab_model(
+  mod_pcl_dass_d_osivq_gender,
+  show.std = TRUE, show.se = TRUE,
+  p.style = ""numeric_stars""
+  )
+
+### simple slopes
+emtrends(mod_pcl_dass_d_osivq_gender, ~ gender_clean, var = ""osivq_s_cen"", infer = c(TRUE , TRUE)) %>% 
+  kable(table.attr = ""style = \""color: black;\"""", caption = ""simple slopes for OSIQ-S × gender"") %>% 
+  kable_styling(c(""striped"", ""hover"", ""condensed"")) %>%
+  scroll_box(width = ""100%"")
+...
+### check against null model
+anova(mod_null, mod_pcl_dass_d_osivq_gender, test = ""Chisq"")
+
+### overall model F stats and p value
+summary(mod_pcl_dass_d_osivq_gender)
+",unknown,"The paper excerpt does not state any explicit inference criteria (e.g., alpha level or decision rules), so it is not possible to determine whether the code’s inferential settings match the paper’s specifications.",,
+yeung,19,"In Study 2, regression models were also estimated including the OSIVQ verbal subscale as an additional predictor of PTSD symptoms (PCL-5), along with DASS-D, gender, OSIQ-O, OSIQ-S, and interaction terms. Higher verbal-cognitive style did not show a robust or consistent relationship with PTSD symptoms in this undergraduate sample, and its inclusion did not materially change the coefficients for object or spatial imagery.",Model Specification,"Data analysis. As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome. We also controlled for depression symptoms (DASS-D; mean-centered) and gender and examined potential interactions between gender and the OSIQ-O and OSIQ-S. As in Study 1, the OSIVQ verbal scale (Blazhenkova & Kozhevnikov, 2009) was administered but did not affect interpretation (see the Supplemental Material).","### null model
+mod_null <-
+  df_joined_filter %>% 
+  lm(pcl_5 ~ 1, 
+     data = .)
+
+### full model
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + 
+       osivq_o_cen*gender_clean + 
+       osivq_s_cen*gender_clean +
+       osivq_v_cen*gender_clean, 
+     data = .)
+
+### check against null model
+anova(mod_null, mod_pcl_dass_d_osivq_gender, test = ""Chisq"")
+
+### overall model F stats and p value
+summary(mod_pcl_dass_d_osivq_gender)",match,"Both the paper and the code use a linear regression model predicting PCL-5 from DASS-D, object imagery, spatial imagery, gender, and interaction terms, with the OSIVQ verbal subscale included as an additional predictor. The implementation via lm() in R aligns with the described regression approach for this analysis-dimension pairing.",,
+yeung,19,"In Study 2, regression models were also estimated including the OSIVQ verbal subscale as an additional predictor of PTSD symptoms (PCL-5), along with DASS-D, gender, OSIQ-O, OSIQ-S, and interaction terms. Higher verbal-cognitive style did not show a robust or consistent relationship with PTSD symptoms in this undergraduate sample, and its inclusion did not materially change the coefficients for object or spatial imagery.",Variable Specification,"As in Study 1, the OSIVQ verbal scale (Blazhenkova & Kozhevnikov, 2009) was administered but did not affect interpretation (see the Supplemental Material).
+
+The verbal scale of the OSIVQ (Blazhenkova & Kozhevnikov, 2009) has been proposed as a measure of verbal-semantic processes, which are also thought to be protective against intrusions (Holmes & Bourne, 2008). Although we administered this verbal scale in both studies, it was not consistently related to PTSD symptoms: Although higher verbal-cognitive style was related to fewer symp- toms in Study 1, this effect was restricted to men and did not replicate in Study 2. Furthermore, its inclusion in regression models had negligible effects on our other findings, suggesting that the visual and spatial-schematic domains may be particularly relevant to PTSD symp- toms (see the Supplemental Material).","```r
+## Center Variables
+
+```{r center variables}
+### center numeric predictors for later regression models
+df_joined <-
+  df_joined %>% 
+  mutate(
+    ### osivq_o
+    osivq_o_cen = scale(osivq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osivq_s
+    osivq_s_cen = scale(osivq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    dass_d_cen = scale(dass_d, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_cen = scale(age, scale = FALSE),
+    )
+```
+
+## Verbal
+
+```{r lin reg pcl_5 by dass_d osivq gender with verbal, warning = F, message = F}
+### subset with pcl_5, dass_d, osivq, and gender (men or women) data
+df_joined_filter <- 
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen), !is.na(gender_clean),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen), !is.na(osivq_v_cen),
+    )
+
+### null model
+mod_null <-
+  df_joined_filter %>% 
+  lm(pcl_5 ~ 1, 
+     data = .)
+
+### full model
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + 
+       osivq_o_cen*gender_clean + 
+       osivq_s_cen*gender_clean +
+       osivq_v_cen*gender_clean, 
+     data = .)
+
+### regression table
+tab_model(
+  mod_pcl_dass_d_osivq_gender,
+  show.std = TRUE, show.se = TRUE,
+  p.style = ""numeric_stars""
+  )
+
+### simple slopes
+emtrends(mod_pcl_dass_d_osivq_gender, ~ gender_clean, var = ""osivq_s_cen"", infer = c(TRUE , TRUE)) %>% 
+  kable(table.attr = ""style = \""color: black;\"""", caption = ""simple slopes for OSIQ-S × gender"") %>% 
+  kable_styling(c(""striped"", ""hover"", ""condensed"")) %>%
+  scroll_box(width = ""100%"")
+```
+```",unknown,,,
+yeung,19,"In Study 2, regression models were also estimated including the OSIVQ verbal subscale as an additional predictor of PTSD symptoms (PCL-5), along with DASS-D, gender, OSIQ-O, OSIQ-S, and interaction terms. Higher verbal-cognitive style did not show a robust or consistent relationship with PTSD symptoms in this undergraduate sample, and its inclusion did not materially change the coefficients for object or spatial imagery.",Transformation Specification,"Total scores reflecting object and spatial imagery are calculated by averaging the raw scores of all the items in each domain.
+
+As in Study 1, the relationship between trait imagery and PTSD symptoms was assessed using a linear regression with object (OSIQ-O) and spatial imagery (OSIQ-S) as mean-centered predictors and PTSD symptoms (PCL-5) as the outcome. We also controlled for depression symptoms (DASS-D; mean-centered) and gender and examined potential interactions between gender and the OSIQ-O and OSIQ-S.
+
+As was the case in Study 1, results were not affected by exclusion of OSIQ-O items that pertained to intrusive memory or the inclusion of age as a predictor (see the Supplemental Material).","df_osivq <- 
+  df_clean %>% 
+  select(deidentified_id_code, starts_with(""osivq"")) %>% 
+  ### reverse items that are reverse coded
+  mutate(across(ends_with(""_rev""), ~ 6-.)) %>% 
+  rowwise() %>% 
+  mutate( 
+    ### averages across items, even if Ps are missing responses
+    osivq_o = mean(c_across(contains(""_o"")), na.rm = T),
+    osivq_s = mean(c_across(contains(""_s"")), na.rm = T),
+    osivq_v = mean(c_across(contains(""_v"")), na.rm = T),
+    ) %>% 
+  mutate(
+    ### replace NaNs with NAs
+    across(
+      c(osivq_o, osivq_s, osivq_v),
+      ~ case_when(
+        .x == ""NaN"" ~ NA,
+        TRUE ~ .x,
+        )
+      )
+    ) %>% 
+  ungroup()
+
+### identify items that might just be tapping into PTSD-like intrusions
+osiq_drop_items <- c(""osivq_33_o"", ""osivq_43_o"")
+
+df_osivq <-
+  df_osivq %>%
+  ### calculate OSIVQ-O & OSIVQ-S difference score (+ve = more O, -ve = more S)
+  mutate(osiq_diff_o_s = osivq_o - osivq_s) %>%
+  ### calculate OSIVQ-O without items 22 and 28
+  mutate(
+    osiq_o_drop = rowMeans(
+      select(
+        ., starts_with(""osivq_"") & ends_with(""_o"") & !matches(osiq_drop_items)
+        ),
+      na.rm = TRUE,
+      )
+    ) %>% 
+  mutate(
+    ### replace NaNs with NAs
+    osiq_o_drop = case_when(
+      osiq_o_drop == ""NaN"" ~ NA,
+      .default = osiq_o_drop,
+      )
+    )
+
+
+dass_d_items <- c(""_3"", ""_5"", ""_10"", ""_13"", ""_16"", ""_17"", ""_21"")
+
+df_clean <- 
+  df_clean %>% 
+  rowwise() %>% 
+  mutate(pcl_5 = sum(across(starts_with(""pcl_5_"") & !contains(""timing"")))-20) %>% 
+  mutate(
+    pcl_5_cutoff = case_when(
+      ### 33 cutoff (probable PTSD) according to Wortmann et al. (https://doi.org/10.1037/pas0000260)
+      pcl_5 >= 33 ~ TRUE,
+      pcl_5 < 33 ~ FALSE,
+      )
+    ) %>% 
+  mutate(dass_d = sum(across(starts_with(""dass_"") & ends_with(dass_d_items)))) %>%  
+  mutate(
+    dass_d_cutoff1 = case_when(
+      ### mild
+      dass_d >= 5 ~ TRUE,
+      dass_d < 5 ~ FALSE,
+      ),
+    dass_d_cutoff2 = case_when(
+      ### moderate
+      dass_d >= 7 ~ TRUE,
+      dass_d < 7 ~ FALSE,
+      ),
+    dass_d_cutoff3 = case_when(
+      ### severe
+      dass_d >= 11 ~ TRUE,
+      dass_d < 11 ~ FALSE,
+      )
+    ) %>% 
+  ungroup()
+
+
+### center numeric predictors for later regression models
+df_joined <-
+  df_joined %>% 
+  mutate(
+    ### osivq_o
+    osivq_o_cen = scale(osivq_o, scale = FALSE),
+    osiq_o_drop_cen = scale(osiq_o_drop, scale = FALSE),
+    ### osivq_s
+    osivq_s_cen = scale(osivq_s, scale = FALSE),
+    ### osivq_v
+    osivq_v_cen = scale(osivq_v, scale = FALSE),
+    ### phq_total
+    dass_d_cen = scale(dass_d, scale = FALSE),
+    ### osiq diff score
+    osiq_diff_o_s_cen = scale(osiq_diff_o_s, scale = FALSE),
+    ### age
+    age_cen = scale(age, scale = FALSE),
+    )
+
+
+### subset with pcl_5, dass_d, osivq, and gender (men or women) data
+df_joined_filter <- 
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen), !is.na(gender_clean),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen), !is.na(osivq_v_cen),
+    )
+
+### null model
+mod_null <-
+  df_joined_filter %>% 
+  lm(pcl_5 ~ 1, 
+     data = .)
+
+### full model
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + 
+       osivq_o_cen*gender_clean + 
+       osivq_s_cen*gender_clean +
+       osivq_v_cen*gender_clean, 
+     data = .)
+",match,"The code applies the same transformations described in the paper: OSIVQ subscales are computed as mean item scores (after reverse-coding where needed), predictors are mean-centered before regression, and an alternative OSIVQ-O score excluding intrusion-like items is constructed for robustness checks. These transformations align with the textual description of averaging items within domains, mean-centering predictors, and testing exclusion of specific OSIQ-O items.",,
+yeung,19,"In Study 2, regression models were also estimated including the OSIVQ verbal subscale as an additional predictor of PTSD symptoms (PCL-5), along with DASS-D, gender, OSIQ-O, OSIQ-S, and interaction terms. Higher verbal-cognitive style did not show a robust or consistent relationship with PTSD symptoms in this undergraduate sample, and its inclusion did not materially change the coefficients for object or spatial imagery.",Inference Specification,"Table 4.  Regression Results for Imagery Versus Symptoms 
+of Posttraumatic Stress Disorder in Undergraduates
+...
+Note: Outcome is PCL-5 score. R2 = 0.47, n = 471. Continuous 
+predictors (DASS-D, OSIQ-O, OSIQ-S) were mean-centered. 
+DASS-D = Depression, Anxiety, Stress Scales Depression subscale; 
+OSIQ-O = Object-Spatial Imagery Questionnaire Object subscale; 
+OSIQ-S = Object-Spatial Imagery Questionnaire Spatial subscale.
+...
+*p < .05. **p < .01. ***p < .001.","### Psychopathology cutoffs (PCL-5 and DASS-D)
+df_clean <- 
+  df_clean %>% 
+  rowwise() %>% 
+  mutate(pcl_5 = sum(across(starts_with(""pcl_5_"") & !contains(""timing"")))-20) %>% 
+  mutate(
+    pcl_5_cutoff = case_when(
+      ### 33 cutoff (probable PTSD) according to Wortmann et al. (https://doi.org/10.1037/pas0000260)
+      pcl_5 >= 33 ~ TRUE,
+      pcl_5 < 33 ~ FALSE,
+      )
+    ) %>% 
+  mutate(dass_d = sum(across(starts_with(""dass_"") & ends_with(dass_d_items)))) %>%  
+  mutate(
+    dass_d_cutoff1 = case_when(
+      ### mild
+      dass_d >= 5 ~ TRUE,
+      dass_d < 5 ~ FALSE,
+      ),
+    dass_d_cutoff2 = case_when(
+      ### moderate
+      dass_d >= 7 ~ TRUE,
+      dass_d < 7 ~ FALSE,
+      ),
+    dass_d_cutoff3 = case_when(
+      ### severe
+      dass_d >= 11 ~ TRUE,
+      dass_d < 11 ~ FALSE,
+      )
+    ) %>% 
+  ungroup()
+
+### Study 2 regression including verbal imagery (OSIVQ-V): model fit & inference
+mod_pcl_dass_d_osivq_gender <- 
+  df_joined_filter %>% 
+  lm(pcl_5 ~ dass_d_cen + 
+       osivq_o_cen*gender_clean + 
+       osivq_s_cen*gender_clean +
+       osivq_v_cen*gender_clean, 
+     data = .)
+
+### regression table with p-value star coding
+tab_model(
+  mod_pcl_dass_d_osivq_gender,
+  show.std = TRUE, show.se = TRUE,
+  p.style = ""numeric_stars""
+  )
+
+### simple slopes with inference (tests & confidence intervals)
+emtrends(mod_pcl_dass_d_osivq_gender, ~ gender_clean, var = ""osivq_s_cen"", infer = c(TRUE , TRUE)) %>% 
+  kable(table.attr = ""style = \""color: black;\"""", caption = ""simple slopes for OSIQ-S × gender"") %>% 
+  kable_styling(c(""striped"", ""hover"", ""condensed"")) %>%
+  scroll_box(width = ""100%"")
+
+### DIAGNOSTICS: model comparison and overall test statistics
+anova(mod_null, mod_pcl_dass_d_osivq_gender, test = ""Chisq"")
+
+### overall model F stats and p value
+summary(mod_pcl_dass_d_osivq_gender)
+
+### variance inflation factors
+car::vif(mod_pcl_dass_d_osivq_gender) %>% 
+  kable(col.names = ""VIF"") %>% 
+  kable_styling(bootstrap_options = c(""striped"", ""hover"", ""condensed""), full_width = F)
+
+### Correlation matrix including verbal imagery, with significance marking
+df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen), !is.na(osivq_v_cen), 
+    !is.na(gender_clean),
+    ) %>% 
+  select(
+    dass_d, osivq_o, osivq_s, osivq_v, pcl_5
+    ) %>% 
+  # nrow()
+  rstatix::cor_mat() %>% 
+  rstatix::cor_mark_significant()
+
+### Plot annotations indicating significance levels for correlations (object vs PCL-5)
+plot_cor_object_pcl_5 <- 
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    !is.na(gender_clean),
+    ) %>% 
+  ggplot(data = ., aes(x = osivq_o, y = pcl_5)) + 
+  scale_x_continuous(limits = c(1, 5), breaks = c(1:5)) + 
+  scale_y_continuous(limits = c(0, 80)) +
+  labs(x = ""Object Imagery (OSIQ-O)"",
+       y = ""PTSD Symptoms (PCL-5)"") + 
+  theme(text = element_text(size = 14),
+        axis.title = element_text(face = ""bold"")) + 
+  annotate(""text"", label = ""***"", size = 10,
+           x = 5, y = Inf, 
+           hjust = 0.8, vjust = 1.3) +
+  annotate(""text"", label = ""r = .28"", size = 5,
+           x = 4.7, y = Inf, 
+           hjust = 0.35, vjust = 3) +
+  geom_point(inherit.aes = TRUE,
+             position = position_jitter(width = 0.2, height = 0.2, seed = 725),
+             alpha = 0.4) +
+  geom_smooth(method = lm, fullrange = TRUE, colour = ""red"", 
+              size = 1, alpha = 0.3)
+
+### Plot annotations indicating non-significance (spatial & verbal vs PCL-5)
+plot_cor_spatial_pcl_5 <-
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    !is.na(gender_clean),
+    ) %>% 
+  ggplot(data = ., aes(x = osivq_s, y = pcl_5)) + 
+  scale_x_continuous(limits = c(1, 5), breaks = c(1:5)) + 
+  scale_y_continuous(limits = c(0 ,80)) +
+  labs(x = ""Spatial Imagery (OSIQ-S)"",
+       y = ""PTSD Symptoms (PCL-5)"") +
+  theme(text = element_text(size = 14),
+        axis.title = element_text(face = ""bold"")) + 
+  annotate(""text"", label = ""paste(italic(ns))"",
+           parse = TRUE, size = 6,
+           x = 5, y = Inf, 
+           hjust = 0.7, vjust = 1.3) +
+  annotate(""text"", label = ""r = .08"", size = 5,
+           x = 4.7, y = Inf, 
+           hjust = 0.35, vjust = 3) +
+  geom_point(inherit.aes = TRUE,
+             position = position_jitter(width = 0.2, height = 0.2, seed = 725),
+             alpha = 0.4) +
+  geom_smooth(method = lm, fullrange = TRUE,
+              colour = ""red"", size = 1, alpha = 0.3)
+
+plot_cor_verbal_pcl_5 <-
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen), !is.na(osivq_v_cen), 
+    !is.na(gender_clean),
+    ) %>% 
+  ggplot(data = ., aes(x = osivq_v, y = pcl_5)) + 
+  scale_x_continuous(limits = c(1, 5), breaks = c(1:5)) + 
+  scale_y_continuous(limits = c(0, 80)) +
+  labs(x = ""Verbal (OSIVQ-V)"",
+       y = ""PTSD Symptoms (PCL-5)"") +
+  theme(text = element_text(size = 14),
+        axis.title = element_text(face = ""bold"")) + 
+  annotate(""text"", label = ""paste(italic(ns))"",
+           parse = TRUE, size = 6,
+           x = 5, y = Inf, 
+           hjust = 0.7, vjust = 1.3) +
+  annotate(""text"", label = ""r = .08"", size = 5,
+           x = 4.7, y = Inf, 
+           hjust = 0.35, vjust = 3) +
+  geom_point(inherit.aes = TRUE,
+             position = position_jitter(width = 0.2, height = 0.2, seed = 725),
+             alpha = 0.4) +
+  geom_smooth(method = lm, fullrange = TRUE,
+              colour = ""red"", size = 1, alpha = 0.3)
+
+### Direct correlation tests (default 0.05 alpha) and comparison
+df_joined_cor <-
+  df_joined %>% 
+  filter(
+    !is.na(pcl_5), !is.na(dass_d_cen),
+    !is.na(osivq_o_cen), !is.na(osivq_s_cen),
+    !is.na(gender_clean),
+    ) %>% 
+  select(pcl_5, osivq_o, osivq_s)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_o)
+
+df_joined_cor %$% 
+  cor.test(.$pcl_5, .$osivq_s)
+
+df_joined_cor %>% 
+  as.data.frame() %>% 
+  cocor::cocor(~pcl_5 + osivq_o | pcl_5 + osivq_s, data = .)
+",match,"Both paper and code use conventional null-hypothesis significance testing with the same p-value star thresholds and an implicit alpha of .05, and no alternative inference criteria are specified in either source.",,

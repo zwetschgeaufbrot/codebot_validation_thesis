@@ -1,0 +1,16 @@
+---
+title: "README CORRIGENDUM"
+author: "Anna T. Wittmann"
+format: html
+editor: visual
+---
+
+## README SUPPLEMENT
+
+This file is outlines the files and contents created as part of the corrigendum of my bachelor's thesis. To maximize readability and transparency, I will not present the whole project tree but. For the latter, please refer to the main README on the base layer of this Rproject, which holds an exhaustive list of all files.
+
+# Additional Files
+
+**processing_corrigendum.html/.qmd** and all related files – original processing script with clearly marked additional sanity checks and detailed commentary retracing and correcting the source of the error.
+
+--\> **res_main_corrigendum.rds** – contains corrected dataset. Different from res_main.rds
