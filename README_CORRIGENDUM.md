@@ -124,6 +124,6 @@ from the updated analyses were added and logged in the README below.
 │       └── top_journals.pdf                # screenshots of TOP database output
 ├── preregistration
 │   └── preregistration.pdf                                    # preregistration
-├── README.md                                                        
-└── README_CORRIGENDUM.md                                            # this file
+├── README_OLD.md                                             # original readme             
+└── README.md                                                        # this file
 ```
