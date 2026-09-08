@@ -180,7 +180,7 @@ p80 <- simulation_ci_estimates %>%
              y = ci_width_prob, 
              color = paper_random_effect))+
   labs(title = "N = 80", 
-        x = "Effect Size",
+        x = "Population Level Agreement Rate",  # Corrected as part of Corrigendum
         y = "CI Width [Decimal]",
         color = "Paper Effect")+
   geom_point(alpha = 1)+
@@ -252,7 +252,7 @@ p80+p90/p100 + plot_layout(guides = "collect")
 # Save N = 80 plot
 ```{r}
 p80
-ggsave("../../data/outputs/plots/p80.png")
+ggsave("../../data/outputs/plots/p80_corrigendum.png")
 ```
 
 # Session info

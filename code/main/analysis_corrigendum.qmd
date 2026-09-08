@@ -117,7 +117,7 @@ matches |>
 
 ```
 :::{.callout-caution}
-Following the changed processing, this table (which does not show numbers filtered for exclude == FALSE) changed as followes: codebot_human_agreement x mismatch from 56 to 374 ergo delta 318 and thus codebot_human_agreement x NA decreased by 318 from 2540 to 2222. -> Requires change of table in thesis.
+Following the changed processing, this table (which does not show numbers filtered for exclude == FALSE) changed as follows: codebot_human_agreement x mismatch from 56 to 374 ergo delta 318 and thus codebot_human_agreement x NA decreased by 318 from 2540 to 2222. 
 :::
 
 # Q1: Examining Frequency of Matchingness
@@ -150,7 +150,9 @@ baser |>
   kable_classic(full_width = FALSE)
 
 df_base |> 
-  count(dimension)
+  count(dimension) |> 
+  kable() |> 
+  kable_classic(full_width = FALSE)
 ```
 
 In total, CodeBot coded `r nrow(df_base)` observations. This corresponds to `r nrow(df_base)/4` unique analyses.
@@ -261,22 +263,20 @@ ci_percent <- map_dbl(c(1,2),
 
 ```
 
-Out of the `r nrow(df)` total possible specifications, ~~1011~~ `r both` observations were coded by both rater. This reflects ~~28.46%~~ `r round_up(both/nrow(df)*100, digits = 2)`% of the entire adjudicated sample and ~~39.13%~~ `r round_up(both/h_total_rated*100, digits = 2)`% of all observations coded by me. 
+Out of the `r nrow(df)` total possible specifications, ~~1011~~ `r both` observations were coded by both raters (exclude == FALSE), i.e. `r df |> filter(exclude == TRUE & codebot_human_agreement %in% c(1,0,99)) |> nrow() + both` (full sample). This reflects ~~28.46%~~ `r round_up(both/nrow(df)*100, digits = 2)`% of the entire adjudicated sample and ~~39.13%~~ `r round_up(both/h_total_rated*100, digits = 2)`% of all observations coded by me. 
 
 EasyStats Results Report: ... ~~The model’s intercept is at 3.08 (95% CI [2.34, 3.83], p < .001)~~ "`r results`"
 
 In probability terms: The probability of CodeBot's judgement agreeing with the human judgment is estimated to be ~~95.62%~~ `r intercept_percent`% ~~(95%CI [91.2, 97.87])~~ (95%CI [`r ci_percent[1]`, `r ci_percent[2]`]).
 
 :::{.callout-caution}
-This is the section most impacted by the shift in the distribution of the observed data. Since my processing error resulted in a positive bias by only including the 10 new matches and missing the 318 mismatches introduced by the differentiation between missingness and indecisiveness, the estimand is now more conservative than in the thesis. -> change GLMM results and discuss implications of new estimand and broader confidence interval. 
-
-Furthermore, there is a general issue with using Wald CIs with binary data like mine, which further impacts the interpretation of the resulting estimand.
+This is the section most impacted by the shift in the distribution of the observed data. Since my processing error resulted in a positive bias by disregarding the 318 mismatches introduced by the recoding of missingness, the estimand is now more conservative than previously estimated. 
 :::
 
 # Q3: Exploratory Examination of Reasons for Missingness
 
 :::{.callout-information}
-Since the changed processing only affected the distribution of codebot_human_agreement ratings but not those of the individual matching variables, the samples of observations only coded by one reater respectively remains unchanged. 
+Since the changed processing only affected the distribution of codebot_human_agreement ratings but not those of the individual matching variables, the samples of observations only coded by one rater respectively remains unchanged. 
 :::
 
 What could explain why CodeBot coded analyses the human did not code and vice versa? → Qualitative examination of 3% randomly sampled specifications that were code by CodeBot or the human coding only.
@@ -657,7 +657,7 @@ disagree |>
 
 ```
 :::{.callout-caution}
-Logically, in all of the above tables, one or more numbers reported changed significantly in the corrected sample. Since the tables merely provide an overview and are not all discussed in detail, I will refrain from explicitly pointing out every single change and focus on the values mentioned in the thesis or inline instead.
+One or more number(s) reported in the above tables changed after updating the sample. Since the tables merely provide an overview and are not all discussed in detail, I will refrain from explicitly pointing out every single change and focus on the values mentioned in the thesis or inline instead.
 :::
 
 In total, the raters disagreed in ~~56/3552 (1.58%)~~ `r nrow(disagree)`/`r nrow(df)` (`r round_up(nrow(disagree)/nrow(df)*100, digits = 2)`%) of all instances.
@@ -807,72 +807,107 @@ test <- disagree_only |>
   pull()
 ```
 
-#### 79
+#### 79 
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[1]) 
+  filter(codebot_manuscript_content == test[1]) |> 
+  kable() |> 
+  kable_styling() |> 
+  scroll_box(width = "100%", height = "400px")
 
 berger |> 
-  filter(paper_value == test[1]) 
+  filter(paper_value == test[1]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 ```
 
 (+) Here, CB was correct since I had overlooked line 600 specifying the first model mentioned in this snippet.
 
-#### 3
-
+#### 3 
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[2]) 
+  filter(codebot_manuscript_content == test[2]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 berger |> 
-  filter(paper_value == test[2]) 
+  filter(paper_value == test[2]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 ```
 (-) Here, CB coded the right manuscript content but matched an unrelated code snippet since the code in question was missing from the script.
 
 #### 121; 121
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[3]) 
+  filter(codebot_manuscript_content == test[3]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 berger |> 
-  filter(paper_value == test[3]) 
+  filter(paper_value == test[3]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 ```
 (-) Both times, I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
 
 :::{.callout-warning}
-Both raters reported the code in question as missing. But this observation is still rated as a mismatch because 99 /= 0. When code is missing, this is not the same as ambiguity. But this shows that my criterion of rating something as 99 if there was a model in the text but no/ambiguous code info was imprecise. This is not as "grave" of a mismatch as if one rater had rated 1 and the other 0. -> Future research should adapt the calibration to prevent disproportionate distortion of the agreement estimand.
+Both raters reported the code in question as missing. But this observation is still rated as a mismatch because 99 /= 0. Missing code is not the same as ambiguously reported code. But this shows, that my criterion of rating something as 99 if there was a model in the text but no or only ambiguous code info was imprecise. This is not as "grave" of a mismatch as if one rater had rated 1 and the other 0. -> Future research should adapt the calibration accordingly to prevent disproportionate distortion of the agreement estimand.
 :::
 
 #### 136;136;138
 
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[4]) 
+  filter(codebot_manuscript_content == test[4]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 berger |> 
-  filter(paper_value == test[4]) |> View()
+  filter(paper_value == test[4]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px")
 ```
-(-) All three times, I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+(-) All three times, I rated 0 because the code was missing. CB also did not log any code but rated 99. 
 
 #### 109
 
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[5]) 
+  filter(codebot_manuscript_content == test[5]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 berger |> 
-  filter(paper_value == test[5])
+  filter(paper_value == test[5]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px")
 ```
-(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description".  
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "The paper clearly describes the variables involved in the correlation, but no corresponding code is provided to verify how these variables were implemented or coded in the analysis."  
 
 #### 79
 
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[6]) 
+  filter(codebot_manuscript_content == test[6]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 berger |> 
-  filter(paper_value == test[6])
+  filter(paper_value == test[6]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px")
 ```
 (+) CB was correct in pointing out, that the described transformation is accountet for thanks to the argument 'scale == TRUE'. Since I both missed the regression in question and did not know of the export_summs() function, I would likely have misjudged this either way.
 
@@ -880,10 +915,16 @@ berger |>
 
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[7]) 
+  filter(codebot_manuscript_content == test[7]) |>    
+  kable() |>    
+  kable_styling() |>   
+  scroll_box(width = "100%", height = "400px") 
 
 berger |> 
-  filter(paper_value == test[7]) 
+  filter(paper_value == test[7]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 ```
 (-) While the code values match, CB's brief description and the manuscript quotes do not. It appears as though the adjudicator matched the snippets based on the identical code snippets even though they do not belong together.
 
@@ -891,136 +932,156 @@ berger |>
 
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[8]) 
+  filter(codebot_manuscript_content == test[8]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 berger |> 
-  filter(paper_value == test[8]) 
+  filter(paper_value == test[8]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description".  
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is insufficient information about the corresponding code to determine whether any data transformations match the paper’s description for this analysis."
 
 #### 127
 
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[9]) 
+  filter(codebot_manuscript_content == test[9]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 berger |> 
-  filter(paper_value == test[9]) 
+  filter(paper_value == test[9]) |>    
+  kable() |>    
+  kable_styling() |>   
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description".  
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "The paper clearly specifies the variables (perceived harm to future generations and political activism), but no corresponding code snippets are provided to verify how these variables are implemented or designated in the analysis."  
 
 #### 110
 
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[10]) 
+  filter(codebot_manuscript_content == test[10]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 berger |> 
-  filter(paper_value == test[10]) 
+  filter(paper_value == test[10]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "The paper specifies inference criteria (one-sided Pearson correlation with α = .05, significance thresholds for p-values), but the provided code contains no information about how inferences were implemented, so alignment cannot be assessed."
 
 #### 121
 
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[11]) 
+  filter(codebot_manuscript_content == test[11]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 berger |> 
-  filter(paper_value == test[11]) 
+  filter(paper_value == test[11]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "The paper specifies general inference criteria (e.g., alpha = .05 in power analysis and significance thresholds of p < .10, .05, .01), but no corresponding code is provided to verify how these criteria were implemented for this specific correlation. Therefore, it is not possible to determine whether the code’s inference specification matches the paper’s description."
 
-#### 136; 136; 138
-
-```{r}
-disagree_only |> 
-  filter(codebot_manuscript_content == test[12]) 
-
-berger |> 
-  filter(paper_value == test[12]) 
-```
-(-) All three times, I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
 
 #### 87
 
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[13]) 
+  filter(codebot_manuscript_content == test[13]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 berger |> 
-  filter(paper_value == test[13]) 
+  filter(paper_value == test[13]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) CB coded the right snippet but "lost track" of the focus. It rated 99 because: "The code applies several data filters and exclusions before the Mann–Whitney test that are not described in the provided paper excerpt, but the excerpt is too limited to determine whether these transformations are inconsistent with the full paper’s methods." Yet the question was only whether the gender variable was transformed as intended. this is indeed the case.
+(-) CB coded the right snippet but "lost track" of the target. It rated 99 because: "The code applies several data filters and exclusions before the Mann–Whitney test that are not described in the provided paper excerpt, but the excerpt is too limited to determine whether these transformations are inconsistent with the full paper’s methods." Yet the question was only whether the gender variable was transformed as intended. This is indeed the case.
 
 #### 118
 
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[14]) 
+  filter(codebot_manuscript_content == test[14]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 berger |> 
-  filter(paper_value == test[14]) 
+  filter(paper_value == test[14]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 ```
 
-(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "The paper clearly specifies the variables (worry about global warming and policy support), but no corresponding code snippets or variable definitions are provided to verify how these variables were implemented in the analysis."
 
 #### 115
 
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[15]) 
+  filter(codebot_manuscript_content == test[15]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 berger |> 
-  filter(paper_value == test[15]) 
+  filter(paper_value == test[15]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
-
-#### 136;136;138
-
-```{r}
-disagree_only |> 
-  filter(codebot_manuscript_content == test[16]) 
-
-berger |> 
-  filter(paper_value == test[16]) 
-```
-(-) All three times, I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "The paper specifies that a Pearson correlation was used, but there is no corresponding code provided to verify the statistical test implemented." 
 
 #### 83
 
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[17]) 
+  filter(codebot_manuscript_content == test[17]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 berger |> 
-  filter(paper_value == test[17]) 
+  filter(paper_value == test[17]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "The code clearly fits a Rasch model and derives person parameters as described, but it is not possible to verify from the provided snippet whether the items were dichotomized exactly as stated or whether all 31 items were used. Additionally, other described transformations (e.g., mean-centering and scaling predictors) are not shown in the provided code fragment."
 
 #### 99
 
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[18]) 
+  filter(codebot_manuscript_content == test[18]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 berger |> 
-  filter(paper_value == test[18]) 
+  filter(paper_value == test[18]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
-
-#### 121;121
-
-```{r}
-disagree_only |> 
-  filter(codebot_manuscript_content == test[19]) 
-
-berger |> 
-  filter(paper_value == test[19]) 
-```
-
-
-
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "It is not possible to determine whether the code matches the paper’s variable specification because no relevant code excerpts were provided." 
 
 ### NEW Bloy et al.
 
@@ -1034,12 +1095,18 @@ test <- disagree_only |>
 #### 8
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[1]) 
+  filter(codebot_manuscript_content == test[1]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 bloy |> 
-  filter(paper_value == test[1]) 
+  filter(paper_value == test[1]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) CB logged the same code and manuscript content as me but rated the match status to be ungknown. Unfortunately it did not provide any explanation, thus I could not identify the cause.
+(-) CB logged the same code and manuscript content as me but rated the match status to be unknown. No explanation given.
 
 
 ### NEW Carvalho et al.
@@ -1054,35 +1121,50 @@ test <- disagree_only |>
 #### 8
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[1]) 
+  filter(codebot_manuscript_content == test[1]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 carvalho |> 
-  filter(paper_value == test[1]) 
+  filter(paper_value == test[1]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) While I did not identify a corresponding snippet, CB did and judged it to be a mismatch. It provides the following explanation: "The code applies additional exclusion criteria (Pretest.Catch > .60 and Gaze.Sample > .50) that are not described in the paper’s description of how fixation proportions and posttest scores were derived. While both sources focus on proportion of fixation and critical-item posttest scores, these unreported filters constitute extra data transformations/subsetting beyond what the paper specifies.". This, however, misses the point and is thus not in accordance with my coding criteria.
+(-) While I did not identify a corresponding snippet, CB did and judged it to be a mismatch. It provides the following explanation: "The code applies additional exclusion criteria (Pretest.Catch > .60 and Gaze.Sample > .50) that are not described in the paper’s description of how fixation proportions and post-test scores were derived. While both sources focus on proportion of fixation and critical-item post-test scores, these unreported filters constitute extra data transformations/subsetting beyond what the paper specifies." This, however, misses the point and is thus not in accordance with my coding criteria.
 
 #### 5
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[2]) 
+  filter(codebot_manuscript_content == test[2]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 carvalho |> 
-  filter(paper_value == test[2]) 
+  filter(paper_value == test[2]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) While I did not identify a corresponding snippet, CB did and judged it to be a mismatch. It provides the following explanation: "The paper describes only computing per-participant proportions of fixation time, whereas the code additionally restricts the analysis to cases with Gaze.Sample > .50, a data-filtering transformation not reported in the text.". This, however, misses the point and is thus not in accordance with my coding criteria.
+(-) While I did not identify a corresponding snippet, CB did and judged it to be a mismatch. It provides the following explanation: "The paper describes only computing per-participant proportions of fixation time, whereas the code additionally restricts the analysis to cases with Gaze.Sample > .50, a data-filtering transformation not reported in the text." This, however, misses the point and is thus not in accordance with my coding criteria.
 
 #### 5
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[3]) 
+  filter(codebot_manuscript_content == test[3]) |>    
+  kable() |>    
+  kable_styling() |>    
+  scroll_box(width = "100%", height = "400px") 
 
 carvalho |> 
-  filter(paper_value == test[3]) 
+  filter(paper_value == test[3]) |>    
+  kable() |>    
+  kable_styling() |>   
+  scroll_box(width = "100%", height = "400px") 
 ```
 (+) Here, CB was correct since the variable retrieved from the df changes.
-
-
-
 
 ### NEW Cha et al.
 
@@ -1096,12 +1178,18 @@ test <- disagree_only |>
 #### 20;20
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[1]) 
+  filter(codebot_manuscript_content == test[1]) |>    
+  kable() |>    
+  kable_styling() |>   
+  scroll_box(width = "100%", height = "400px") 
 
 cha |> 
-  filter(paper_value == test[1]) 
+  filter(paper_value == test[1]) |>    
+  kable() |>   
+  kable_styling() |>   
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) Both times, I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the actual code implementation to determine whether the variables used match the paper’s description". 
+(-) Both times, I rated 0 because the code was missing. CB also did not log any code but rated 99. 
 
 
 
@@ -1117,22 +1205,34 @@ test <- disagree_only |>
 #### 9
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[1]) 
+  filter(codebot_manuscript_content == test[1]) |>   
+  kable() |>  
+  kable_styling() |>   
+  scroll_box(width = "100%", height = "400px") 
 
 evans |> 
-  filter(paper_value == test[1]) 
+  filter(paper_value == test[1]) |>  
+  kable() |>   
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) CB did not identify any code.
+(-) I rated a match but CB did not identify any code, thus rating 99.
 
 #### 38
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[2]) 
+  filter(codebot_manuscript_content == test[2]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 
 evans |> 
-  filter(paper_value == test[2]) 
+  filter(paper_value == test[2]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) CB did not identify any code.
+(-) I rated a match but CB did not identify any code, thus rating 99.
 
 
 ### NEW Hsieh et al.
@@ -1147,12 +1247,18 @@ test <- disagree_only |>
 #### 2
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[1]) 
+  filter(codebot_manuscript_content == test[1]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 
 hsieh |> 
-  filter(paper_value == test[1]) 
+  filter(paper_value == test[1]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is insufficient information about the code to determine whether the variables used in the implementation match those described in the paper for this analysis.". 
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming: "There is insufficient information about the code to determine whether the variables used in the implementation match those described in the paper for this analysis." 
 
 ### NEW Mancassola et al.
 
@@ -1166,43 +1272,67 @@ test <- disagree_only |>
 #### 13
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[1]) 
+  filter(codebot_manuscript_content == test[1]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 
 mancassola |> 
-  filter(paper_value == test[1]) 
+  filter(paper_value == test[1]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming "There is not enough information about the code implementation to determine whether the statistical test used matches the described Tukey post hoc t-test in the paper.". 
+(-) I rated 0 because the code was missing. CB also did not log any code but rated 99 instead claiming: "There is not enough information about the code implementation to determine whether the statistical test used matches the described Tukey post hoc t-test in the paper." 
 
 #### 2
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[2]) 
+  filter(codebot_manuscript_content == test[2]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 
 mancassola |> 
-  filter(paper_value == test[2]) 
+  filter(paper_value == test[2]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) I rated 1. CB  did not log any code but rated 99 instead claiming "There is insufficient information about the code to determine whether the variables and their roles in the ANOVA match the description in the paper.". 
+(-) I rated 1. CB  did not log any code but rated 99 instead claiming "There is insufficient information about the code to determine whether the variables and their roles in the ANOVA match the description in the paperi." 
 
 
 #### 3
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[3]) 
+  filter(codebot_manuscript_content == test[3]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 
 mancassola |> 
-  filter(paper_value == test[3]) 
+  filter(paper_value == test[3]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) I rated 1. CB  did not log any code but rated 99 instead claiming "The paper specifies a Tukey post hoc t-test, but no corresponding code is provided to verify the statistical test used.". 
+(-) I rated 1. CB  did not log any code but rated 99 instead claiming "The paper specifies a Tukey post hoc t-test, but no corresponding code is provided to verify the statistical test used." 
 
 #### 1
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[4]) 
+  filter(codebot_manuscript_content == test[4]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 
 mancassola |> 
-  filter(paper_value == test[4]) 
+  filter(paper_value == test[4]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) I rated 1. CB  did not log any code but rated 99 instead claiming "The paper specifies a Tukey post hoc t-test, but no corresponding code is provided to verify the statistical test used.". 
+(-) I rated 1. CB  did not log any code but rated 99 instead claiming "The paper specifies a Tukey post hoc t-test, but no corresponding code is provided to verify the statistical test used." 
 
 
 
@@ -1219,10 +1349,16 @@ test <- disagree_only |>
 #### 3
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[1]) 
+  filter(codebot_manuscript_content == test[1]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 
 muenster |> 
-  filter(paper_value == test[1]) 
+  filter(paper_value == test[1]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 ```
 (-) I rated 1 because the alpha = 0.5 is the default in R for the t-test. CB rated this 99 even though it did identify the right code snippet.
 
@@ -1238,20 +1374,32 @@ test <- disagree_only |>
 #### 81
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[1]) 
+  filter(codebot_manuscript_content == test[1]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 
 nguyen |> 
-  filter(paper_value == test[1]) 
+  filter(paper_value == test[1]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 ```
-(-) I rated 99 because the variables are named similarly but not identical to what is claimed in the text. CB identified the same diilemma but rated 1.
+(-) I rated 99 because the variables are named similarly but not identical to what is claimed in the text. CB identified the same dilemma but rated 1.
 
 #### 68
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[2]) 
+  filter(codebot_manuscript_content == test[2]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 
 nguyen |> 
-  filter(paper_value == test[2]) 
+  filter(paper_value == test[2]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 ```
 (-) I rated 1 assuming 0.5 is the default in the corrplot. CB rated 99 even though it did not identify any code.
 
@@ -1268,22 +1416,56 @@ test <- disagree_only |>
 #### 1
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[1]) 
+  filter(codebot_manuscript_content == test[1]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 
 yang |> 
-  filter(paper_value == test[1]) 
+  filter(paper_value == test[1]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 ```
 (-) I rated 0 because I did not find any code. CB also did not log any code but rated 99.
 
 #### 2
 ```{r}
 disagree_only |> 
-  filter(codebot_manuscript_content == test[2]) 
+  filter(codebot_manuscript_content == test[2]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 
 yang |> 
-  filter(paper_value == test[2]) 
+  filter(paper_value == test[2]) |>    
+  kable() |>  
+  kable_styling() |>  
+  scroll_box(width = "100%", height = "400px") 
 ```
 (-) I rated 0 while having logged a code snippet. CB rated 99 even though it did not identify any code.
+
+### Summary
+
+CODE: <reason:authoranalysisnumberdimension>
+
+- CB found something I overlooked: berger79ms; berger79t; carvalho5vs
+
+- CB identified correct manuscript content but unrelated code: berger119ms
+
+- CB logged correct snippets but missed the target of the investigation: berger87t; carvalho8t, carvalho5t
+
+- I rated 0 bcs no code, CB rated 99 even though manuscript but no code: berger121vs1; berger121vs2; berger136t1; berger136t2; berger138t; berger109vs; berger124t; berger127vs; berger110i; berger121i;  berger118vs; berger115ms; berger83t; berger99vs; hsieh2vs; mancassola13ms; yang1i; yang2vs; cha20vs1; cha20vs2
+
+- CB code matches but unrelated manuscript quote: berger36vs
+
+- Same code and manuscript content but CB 99: bergerl8vs
+
+- CB missed the code snippet while I found one: evans9i, evans38i; mancassola2vs; mancassola3ms; mancassola1ms
+
+- CB did not account for default alpha levels in R-functions: muenster3i, nguyen68i
+
+- Disagreement due to ambiguous variable naming: nguyen81ms
 
 # Session info
 ```{r}

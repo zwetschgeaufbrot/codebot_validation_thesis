@@ -22,7 +22,7 @@ rm(list = ls())
 ```
 
 ::: callout-caution
-This is the script outlining the discovery of my filtering error in the original version of my thesis. Beneath each chunk, I will add a box (just like this one) detailing the steps I took, leading up to the filtering error highlighted by Malte Elson. The problem highlighted by M. Elson concerns the fact that the samples attributed to the different sets in the Venn-Diagram do not add up to the full sample sizes reported in the text. I will add new sanity checks - mostly consisting of count() - along the way and highlight them accordingly.
+This is the script outlining the discovery of my filtering error in the original version of my thesis. Beneath each chunk, I will add a box (just like this one) detailing the steps I took to identify the filtering error highlighted by Malte Elson. The error caused inconsistencies in the reported (sub-)sample sizes reported in the thesis. For a detailed explanation refer to the updated thesis document. To ensure maximum clarity, I added clearly identified sanity checks along the way.
 :::
 
 # Dependencies
@@ -102,7 +102,7 @@ df |> count(codebot_match_judgement) |>
 ```
 
 ::: callout-caution
-This shows, that - prior to any processing - the number of valid \[1,0\] codebot_human_agreement ratings was 1002.
+Prior to any processing, the number of valid \[1,0\] codebot_human_agreement ratings was 1002.
 :::
 
 # Check for Empty Rows
@@ -182,7 +182,7 @@ df |> count(codebot_match_judgement) |>
 ```
 
 ::: callout-caution
-The number of valid \[1,0\] codebot_human_agreement ratings is still 1002. The valid \[1,0\] human and CodeBot match judgements also have not been changed by the previous processing.
+The number of valid \[1,0\] codebot_human_agreement ratings is still 1002. The number of each raters' valid \[1,0\] match judgements also remains unchanged.
 :::
 
 The NAs that got read in in an unwanted manner were successfully removed and replaced with empty strings.
@@ -224,7 +224,7 @@ df |> count(codebot_match_judgement)|>
 ```
 
 ::: callout-caution
-The number of valid \[1,0\] codebot_human_agreement ratings is still 1002. The valid \[1,0\] human and CodeBot match judgements also were not changed by this operation.
+The number of valid \[1,0\] codebot_human_agreement ratings is still 1002. The number of each raters' valid \[1,0\] match judgements continues to remain unchanged.
 :::
 
 ## Clean Up Manuscript Location
@@ -296,7 +296,7 @@ df |> count(codebot_match_judgement)|>
 ```
 
 ::: callout-caution
-The number of valid \[1,0\] codebot_human_agreement ratings is still 1002. The valid \[1,0\] human and CodeBot match judgements remain the same.
+The number of valid \[1,0\] codebot_human_agreement ratings is still 1002. The number of each raters' valid \[1,0\] match judgements continues to remain unchanged.
 :::
 
 Screening for human_manuscript_content cells unintentionally left blank.
@@ -355,7 +355,7 @@ df |> filter(exclude == FALSE) |>
 ```
 
 ::: callout-caution
-The number of valid \[1,0\] codebot_human_agreement ratings is now **1001**. This is in accordance with the value reported in the thesis. The valid \[1,0\] human and CodeBot match judgements remain unchanged.
+The number of valid \[1,0\] codebot_human_agreement ratings is now **1001**. This is in accordance with the value reported in the thesis. The number of valid \[1,0\] human and CodeBot match judgements remains unchanged.
 :::
 
 # Sanity Check NAs
@@ -420,7 +420,7 @@ df |> filter(exclude == FALSE) |>
 ```
 
 ::: callout-caution
-The number of valid \[1,0\] codebot_human_agreement ratings is still 1001. Following my logic to include 99 as a valid judgement call indicating indecisiveness, the number of valid calls by the human increased by 85. The number of valid \[1,0\] CodeBot match judgements remains unchanged as intended.
+The number of valid \[1,0\] codebot_human_agreement ratings is still 1001. Following my logic to include 99 as a valid judgement call indicating indecisiveness, the number of valid observations by the human increased by 85. As intended, the number of valid \[1,0\] CodeBot match judgements remains unchanged as intended.
 :::
 
 ## CodeBot_match_judgement
@@ -489,7 +489,7 @@ df |> filter(exclude == FALSE) |>
 ```
 
 ::: callout-caution
-The number of valid \[1,0\] codebot_human_agreement ratings is 1001. Following my logic to include 99 as a valid judgement call indicating indecisiveness, the number of valid calls by the human increased by 85 and the number of valid CodeBot match judgements increased by 442. The sum of valid CodeBot judgements is not 1768, which is the exact value reported in the thesis.
+The number of valid \[1,0\] codebot_human_agreement ratings is 1001. Following my logic to include 99 as a valid judgement call indicating indecisiveness, the number of valid calls by the human increased by 85 and the number of valid CodeBot match judgements increased by 442. The sum of valid CodeBot judgements is now 1768, which is the exact value reported in the thesis.
 :::
 
 ## Codebot_human_agreement
@@ -514,7 +514,7 @@ df <- df |>
 ```
 
 ::: callout-important
-The number of valid \[1,0\] codebot_human_agreement ratings is now 1011. This is where the error occurred. In this step, I only changed the codebot_human_agreement rating for those cases where both ratings were 99. Thus, I involuntarily **dropped 318** cases where both raters provided valid ratings but only one of them rated 99 (i.e. 99\|0; 99\|1 and vice versa - see last two sanity checks in this script).
+The number of valid \[1,0\] codebot_human_agreement ratings is now **1011**. This is where the error occurred: I only changed the codebot_human_agreement rating for those cases where both ratings were 99. This way, I involuntarily **dropped 318** cases where both raters provided valid ratings but only one of them rated 99 (i.e. 99\|0; 99\|1 and vice versa - see last two sanity checks in this script).
 :::
 
 ```{r}
@@ -550,23 +550,6 @@ df |> count(human_match_judgement %in% c(1,0) & codebot_match_judgement == 99)|>
   kable_styling()
 ```
 
-# Save processed Dataframe
-
-```{r}
-write_rds(df, "../../data/processed/main/res_main_corrigendum.rds")
-```
-
-```{r}
-# making sure I did not involuntarily manipulate the dataset
-
-df_new <- readr::read_rds("../../data/processed/main/res_main_corrigendum.rds")
-
-df_old <- readr::read_rds("../../data/processed/main/res_main.rds")
-
-waldo::compare(df_old,df_new)
-
-```
-
 # Correct Error
 
 ```{r}
@@ -590,17 +573,6 @@ df <- df %>%
 ```
 
 ```{r}
-# making sure I did not involuntarily manipulate the dataset
-
-write_rds(df, "../../data/processed/main/res_main_corrigendum.rds")
-
-df_new <- readr::read_rds("../../data/processed/main/res_main_corrigendum.rds")
-
-waldo::compare(df_old,df_new)
-
-```
-
-```{r}
 # NEW sanity check #
 df |> count(codebot_human_agreement)|> 
   kable() |> 
@@ -616,6 +588,12 @@ df |> filter(exclude == FALSE) |>
 ::: callout-caution
 This additional step recovered the 10+314 = 324 (exclude == FALSE) i.e. 11+318 = 329 (without the exclusion filtering) observations that were previously dropped.
 :::
+
+# Save processed Dataframe
+
+```{r}
+write_rds(df, "../../data/processed/main/res_main_corrigendum.rds")
+```
 
 # Session info
 
