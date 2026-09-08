@@ -2,4 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
-*.rds
+#*.rds
+/data/raw/precision_analysis/full_simulation_unnested.rds

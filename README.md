@@ -39,15 +39,15 @@ Open the RProject on your local machine and run (1) the processing and (2) analy
 │   │    ├── main
 │   │    │   ├── codebook_res_main.xlsx       # codebook for processed main data
 │   │    │   ├── res_main.xlsx                             # processed main data
-│   │    │   └── res_main.rds                                      # corrigendum
+│   │    │   └── res_main.rds*                                      # corrigendum
 │   │    ├── pilot
 │   │    │   ├── codebook_res_pilot.xlsx  # codebook for processed piloting data
-│   │    │   └── res_pilot.rds                        # processed piloting data
+│   │    │   └── res_pilot.rds *                      # processed piloting data
 │   │    └── precision_analysis 
 │   │        ├── codebook_power_ba_ci.xlsx                    # codebook to .rds
 │   │        ├── codebook_ci_estimates.xlsx                   # codebook to .rds
-│   │        ├── power_ba_ci.rds              # CIs of n = 17 a posteriori analysis
-│   │        └── simulation_ci_estimates.RDS  # CIs of full_simulation_unnested.rds
+│   │        ├── power_ba_ci.rds *             # CIs of n = 17 a posteriori analysis
+│   │        └── simulation_ci_estimates.rds * # CIs of full_simulation_unnested.rds
 │   └── raw
 │       ├── main
 │       │   ├── adjudicator
@@ -118,8 +118,8 @@ Open the RProject on your local machine and run (1) the processing and (2) analy
 │       └── precision_analysis
 │           ├── codebook_full_simulation_unnested.xlsx        # codebook to .rds
 │           ├── codebook_power_ba.xlsx                        # codebook to .rds
-│           ├── full_simulation_unnested.rds     # full sample precision analysis sim
-│           └── power_ba.rds                     # sim data for a posteriori analysis
+│           ├── full_simulation_unnested.rds *     # full sample precision analysis sim
+│           └── power_ba.rds *                    # sim data for a posteriori analysis
 ├── methods
 │   ├── adjudicator.py                      # preregistered adjudicator workflow
 │   ├── codebot                             # CB files kindly provided by J. Cummins
