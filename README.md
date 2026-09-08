@@ -11,7 +11,7 @@ from the updated analyses were added and logged in the README below.
 First, download this GitHub repository, maintaining the project structure as outlined below. 
 Next, download the data sets (identified with an *) from the corresponding Zenodo repository <LINK>.
 Save the data sets to the corresponding folders.
-Open the RProject on your local machine and run the (1) the processing and (2) analysis scripts. 
+Open the RProject on your local machine and run (1) the processing and (2) analysis scripts. 
 
 ## Structure
 
