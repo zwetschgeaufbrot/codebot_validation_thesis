@@ -8,10 +8,9 @@ from the updated analyses were added and logged in the README below.
 
 ## Reproducibility Guide
 
-First, download this GitHub repository, maintaining the project structure as outlined below. 
-Next, download the data sets (identified with an *) from the corresponding Zenodo repository <LINK>.
-Save the data sets to the corresponding folders.
+Download this GitHub repository, maintaining the project structure as outlined below. 
 Open the RProject on your local machine and run (1) the processing and (2) analysis scripts. 
+Note: The dataset full_simulation_unnested.rds can be reproduced by running full_sim.qmd if needed.
 
 ## Structure
 
@@ -42,11 +41,11 @@ Open the RProject on your local machine and run (1) the processing and (2) analy
 │   │    │   └── res_main.rds*                                      # corrigendum
 │   │    ├── pilot
 │   │    │   ├── codebook_res_pilot.xlsx  # codebook for processed piloting data
-│   │    │   └── res_pilot.rds *                      # processed piloting data
+│   │    │   └── res_pilot.rds                         # processed piloting data
 │   │    └── precision_analysis 
 │   │        ├── codebook_power_ba_ci.xlsx                    # codebook to .rds
 │   │        ├── codebook_ci_estimates.xlsx                   # codebook to .rds
-│   │        ├── power_ba_ci.rds *             # CIs of n = 17 a posteriori analysis
+│   │        ├── power_ba_ci.rds              # CIs of n = 17 a posteriori analysis
 │   │        └── simulation_ci_estimates.rds * # CIs of full_simulation_unnested.rds
 │   └── raw
 │       ├── main
@@ -118,8 +117,8 @@ Open the RProject on your local machine and run (1) the processing and (2) analy
 │       └── precision_analysis
 │           ├── codebook_full_simulation_unnested.xlsx        # codebook to .rds
 │           ├── codebook_power_ba.xlsx                        # codebook to .rds
-│           ├── full_simulation_unnested.rds *     # full sample precision analysis sim
-│           └── power_ba.rds *                    # sim data for a posteriori analysis
+│          (├── full_simulation_unnested.rds      # full sample precision analysis sim)
+│           └── power_ba.rds                     # sim data for a posteriori analysis
 ├── methods
 │   ├── adjudicator.py                      # preregistered adjudicator workflow
 │   ├── codebot                             # CB files kindly provided by J. Cummins
