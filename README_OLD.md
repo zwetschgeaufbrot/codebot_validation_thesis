@@ -1,19 +1,20 @@
-# (Automated) Assessment of the Narrative Description of Analysis Code – A CodeBot Validation Study
+# (Automated) Assessment of the Narrative Description of Analysis Code – A CodeBot Validation Study 
 
 ## Overview
+This README organises the online materials corresponding to the bachelor's thesis of Anna T. Wittmann.
+To reproduce the analyses, download all online materials to your local machine, keeping the files and folders structured as outlined below.
+Next, open the Rproj in RStudio.
+For the a priori and posteriori precision analyses, run full_sim.qmd and bachelor_sim.qmd.
+All plots created in R can be reproduced with the help of full_sim_visual.qmd.
+To recreate both the pilot and main analyses run processing.qmd followed by analysis.qmd.
+In contrast, the adjudicator script is included because it was saved to the OSF together with my pre-registration and CodeBot and my recorded data previous to the analysis process.
 
-This README updates the original README to the bachelor's thesis of A.T. Wittmann
-as part of the corresponding corrigendum. All files necessary for or resulting 
-from the updated analyses were added and logged in the README below.
 ## Structure
-
-```         
+```
 ├── code
 │   ├── main
 │   │   ├── analysis.qmd                             # detailed analysis process
-│   │   ├── analysis_corrigendum.qmd                               # corrigendum
-│   │   ├── processing.qmd                        # detailed processing protocol
-│   │   └── processing_corrigendum.qmd                             # corrigendum
+│   │   └── processing.qmd                        # detailed processing protocol
 │   ├── pilot
 │   │   ├── analysis.qmd                             # detailed analysis process
 │   │   └── processing.qmd                        # detailed processing protocol                         
@@ -25,13 +26,11 @@ from the updated analyses were added and logged in the README below.
 ├── data
 │   ├── outputs
 │   │   └── plots                              # plots from full_sim_visual.qmd
-│   │       ├── precision.png        
-│   │       └── precision_corrigendum.png                          # corrigendum
+│   │       └── precision.png
 │   ├── processed                                   # output from processing.qmd
 │   │    ├── main
 │   │    │   ├── codebook_res_main.xlsx       # codebook for processed main data
-│   │    │   ├── res_main.xlsx                             # processed main data
-│   │    │   └── res_main.rds                                      # corrigendum
+│   │    │   └── res_main.rds                             # processed main data
 │   │    ├── pilot
 │   │    │   ├── codebook_res_pilot.xlsx  # codebook for processed piloting data
 │   │    │   └── res_pilot.rds                        # processed piloting data
@@ -64,26 +63,10 @@ from the updated analyses were added and logged in the README below.
 │       │   │       └── yeung_combined_report.csv
 │       │   ├── codebot
 │       │   │   ├── link.xlsx                           # CB material input list
-│       │   │   └── output                               # CB output per author
-│       │   │       ├── akan.csv
+│       │   │   └── output                               # CB output full sample
 │       │   │       ├── all_papers.csv
-│       │   │       ├── avilles.csv
-│       │   │       ├── berger.csv
-│       │   │       ├── besken.csv
-│       │   │       ├── bloy.csv
-│       │   │       ├── carvalho.csv
-│       │   │       ├── cha.csv
-│       │   │       ├── codebook_all_papers.xlsx  # codebook for combined CB output 
-│       │   │       ├── evans.csv
-│       │   │       ├── helm.csv
-│       │   │       ├── hsieh.csv
-│       │   │       ├── hussey.csv
-│       │   │       ├── mancassola.csv
-│       │   │       ├── muenster.csv
-│       │   │       ├── nguyen.csv
-│       │   │       ├── radtke.csv
-│       │   │       ├── yang.csv
-│       │   │       └── yeung.csv
+│       │   │       ├── all_papers.json
+│       │   │       └── codebook_all_papers.xlsx  # codebook for combined CB output 
 │       │   └── human
 │       │       └── sample_coding_human.xlsx  # manual coding of full sample,contains definition of variable in tab "vars"
 │       ├── pilot
@@ -118,12 +101,9 @@ from the updated analyses were added and logged in the README below.
 │   │   └── ... 
 │   └── sampling_main
 │       ├── prisma.png                            # PRISMA flowchart of sampling
-│       ├── prisma_corrigendum.png                                 # corrigendum   
 │       ├── sample.xlsx                      # documentation of sampling process
-│       ├── sample_corrigendum.xlsx                                # corrigendum
 │       └── top_journals.pdf                # screenshots of TOP database output
 ├── preregistration
 │   └── preregistration.pdf                                    # preregistration
-├── README_OLD.md                                             # original readme             
 └── README.md                                                        # this file
 ```
