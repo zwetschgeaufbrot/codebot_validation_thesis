@@ -10,7 +10,6 @@ from the updated analyses were added and logged in the README below.
 
 Download this GitHub repository, maintaining the project structure as outlined below. 
 Open the RProject on your local machine and run (1) the processing and (2) analysis scripts. 
-Note: The dataset full_simulation_unnested.rds can be reproduced by running full_sim.qmd if needed.
 
 ## Structure
 
@@ -38,7 +37,7 @@ Note: The dataset full_simulation_unnested.rds can be reproduced by running full
 │   │    ├── main
 │   │    │   ├── codebook_res_main.xlsx       # codebook for processed main data
 │   │    │   ├── res_main.xlsx                             # processed main data
-│   │    │   └── res_main.rds*                                      # corrigendum
+│   │    │   └── res_main.rds                                      # corrigendum
 │   │    ├── pilot
 │   │    │   ├── codebook_res_pilot.xlsx  # codebook for processed piloting data
 │   │    │   └── res_pilot.rds                         # processed piloting data
@@ -46,7 +45,7 @@ Note: The dataset full_simulation_unnested.rds can be reproduced by running full
 │   │        ├── codebook_power_ba_ci.xlsx                    # codebook to .rds
 │   │        ├── codebook_ci_estimates.xlsx                   # codebook to .rds
 │   │        ├── power_ba_ci.rds              # CIs of n = 17 a posteriori analysis
-│   │        └── simulation_ci_estimates.rds * # CIs of full_simulation_unnested.rds
+│   │        └── simulation_ci_estimates.rds  # CIs of full_simulation_unnested.rds *Note: full_simulation_unnested.rds can be reproduced by running full_sim.qmd if needed.
 │   └── raw
 │       ├── main
 │       │   ├── adjudicator
