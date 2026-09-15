@@ -18,8 +18,12 @@ Open the RProject on your local machine and run (1) the processing and (2) analy
 │   ├── main
 │   │   ├── analysis.qmd                             # detailed analysis process
 │   │   ├── analysis_corrigendum.qmd                               # corrigendum
+│   │   ├── analysis_corrigendum.html                             # HTML version
+│   │   ├── ...                                        # files required for HTML
 │   │   ├── processing.qmd                        # detailed processing protocol
-│   │   └── processing_corrigendum.qmd                             # corrigendum
+│   │   ├── processing_corrigendum.qmd                             # corrigendum
+│   │   ├── processing_corrigendum.html                             # HTML version
+│   │   └── ...                                        # files required for HTML
 │   ├── pilot
 │   │   ├── analysis.qmd                             # detailed analysis process
 │   │   └── processing.qmd                        # detailed processing protocol                         
@@ -119,8 +123,9 @@ Open the RProject on your local machine and run (1) the processing and (2) analy
 │          (├── full_simulation_unnested.rds      # full sample precision analysis sim)
 │           └── power_ba.rds                     # sim data for a posteriori analysis
 ├── methods
-│   ├── adjudicator.py                      # preregistered adjudicator workflow
+│   ├── adjudicator.py            # preregistered adjudicator workflow by J. Cummins
 │   ├── codebot                             # CB files kindly provided by J. Cummins
+│   │   ├── LICENSE                   # License for workflows provided by J. Cummins
 │   │   └── ... 
 │   └── sampling_main
 │       ├── prisma.png                            # PRISMA flowchart of sampling
@@ -131,5 +136,7 @@ Open the RProject on your local machine and run (1) the processing and (2) analy
 ├── preregistration
 │   └── preregistration.pdf                                    # preregistration
 ├── README_OLD.md                                             # original readme             
-└── README.md                                                        # this file
+├── README.md                                                        # this file
+└── LICENSE                                                 
+
 ```
